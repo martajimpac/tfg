@@ -17,10 +17,6 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        title: const Text('My cool App'),
-        elevation: 0,
-      ),
       body: SafeArea(
         //avoid notch area
         child: Column(
@@ -30,15 +26,12 @@ class LoginPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50), //ESPACIAR
 
                   // logo
                   const Icon(
                     Icons.lock,
                     size: 100,
                   ),
-
-                  const SizedBox(height: 50),
 
                   // welcome back, you've been missed!
                   Text(
@@ -49,7 +42,6 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 25),
 
                   // username textfield
                   MyTextField(
@@ -58,7 +50,6 @@ class LoginPage extends StatelessWidget {
                     obscureText: false,
                   ),
 
-                  const SizedBox(height: 10),
 
                   // password textfield
                   MyTextField(
@@ -66,8 +57,6 @@ class LoginPage extends StatelessWidget {
                     hintText: 'Password',
                     obscureText: true,
                   ),
-
-                  const SizedBox(height: 10),
 
                   // forgot password?
                   Padding(
@@ -83,8 +72,6 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 25),
-
                   // sign in button
                   MyButton(onTap: () {
                     Navigator.push(
@@ -95,7 +82,6 @@ class LoginPage extends StatelessWidget {
                     );
                   }),
 
-                  const SizedBox(height: 50),
 
                   // or continue with
                   Padding(
@@ -125,7 +111,6 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 50),
 
                   // google + apple sign in buttons
                   const Row(
@@ -141,7 +126,6 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 50),
 
                   // not a member? register now
                   Row(

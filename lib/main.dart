@@ -17,7 +17,18 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: LoginPage(),
-        theme: ThemeData(primarySwatch: Colors.yellow),
+        theme:
+        ThemeData(
+            primarySwatch: Colors.yellow,
+          appBarTheme: const AppBarTheme(
+            elevation: 0,
+            color: Colors.blue, // Color de fondo de la AppBar
+            iconTheme: IconThemeData(
+              color: Colors.white, // Color de los iconos en la AppBar
+            ),
+          ),
+
+        ),
       ),
     );
   }

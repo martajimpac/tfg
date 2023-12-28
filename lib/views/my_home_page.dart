@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modernlogintute/cubit/counter_cubir.dart';
+import 'package:modernlogintute/views/cuestionario.dart';
+
+import '../components/my_button.dart';
+import '../components/my_navigation_drawer.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -15,10 +19,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      drawer: MyNavigationDrawer(),
+
       body: BlocBuilder<CounterCubit, int>(
         builder: (context, state) {
           return Center(
@@ -32,6 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   '$state',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
+                MyButton(onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Cuestionario(),
+                    ),
+                  );
+                }),
               ],
             ),
           );
