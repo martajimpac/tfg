@@ -1,32 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:modernlogintute/theme/app_theme.dart';
+import 'package:modernlogintute/theme/dimensions.dart';
+
 
 class MyButton extends StatelessWidget {
   final Function()? onTap;
+  final String text;
+  final bool adaptableWidth;
 
-  const MyButton({super.key, required this.onTap});
+  const MyButton({
+    super.key,
+    required this.adaptableWidth,
+    required this.onTap,
+    required this.text
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(25),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Center(
-          child: Text(
-            "Sign In",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+      child: Wrap(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(Dimensions.marginButton),
+            margin:  const EdgeInsets.all(Dimensions.marginMedium),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
+              color: Theme.of(context).colorScheme.primaryContainer,
             ),
-          ),
-        ),
-      ),
+            constraints: BoxConstraints(
+              minWidth: adaptableWidth? 0 : double.infinity
+            ),
+            child: Text(
+              text,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
+        ]
+      )
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:modernlogintute/views/my_home_page.dart';
 
 import '../components/my_button.dart';
-import '../components/my_textfield.dart';
+import '../components/login_textfield.dart';
 import '../components/square_tile.dart';
 
 class LoginPage extends StatelessWidget {
@@ -42,17 +42,15 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
 
-
                   // username textfield
-                  MyTextField(
+                  LoginTextField(
                     controller: usernameController,
                     hintText: 'Username',
                     obscureText: false,
                   ),
 
-
                   // password textfield
-                  MyTextField(
+                  LoginTextField(
                     controller: passwordController,
                     hintText: 'Password',
                     obscureText: true,
@@ -73,14 +71,18 @@ class LoginPage extends StatelessWidget {
                   ),
 
                   // sign in button
-                  MyButton(onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: "Hola"),
-                      ),
-                    );
-                  }),
+                  MyButton(
+                      adaptableWidth: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyHomePage(),
+                          ),
+                        );
+                    },
+                    text: "Iniciar sesión",
+                  ),
 
 
                   // or continue with

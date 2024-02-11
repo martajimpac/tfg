@@ -1,63 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modernlogintute/cubit/counter_cubir.dart';
-import 'package:modernlogintute/views/cuestionario.dart';
+import 'package:modernlogintute/cubit/counter_cubit.dart';
+import 'package:modernlogintute/theme/dimensions.dart';
+import 'package:modernlogintute/views/checklist_page.dart';
+import 'package:modernlogintute/views/nueva_inspeccion_page.dart';
 
 import '../components/my_button.dart';
 import '../components/my_navigation_drawer.dart';
+import 'evaluaciones_page.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      drawer: MyNavigationDrawer(),
-
-      body: BlocBuilder<CounterCubit, int>(
-        builder: (context, state) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
-                Text(
-                  '$state',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                MyButton(onTap: () {
+      appBar: AppBar(),
+      drawer: const MyNavigationDrawer(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Bienvenido!, ¿Qué desea hacer?",
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+            MyButton(
+              adaptableWidth: false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InspeccionesPage(),
+                  ),
+                );
+              },
+              text: "Ver mis evaluaciones"
+            ),
+            const SizedBox(height: Dimensions.marginMedium),
+            MyButton(
+                adaptableWidth: false,
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Cuestionario(),
+                      builder: (context) => NuevaInspeccionPage(),
                     ),
                   );
-                }),
-              ],
+                },
+                text: "Crear nueva evaluación"
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final cubit = context.read<CounterCubit>();
-          cubit.increment();
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+          ],
+        ),
       ),
     );
   }
