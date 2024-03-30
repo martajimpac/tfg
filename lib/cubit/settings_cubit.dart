@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modernlogintute/cubit/settings_state.dart';
 import 'package:modernlogintute/theme/app_theme.dart';

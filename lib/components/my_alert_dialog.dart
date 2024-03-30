@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:modernlogintute/theme/app_theme.dart';
-import 'package:modernlogintute/theme/dimensions.dart';
 
 
 class MyAlertDialog extends StatelessWidget {

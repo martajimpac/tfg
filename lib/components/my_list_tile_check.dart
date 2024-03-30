@@ -43,6 +43,7 @@ class _MyListTileState extends State<MyListTile> {
       children: [
         Checkbox(
           activeColor: Theme.of(context).appBarTheme.iconTheme?.color,
+          checkColor: Theme.of(context).colorScheme.primaryContainer,
           value: answer == selectedAnswer,
           onChanged: (value) {
             setState(() {

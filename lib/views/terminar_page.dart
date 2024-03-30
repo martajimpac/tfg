@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:modernlogintute/components/my_alert_dialog.dart';
 import 'package:modernlogintute/components/my_button.dart';
 import 'package:modernlogintute/views/pdf_page.dart';
 
@@ -51,10 +50,10 @@ class _TerminarPageState extends State<TerminarPage> {
                 child: TabBarView(
                   children: [
                     Container(
-                      child: Text("Resumen"),
+                      child: const Text("Resumen"),
                     ),
                     Container(
-                      child: Text("PDF"),
+                      child: const Text("PDF"),
                     )
                   ],
                 ),
@@ -101,15 +100,15 @@ void _mostrarDialogo(BuildContext context){
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Título del Diálogo'),
-        content: Text('Contenido del diálogo.'),
+        title: const Text('Título del Diálogo'),
+        content: const Text('Contenido del diálogo.'),
         actions: [
           TextButton(
             onPressed: () {
               // Acción cuando se presiona el botón en el diálogo
               Navigator.of(context).pop(); // Cierra el diálogo
             },
-            child: Text('Aceptar'),
+            child: const Text('Aceptar'),
           ),
         ],
       );

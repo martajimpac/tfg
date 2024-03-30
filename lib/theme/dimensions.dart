@@ -9,4 +9,7 @@ class Dimensions {
   // Radios de esquina
   static const double cornerRadius = 25.0;
 
+  static const double bigTextSize = 25.0;
+  static const double defaultTextSize = 16.0;
+  static const double smallTextSize = 13.0;
 }

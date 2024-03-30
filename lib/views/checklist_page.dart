@@ -1,20 +1,15 @@
-import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modernlogintute/components/my_list_tile_check.dart';
-import 'package:modernlogintute/components/my_navigation_drawer.dart';
 import 'package:modernlogintute/cubit/page_cubit.dart';
 import 'package:modernlogintute/theme/dimensions.dart';
-import 'package:modernlogintute/views/my_home_page.dart';
 import 'package:modernlogintute/views/terminar_page.dart';
 
 import '../components/my_button.dart';
 import '../components/login_textfield.dart';
 import '../components/my_textfield.dart';
-import '../components/square_tile.dart';
-import '../cubit/page_state.dart';
+import '../cubit/categories_cubit.dart';
 
 class CheckListPage extends StatefulWidget {
   const CheckListPage({super.key});
@@ -47,28 +42,25 @@ extension AnswerExtension on Answer {
   }
 }
 
-
 class _CheckListPageState extends State<CheckListPage> {
+  late CategoriesCubit cubit;
 
-  // text editing controllers
-  final fieldController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    cubit = CategoriesCubit();
+    cubit.loadData();
+  }
+
   final pageViewController = PageController(initialPage: 0);
-
-  final List<String> items = List.generate(100, (index) => 'Item $index');
   late List<TextEditingController> controllers;
 
   final List<int> numbers = List.generate(3, (index) => index + 1); //TODO, los mismos que pageview
 
   List toDoList = [
-    ["Make tdsdfadadasaffda dfsaas", Answer.notselected],
+    ["Make tdsd fada dasa ffda dfsaas", Answer.notselected],
     ["Do dfasd asdf sdf asdf asf exercdfasfise", Answer.notselected]
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    controllers = List.generate(items.length, (index) => TextEditingController());
-  }
 
   // checkbox was tapped
   void checkBoxChanged(Answer? value, int index) {
@@ -76,6 +68,8 @@ class _CheckListPageState extends State<CheckListPage> {
       toDoList[index][1] = !toDoList[index][1];
     });
   }
+
+  int _selectedCircle = 0;
 
   @override
   void dispose() {
@@ -88,20 +82,20 @@ class _CheckListPageState extends State<CheckListPage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           title: Text(
-              "CheckList",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+            "Checklist",
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          iconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-          ),
+          // Aquí puedes personalizar otras propiedades del AppBar según tus necesidades
+          // backgroundColor: Colors.blue, // Ejemplo de personalización del color de fondo
         ),
-        drawer: const MyNavigationDrawer(),
-
-        body: BlocBuilder<PageCubit, PageState>(
+        body: BlocBuilder<CategoriesCubit, CategoriesState>(
           builder: (context, state) {
             return Center(
               child: Column(
@@ -112,43 +106,73 @@ class _CheckListPageState extends State<CheckListPage> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(Dimensions.cornerRadius), //TODO USAR CORNER RADIOUS
+                          bottomLeft: Radius.circular(Dimensions.cornerRadius),
                           bottomRight: Radius.circular(Dimensions.cornerRadius),
                         ),
                       ),
-                      child:  ListView.builder(
+                      child:
+                      ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(Dimensions.marginSmall),
                             child: GestureDetector(
                               onTap: () {
-                                context.read<PageCubit>().selectedPage(index);
+                                setState(() {
+                                  context.read<CategoriesCubit>().selectedPage(index);
+                                  _selectedCircle = index;
+                                });
+                                context.read<CategoriesCubit>().selectedPage(index);
                                 pageViewController.animateToPage(
-                                    index,
-                                    duration: const Duration(seconds: 1),
-                                    curve: Curves.easeInOut
+                                  index,
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.easeInOut,
                                 );
                               },
-                              child: Container(
-                                width: 50, // Ancho del elemento
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 600),
+                                width: _selectedCircle == index ? 200 : 50,
+                                height: _selectedCircle == index ? 200 : 50,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  color: index == state.pageIndex ? Colors.white : Theme.of(context).colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: index == _selectedCircle ? Colors.black : Theme.of(context).colorScheme.secondaryContainer,
                                 ),
                                 child: Center(
-                                  child: Text(
+                                  child: _selectedCircle == index
+                                      ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 50, // Ancho fijo deseado
+                                        child: Text(
+                                          numbers[index].toString(),
+                                          style: const TextStyle(fontSize: 15, color: Colors.white),
+                                          textAlign: TextAlign.center, // Alinear el texto al centro
+                                          overflow: TextOverflow.ellipsis, // Controlar el desbordamiento del texto
+                                        ),
+                                      ),
+                                      const Expanded(
+                                        child: Text(
+                                          "Texto al lado",
+                                          style: TextStyle(fontSize: 15, color: Colors.white),
+                                          textAlign: TextAlign.start, // Alinear el texto al centro
+                                          overflow: TextOverflow.ellipsis, // Controlar el desbordamiento del texto
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                      : Text(
                                     numbers[index].toString(),
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(fontSize: 15, color: Colors.white),
                                   ),
                                 ),
                               ),
-                            )
-
-                        );
+                            ),
+                          );
                         },
                         itemCount: numbers.length,
                       ),
+
                     ),
                     Expanded(
                         child : Column(
@@ -160,11 +184,23 @@ class _CheckListPageState extends State<CheckListPage> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 children: [
                                   ListView.builder(
-                                    itemCount: items.length,
+                                    itemCount: state.preguntas.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        title: Text('Elemento $index'), // Contenido del elemento de la lista
+                                        onTap: () {
+                                          // Acción a realizar cuando se hace clic en el elemento
+                                          print('Elemento $index clickeado');
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  /*ListView.builder(
+                                    itemCount: toDoList.length,
                                     itemBuilder: (context, index){
-                                      return MyTextField(
-                                          controller: controllers[index],
-                                          hintText: items[index]
+                                      return MyListTile(
+                                        name: toDoList[index][0],
+                                        answerSelected: toDoList[index][1],
                                       );
                                     },
                                   ),
@@ -178,31 +214,29 @@ class _CheckListPageState extends State<CheckListPage> {
                                     },
                                   ),
                                   ListView.builder(
-                                    itemCount: items.length,
+                                    itemCount: toDoList.length,
                                     itemBuilder: (context, index){
-                                      return ListTile(
-                                        title: LoginTextField(
-                                          controller: fieldController,
-                                          hintText: items[index],
-                                          obscureText: false,
-                                        ),
+                                      return MyListTile(
+                                        name: toDoList[index][0],
+                                        answerSelected: toDoList[index][1],
                                       );
                                     },
-                                  ),
+                                  ),*/
                                 ],
+
                               ),
                             )
                           ],
                         )
                     ),
-                    if(state.pageIndex == (numbers.length - 1))
+                    if(_selectedCircle == (numbers.length - 1))
                       MyButton(
                           adaptableWidth: false,
                           onTap: (){
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) => TerminarPage(),
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TerminarPage(),
                               ),
                             );
                           },
@@ -213,7 +247,6 @@ class _CheckListPageState extends State<CheckListPage> {
             );
           }
         )
-
     );
   }
 

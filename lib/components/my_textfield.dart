@@ -16,9 +16,9 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        Dimensions.marginMedium, // Izquierda
+        0, // Izquierda
         Dimensions.marginSmall, // Arriba
-        Dimensions.marginMedium, // Derecha
+        0, // Derecha
         Dimensions.marginSmall, // Abajo (añadiendo un espacio extra)
       ),
       child: TextField(
@@ -33,7 +33,16 @@ class MyTextField extends StatelessWidget {
             fillColor: Theme.of(context).colorScheme.onBackground,
             filled: true,
             hintText: hintText,
-            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary)
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+            fontSize: Dimensions.defaultTextSize
+          ),
+          suffixIcon: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              controller.clear(); // Borrar el texto del TextField
+            },
+          ),
         ),
       ),
     );
