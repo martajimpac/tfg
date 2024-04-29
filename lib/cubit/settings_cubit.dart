@@ -1,7 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modernlogintute/cubit/settings_state.dart';
 import 'package:modernlogintute/theme/app_theme.dart';
+import 'package:flutter/material.dart';
 
+class SettingsState{
+  final ThemeData theme;
+  SettingsState({
+    required this.theme
+  });
+}
 class SettingsCubit extends Cubit<SettingsState>{
   SettingsCubit(): super(SettingsState(theme: MyAppTheme.lightTheme));
 

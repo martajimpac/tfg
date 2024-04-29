@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:modernlogintute/helpers/ConstantsHelper.dart';
 import 'package:modernlogintute/views/checklist_page.dart';
 import 'package:modernlogintute/views/mis_evaluaciones_page.dart';
-import 'package:modernlogintute/views/nueva_evaluacion_page.dart';
+import 'package:modernlogintute/views/nueva_evaluacion_page_old.dart';
 import 'package:modernlogintute/views/profile_page.dart';
+
+import 'nueva_evaluacion_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -25,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const MisEvaluaccionesPage(),
-    const NuevaInspeccionPage(),
+    const NuevaEvaluacionPage(),
     const ProfilePage(),
   ];
 

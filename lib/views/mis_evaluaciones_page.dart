@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modernlogintute/theme/dimensions.dart';
 import 'package:modernlogintute/views/checklist_page.dart';
 import 'package:modernlogintute/views/filtros_page.dart';
@@ -17,7 +18,7 @@ class MisEvaluaccionesPage extends StatefulWidget {
 }
 
 class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
-  List<String> filterList = ["Filtro 1", "Filtro 2", "Filtro 3", "Filtro 4", "Filtro 5", "Filtro 6"];
+  List<String> filterList = ["Filtro 1", "Filtro 2", "Filtro 3", "Filtro 4", "Filtro 5", "Filtro 6", "Filtro 4", "Filtro 5", "Filtro 6", "Filtro 4", "Filtro 5", "Filtro 6"];
 
 
   @override
@@ -50,10 +51,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                       icon: const Icon(Icons.filter_alt),
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const FiltrosPage()),
-                        );
+                        //GoRouter.of(context).go('/filtros');
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()),);
                       },
                     ),
                   ),
@@ -74,88 +73,52 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 50, // Ajusta la altura según lo necesites
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const ClampingScrollPhysics(),
-                    shrinkWrap: true,
-                    children: [
-                      for (int index = 0; index < filterList.length; index++)
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                              margin: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: Theme.of(context).colorScheme.primaryContainer,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    filterList[index],
-                                    style: Theme.of(context).textTheme.labelMedium, // Color del texto del filtro
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        filterList.removeAt(index);
-                                      });
-                                    },
-                                    child: Icon(
-                                      Icons.close,
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                      size: 20.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
               ],
             ),
-            /*SizedBox(
-              height: 60, // Altura de la lista de filtros aplicados
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal, // Dirección horizontal
-                itemCount: 3, // Cantidad de elementos de la lista (puedes cambiarlo según tus necesidades)
-                itemBuilder: (BuildContext context, int index) {
-                  // Aquí puedes generar datos inventados para cada filtro aplicado
-                  String filterName = "Filtro $index";
-
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8.0), // Margen horizontal entre los filtros
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Theme.of(context).colorScheme.primaryContainer, // Color de fondo del contenedor
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+            SizedBox(
+              height: 50, // Ajusta la altura según lo necesites
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                physics: const ClampingScrollPhysics(),
+                shrinkWrap: true,
+                children: [
+                  for (int index = 0; index < filterList.length; index++)
+                    Stack(
                       children: [
-                        Text(
-                          filterName,
-                          style: const TextStyle(color: Colors.white), // Color del texto del filtro
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          color: Colors.white, // Color del icono de la cruz
-                          onPressed: () {
-                            // Acción al presionar la cruz para eliminar el filtro
-                          },
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          margin: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                filterList[index],
+                                style: Theme.of(context).textTheme.labelMedium, // Color del texto del filtro
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    filterList.removeAt(index);
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  size: 20.0,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  );
-                },
+                ],
               ),
-            ),*/
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: 3,
@@ -168,12 +131,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   return GestureDetector(
                     onTap: () {
                       // Navegar a la nueva página cuando se hace clic en la tarjeta
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DetalleEvaluaccionPage(),
-                        ),
-                      );
+                      //GoRouter.of(context).go('/detalle_evaluaciones');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DetalleEvaluaccionPage(),),);
                     },
                     child: Card(
                       margin: const EdgeInsets.all(10),

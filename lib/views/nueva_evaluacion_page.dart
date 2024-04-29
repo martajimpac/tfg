@@ -3,10 +3,15 @@ import 'dart:typed_data';
 import 'package:dropdownfield2/dropdownfield2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:modernlogintute/components/date_slider.dart';
 import 'package:modernlogintute/components/my_button.dart';
+import 'package:modernlogintute/components/my_loading_dialog.dart';
 import 'package:modernlogintute/components/my_textfield.dart';
 import 'package:modernlogintute/helpers/ConstantsHelper.dart';
 import 'package:modernlogintute/main.dart';
+import 'package:modernlogintute/modelos/centro_dm.dart';
 import 'package:modernlogintute/theme/dimensions.dart';
 import 'package:modernlogintute/views/checklist_page.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,54 +19,60 @@ import 'package:modernlogintute/views/my_home_page.dart';
 
 import '../components/custom_drop_down_field.dart';
 
-class NuevaInspeccionPage extends StatefulWidget {
-  const NuevaInspeccionPage({Key? key}) : super(key: key);
+import 'package:flutter/material.dart';
+
+import '../cubit/centros_cubit.dart';
+import '../cubit/insertar_evaluacion_cubit.dart';
+import '../cubit/settings_cubit.dart';
+import '../modelos/evaluacion_to_insert_dm.dart';
+import '../theme/app_theme.dart';
+
+class NuevaEvaluacionPage extends StatefulWidget {
+  const NuevaEvaluacionPage({Key? key}) : super(key: key);
 
   @override
-  _NuevaInspeccionPageState createState() => _NuevaInspeccionPageState();
+  _NuevaEvaluacionPageState createState() => _NuevaEvaluacionPageState();
+
+
 }
 
-class _NuevaInspeccionPageState extends State<NuevaInspeccionPage> {
-  late List<dynamic> data = [];
+class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
+  late EvaluacionCubit _cubitEvaluacion;
+
+  final dropDownController = TextEditingController();
+  final controller = TextEditingController();
+
+  //valores evaluacion
+  late int _idCentro;
+  final List<Uint8List> _imageList = [];
+  late DateTime _fechaCaducidad;
+
+  Future<void> _insertarEvaluacion() async {
+    final evaluacion = EvaluacionToInsertDataModel.fromRealizacion(
+      idinspector: 1,
+      idcentro: 1, //_idCentro
+      fechaRealizacion: DateTime.now(),
+      fechaCaducidad: _fechaCaducidad,//TODO METER AQUI VALOR POR DEFECTO FECHA CADUCIDAD por defecto 2 años, si no selecciona fecha...
+      idmaquina: 1, //TODO METER LISTA DE MAQUINAS
+      idtipoeval: 1 //todo que significa esto??
+    );
+    _cubitEvaluacion.insertarEvaluacion(evaluacion, _imageList);
+  }
 
   @override
   void initState() {
     super.initState();
-    getData();
+    BlocProvider.of<CentrosCubit>(context).getCentros();
+    _cubitEvaluacion = BlocProvider.of<EvaluacionCubit>(context, listen: false);
   }
 
-  Future<List<dynamic>> getDataFromTable(String tableName) async {
-    final response = await supabase.from(tableName).select();
-    return response;
-  }
-
-  Future<void> getData() async {
-    data = await getDataFromTable('maq_centro');
-    setState(() {});
-  }
-
-  List<String> getDropdownValues() {
-    return data.map((row) => row['denominacion'].toString()).toList();
-  }
-
-  final dropDownController = TextEditingController();
-  final controller = TextEditingController();
-  String _currentDropDownSelectedValue = '';
-
-  final _responseStream = supabase.from('maq_imagenes').stream(primaryKey: ['idimg']);
-
-  final List<Uint8List> _imageList = [];
-  Future<List<dynamic>> getListCenters(String tableName) async {
-    final response = await supabase.from(tableName).select();
-    return response;
-  }
-  Future<void> _getImage() async {
+    Future<void> _getImage() async {
     // Mostrar un diálogo con opciones
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Seleccionar fuente de imagen"),
+          title: const Text("Seleccionar fuente de imagen"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -101,150 +112,180 @@ class _NuevaInspeccionPageState extends State<NuevaInspeccionPage> {
   }
 
 
-  Future<void> _saveImages() async {
-    // Guardar los bytes de la imagen en la base de datos Supabase
-    for (var image in _imageList){
-      final response = await supabase.from("maq_imagenes").insert({"ideval": 2,"imagen": image});
-      if (response.error != null) {
-        // Manejar el error, por ejemplo, mostrando un mensaje al usuario
-        debugPrint("Error al guardar la imagen: ${response.error!.message}");
-      } else {
-        // La imagen se guardó correctamente
-        debugPrint("Imagen guardada correctamente en la base de datos.");
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MyHomePage()), //todo volver a index correcto
-          );
-      }, child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        appBar:  AppBar(
-          title: Text(
-            'Datos de la inspeccion',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.close), // Icono de cruz
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyHomePage()), //todo volver a index correcto
-              );
-            },
-          ),
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+          //GoRouter.of(context).go('/home'); //TODO
+        }, child: Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar:  AppBar(
+        title: Text(
+          'Datos de la inspeccion',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: Dimensions.marginMedium),
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).drawerTheme!.backgroundColor,
-                  borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Expanded(
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        children: <Widget>[
-                          Container(height: 200, color: Colors.blue),
-                          const Text("Centros"),
-                          const SizedBox(height: 20.0,),
-                          CustomDropdownField(
-                            controller: dropDownController,
-                            hintText: "Selecciona un centro",
-                            items: getDropdownValues(),
-                            numItems: 5,
-                            onValueChanged: (value) {
-                              setState(() {
-                                _currentDropDownSelectedValue = value;
-                              });
-                            },
-                          ),
-                          SizedBox(
-                            height: 200, // Ajusta la altura según lo necesites
-                            child: _imageList.isNotEmpty
-                                ? ListView(
-                              scrollDirection: Axis.horizontal,
-                              physics: const ClampingScrollPhysics(),
-                              shrinkWrap: true,
-                              children: [
-                                for (int index = 0; index < _imageList.length; index++)
-                                  Stack(
-                                    children: [
-                                      GestureDetector(
-                                        onLongPress: () {
+        leading: IconButton(
+          icon: const Icon(Icons.close), // Icono de cruz
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+            //GoRouter.of(context).go('/home');
+          },
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: Dimensions.marginMedium),
+              height: 200,
+              decoration: BoxDecoration(
+                color: Theme.of(context).drawerTheme!.backgroundColor,
+                borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: Dimensions.marginSmall),
+                  Expanded(
+                    child: ListView(
+                      scrollDirection: Axis.vertical,
+                      children: <Widget>[
+                        const Text("Centros"),
+                        const SizedBox(height: 20.0,),
+                        BlocBuilder<CentrosCubit, CentrosState>(
+                          builder: (context, state) {
+                            if (state is CentrosLoading) {
+                              List<CentroDataModel> centros = [];
+                              return CustomDropdownField(
+                                controller: dropDownController,
+                                hintText: "Selecciona un centro",
+                                items: centros,
+                                numItems: 0,
+                                onValueChanged: (value) {
+                                  setState(() {
+                                    _idCentro = value;
+                                  });
+                                },
+                              );
+                            } else if (state is CentrosLoaded) {
+                              final List<CentroDataModel> centros = state.centros;
+
+                              return CustomDropdownField(
+                                controller: dropDownController,
+                                hintText: "Selecciona un centro",
+                                items: centros,
+                                numItems: 5,
+                                onValueChanged: (value) {
+                                  setState(() {
+                                    _idCentro = (value as CentroDataModel).idCentro;
+                                  });
+                                },
+                              );
+                            } else if (state is CentrosError) {
+                              return Text('Error: ${state.errorMessage}');
+                            } else {
+                              return Text('Estado desconocido del cubit');
+                            }
+                          },
+                        ),
+                        DateSlider(
+                          initialDate: DateTime.now(), // Fecha inicial para el slider
+                          onChanged: (newDate) {
+                            setState(() {
+                              _fechaCaducidad = newDate; // Actualiza la fecha de caducidad cuando cambia el slider
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          height: 200, // Ajusta la altura según lo necesites
+                          child: _imageList.isNotEmpty
+                              ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const ClampingScrollPhysics(),
+                            shrinkWrap: true,
+                            children: [
+                              for (int index = 0; index < _imageList.length; index++)
+                                Stack(
+                                  children: [
+                                    GestureDetector(
+                                      onLongPress: () {
+                                        setState(() {
+                                          _imageList.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.all(8.0),
+                                        width: 200,
+                                        height: 200,
+                                        child: Image.memory(
+                                          _imageList[index],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8.0,
+                                      right: 8.0,
+                                      child: GestureDetector(
+                                        onTap: () {
                                           setState(() {
                                             _imageList.removeAt(index);
                                           });
                                         },
-                                        child: Container(
-                                          margin: const EdgeInsets.all(8.0),
-                                          width: 200,
-                                          height: 200,
-                                          child: Image.memory(
-                                            _imageList[index],
-                                            fit: BoxFit.cover,
-                                          ),
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 24.0,
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 8.0,
-                                        right: 8.0,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _imageList.removeAt(index);
-                                            });
-                                          },
-                                          child: const Icon(
-                                            Icons.close,
-                                            color: Colors.white,
-                                            size: 24.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            )
-                                : const Center(child: Text('No hay imagen seleccionada')),
-                          ),
-                          MyButton(adaptableWidth: true, onTap:  _getImage, text: 'Seleccionar imagen')
-                        ],
-                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          )
+                              : const Center(child: Text('No hay imagen seleccionada')),
+                        ),
+                        MyButton(adaptableWidth: true, onTap:  _getImage, text: 'Seleccionar imagen')
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                ],
               ),
             ),
-            MyButton(
-              adaptableWidth: true,
-              onTap: () async {
-                final BuildContext currentContext = context; // Almacena el contexto antes de entrar en el bloque asincrónico
-                await _saveImages();
-                Navigator.push(
-                  currentContext, // Usa la variable que contiene el contexto almacenado
-                  MaterialPageRoute(builder: (context) => const CheckListPage()), //TODO ARREGLA ESTO
-                );
-              },
-              text: "ir a checklist",
-            ),
-          ],
-        ),
-      )
+          ),
+          MyButton(
+            adaptableWidth: true,
+            onTap: () {
+              _insertarEvaluacion();
+            },
+            text: "ir a checklist",
+          ),
+          BlocConsumer<EvaluacionCubit, EvaluacionState>(
+            listener: (context, state) {
+              // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
+              if (state is EvaluacionInsertada) {
+                // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),);
+              }
+            },
+            builder: (context, state) {
+              if (state is EvaluacionLoading) {
+                return const LoadingAlertDialog(); //TODO DIALOGO
+              } else if (state is EvaluacionError) {
+                return Text('Error: ${state.errorMessage}');
+              } else {
+                return Text('Estado desconocido del cubit');
+              }
+            }
+          )
+        ],
+      ),
+    )
     );
   }
 }
+
+

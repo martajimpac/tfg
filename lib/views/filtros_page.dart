@@ -25,22 +25,22 @@ class _FiltrosPageState extends State<FiltrosPage> {
     super.initState();
     _selectedDate = DateTime.now();
     _descripcionController = TextEditingController();
-    getData();
+    //getData();
   }
 
-  Future<List<dynamic>> getDataFromTable(String tableName) async {
+  /*Future<List<dynamic>> getDataFromTable(String tableName) async {
     final response = await supabase.from(tableName).select();
     return response;
-  }
+  }*/
 
-  Future<void> getData() async {
+ /* Future<void> getData() async {
     data = await getDataFromTable('maq_centro');
     setState(() {});
-  }
+  }*/
 
-  List<String> getDropdownValues() {
+/*  List<String> getDropdownValues() {
     return data.map((row) => row['denominacion'].toString()).toList();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
               const Text(
                 'Centro:',
               ),
-              CustomDropdownField(
+              /*CustomDropdownField(
                 controller: dropDownController,
                 hintText: "Selecciona un centro",
                 items: getDropdownValues(),
@@ -70,7 +70,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
                     _currentDropDownSelectedValue = value;
                   });
                 },
-              ),
+              ),*/
               const Text(
                 'Fecha:',
               ),

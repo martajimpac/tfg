@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modernlogintute/components/my_button.dart';
 import 'package:modernlogintute/components/my_textfield.dart';
 import 'package:modernlogintute/main.dart';
@@ -22,7 +23,7 @@ class DetalleEvaluaccionPage extends StatefulWidget {
 class _DetalleEvaluaccionPageState extends State<DetalleEvaluaccionPage> {
   final controller = TextEditingController();
 
-  final _imageStream = supabase
+  /*final _imageStream = supabase
       .from('maq_imagenes')
       .stream(primaryKey: ['idimg']); //TODO FILTRAR POR INSPECCION
 
@@ -37,10 +38,10 @@ class _DetalleEvaluaccionPageState extends State<DetalleEvaluaccionPage> {
   Future<void> _deleteImage(String imageid, int index) async {
     await supabase.from("maq_imagenes").delete().eq("idimg", imageid);
     // Actualiza la lista de imágenes para reflejar el cambio en la interfaz de usuario
-    /*setState(() {
+    *//*setState(() {
       _imageStream.removeAt(index); // Elimina la imagen de la lista local
-    });*/
-  }
+    });*//*
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,8 @@ class _DetalleEvaluaccionPageState extends State<DetalleEvaluaccionPage> {
         body: Column(
           children: [
             Expanded(child:
-              StreamBuilder<List<Map<String, dynamic>>>(
+                Container()
+              /*StreamBuilder<List<Map<String, dynamic>>>(
                 stream: _imageStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
@@ -105,30 +107,18 @@ class _DetalleEvaluaccionPageState extends State<DetalleEvaluaccionPage> {
                     },
                   );
                 },
-              )
+              )*/
             ),
-            MyButton(adaptableWidth: true, onTap: _deleteImages, text: "Eliminar todas las imágnes")
+            MyButton(
+              adaptableWidth: true,
+              onTap: () {
+                //_deleteImages
+              },
+              text: "Eliminar todas las imágenes",
+            ),
           ],
         )
 
-        /*StreamBuilder<List<Map<String, dynamic>>>(
-          stream: _responsesStream,
-          builder: (context, snapshot) {
-            if(!snapshot.hasData){
-              return const Center(child: CircularProgressIndicator());
-            }
-            final notes = snapshot.data!;
-
-            return ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(notes[index]['opcion']),
-                  );
-                }
-            );
-          },
-        ),*/
       );
   }
 }

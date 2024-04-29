@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart'; // Necesitas importar Cupertino para us
 import 'package:flutter_bloc/flutter_bloc.dart'; // Necesitas importar flutter_bloc para usar BlocBuilder
 import '../components/square_tile.dart';
 import '../cubit/settings_cubit.dart';
-import '../cubit/settings_state.dart';
 import '../theme/app_theme.dart'; // Asumiendo que tienes un archivo settings_cubit.dart
 
 class ProfilePage extends StatelessWidget {

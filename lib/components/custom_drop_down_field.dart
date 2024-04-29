@@ -1,12 +1,13 @@
 import 'package:dropdownfield2/dropdownfield2.dart';
 import 'package:flutter/material.dart';
+import 'package:modernlogintute/modelos/centro_dm.dart';
 import 'package:modernlogintute/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdownField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
-  final List<String> items;
+  final List<CentroDataModel> items;
   final int numItems;
   final Function(dynamic)? onValueChanged;
 
@@ -33,7 +34,7 @@ class CustomDropdownField extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.blue),
         enabled: true,
         itemsVisibleInDropdown: numItems,
-        items: items,
+        items:  items.map((centro) => centro.denominacion).toList(),
         onValueChanged: onValueChanged,
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modernlogintute/components/my_button.dart';
 import 'package:modernlogintute/views/pdf_page.dart';
 
@@ -76,12 +77,8 @@ class _TerminarPageState extends State<TerminarPage> {
                     child: MyButton(
                         adaptableWidth: false,
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PdfPage(),
-                            ),
-                          );
+                          //GoRouter.of(context).go('/pdf');
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const PdfPage(),),);
                         },
                         text: "Terminar"
                     )

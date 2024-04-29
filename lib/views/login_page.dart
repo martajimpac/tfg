@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modernlogintute/views/my_home_page.dart';
 
 import '../components/my_button.dart';
@@ -74,12 +75,8 @@ class LoginPage extends StatelessWidget {
                   MyButton(
                       adaptableWidth: false,
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MyHomePage(),
-                          ),
-                        );
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+                        //GoRouter.of(context).go('/home');
                     },
                     text: "Iniciar sesión",
                   ),
