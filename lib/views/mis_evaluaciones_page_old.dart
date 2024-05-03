@@ -130,106 +130,82 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               ),
             ),
             Expanded(
-              child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
-                builder: (context, state) {
-                  if (state is EvaluacionesLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is EvaluacionesLoaded) {
-                    return ListView.builder(
-                      itemCount: state.evaluaciones.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final evaluacion = state.evaluaciones[index];
-                        return Dismissible(
-                          key: UniqueKey(), // Se necesita una clave única para cada elemento Dismissible
-                          onDismissed: (direction) {
-                            // Remover el elemento de la lista cuando se desliza
-                            setState(() {
-                              state.evaluaciones.removeAt(index);
-                            });
-                          },
-                          background: Container(
-                            color: Colors.red, // Color de fondo cuando se desliza
-                            child: Icon(Icons.delete, color: Colors.white),
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20.0),
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const DetalleEvaluaccionPage()),
-                              );
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.all(10),
-                              elevation: 0,
-                              color: Theme.of(context).colorScheme.onBackground,
-                              child: ListTile(
-                                title: Text(
-                                  evaluacion.nombreMaquina,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: Colors.green),
-                                      ),
-                                      padding: const EdgeInsets.all(8.0),
-                                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            'Fecha de realización: ${evaluacion.fechaRealizacion.toString()}',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: Colors.red),
-                                      ),
-                                      padding: const EdgeInsets.all(8.0),
-                                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            'Fecha de caducidad: ${evaluacion.fechaCaducidad.toString()}',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: evaluacion.imagen != null
-                                      ? Image.memory(
-                                    evaluacion.imagen!,
-                                    width: 50, // Ajusta el tamaño de la imagen según sea necesario
-                                    height: 50,
-                                  )
-                                      : const SizedBox(), // O cualquier otro widget que desees mostrar cuando no haya imagen
-                                ),
+              child: ListView.builder(
+                itemCount: 3,
+                itemBuilder: (BuildContext context, int index) {
+                  // Aquí puedes generar datos inventados para cada tarjeta
+                  String maquina = "Máquina ${index + 1}";
+                  String fechaInspeccion = "Fecha de creación: 2024-02-11";
+                  String fechaCaducidad = "Fecha de caducidad: 2024-12-31";
+
+                  return GestureDetector(
+                    onTap: () {
+                      // Navegar a la nueva página cuando se hace clic en la tarjeta
+                      //GoRouter.of(context).go('/detalle_evaluaciones');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DetalleEvaluaccionPage(),),);
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(10),
+                      elevation: 0,
+                      color: Theme.of(context).colorScheme.onBackground,
+                      child: ListTile(
+                        title: Text(
+                          maquina,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.green),
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    fechaInspeccion,
+                                  ),
+                                ],
                               ),
                             ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.red),
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    fechaCaducidad,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Container(
+                          width: 50, // Ancho de la imagen
+                          height: 50, // Alto de la imagen
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25), // Radio de borde para hacerlo redondeado
+                            color: Colors.blue, // Color de fondo de la imagen
                           ),
-                        );
-                      },
-                    );
-
-                  } else if (state is EvaluacionesError) {
-                    return Center(child: Text(state.errorMessage));
-                  } else {
-                    return Center(child: Text('Estado desconocido'));
-                  }
+                          child: Icon(
+                            Icons.photo, // Aquí puedes usar tu propia imagen
+                            color: Colors.white, // Color del icono (o imagen)
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
                 },
               ),
             )
-
           ],
         ),
       ),

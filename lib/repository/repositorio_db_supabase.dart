@@ -5,12 +5,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
-import 'package:modernlogintute/modelos/categoria_pregunta_dm.dart';
-import 'package:modernlogintute/modelos/centro_dm.dart';
-import 'package:modernlogintute/repository/repositorio_db.dart';
+import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
+import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
+import 'package:evaluacionmaquinas/repository/repositorio_db.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../modelos/evaluacion_dm.dart';
+import '../modelos/evaluacion_details_dm.dart';
 import '../modelos/evaluacion_to_insert_dm.dart';
 import '../modelos/imagen_dm.dart';
 import '../modelos/opcion_pregunta_dm.dart';
@@ -38,6 +39,8 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
     }
   }
 
+  /***************** GET EVALUACIONES *************************/
+
   @override
   Future<List<ImagenDataModel>> getImagenes() async {
     try {
@@ -53,13 +56,13 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
   }
 
   @override
-  Future<List<EvaluacionDataModel>> getListaEvaluaciones() async { //TODO GET LISTA EVALUACIONES Y GETDETALLES EVALUACION!!
+  Future<List<ListEvaluacionDataModel>> getListaEvaluaciones() async { //TODO GET LISTA EVALUACIONES Y GETDETALLES EVALUACION!!
     try {
       var resConsulta = _supabase.client.rpc(
         'get_evaluaciones',
       );
-      return resConsulta.then((value) => List<EvaluacionDataModel>.from(
-          value.map((e) => EvaluacionDataModel.fromMap(e)).toList()));
+      return resConsulta.then((value) => List<ListEvaluacionDataModel>.from(
+          value.map((e) => ListEvaluacionDataModel.fromMap(e)).toList()));
     } catch (e) {
       log.e('Se ha producido un error al intentar obtener las evaluaciones de la base de datos: $e');
       rethrow;

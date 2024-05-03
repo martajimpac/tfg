@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modernlogintute/views/login_page.dart'; // Asegúrate de importar GoRouter
+import 'package:evaluacionmaquinas/views/login_page.dart'; // Asegúrate de importar GoRouter
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);

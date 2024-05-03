@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modernlogintute/theme/app_theme.dart';
+import 'package:evaluacionmaquinas/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SettingsState{

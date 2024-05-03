@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 
 import '../modelos/evaluacion_to_insert_dm.dart';
 import '../repository/repositorio_db_supabase.dart';
@@ -28,9 +29,9 @@ class EvaluacionError extends EvaluacionState {
 }
 
 // Define el cubit
-class EvaluacionCubit extends Cubit<EvaluacionState> {
+class InsertarEvaluacionCubit extends Cubit<EvaluacionState> {
   final RepositorioDBSupabase repositorio;
-  EvaluacionCubit(this.repositorio) : super(EvaluacionInicial());
+  InsertarEvaluacionCubit(this.repositorio) : super(EvaluacionInicial());
 
   Future<void> insertarEvaluacion(EvaluacionToInsertDataModel item, List<Uint8List> imagenes) async {
     emit(EvaluacionLoading());

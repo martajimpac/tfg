@@ -1,11 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:modernlogintute/helpers/ConstantsHelper.dart';
-import 'package:modernlogintute/views/checklist_page.dart';
-import 'package:modernlogintute/views/mis_evaluaciones_page.dart';
-import 'package:modernlogintute/views/nueva_evaluacion_page_old.dart';
-import 'package:modernlogintute/views/profile_page.dart';
+import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/views/checklist_page.dart';
+import 'package:evaluacionmaquinas/views/mis_evaluaciones_page.dart';
+import 'package:evaluacionmaquinas/views/nueva_evaluacion_page_old.dart';
+import 'package:evaluacionmaquinas/views/profile_page.dart';
 
 import 'nueva_evaluacion_page.dart';
 

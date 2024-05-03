@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:modernlogintute/modelos/categoria_pregunta_dm.dart';
-import 'package:modernlogintute/repository/repositorio_db_supabase.dart';
+import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
+import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 
 // Define el estado del cubit
 abstract class CategoriasState extends Equatable {

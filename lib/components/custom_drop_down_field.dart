@@ -1,7 +1,7 @@
 import 'package:dropdownfield2/dropdownfield2.dart';
 import 'package:flutter/material.dart';
-import 'package:modernlogintute/modelos/centro_dm.dart';
-import 'package:modernlogintute/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 
 class CustomDropdownField extends StatelessWidget {

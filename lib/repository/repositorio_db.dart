@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:modernlogintute/modelos/categoria_pregunta_dm.dart';
+import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 
 import '../modelos/centro_dm.dart';
-import '../modelos/evaluacion_dm.dart';
+import '../modelos/evaluacion_details_dm.dart';
 import '../modelos/evaluacion_to_insert_dm.dart';
 import '../modelos/imagen_dm.dart';
 import '../modelos/opcion_pregunta_dm.dart';
@@ -13,7 +14,7 @@ abstract class RepositorioDBInspecciones {
   Future<List<CentroDataModel>> getCentros();
   Future<List<ImagenDataModel>> getImagenes();
 
-  Future<List<EvaluacionDataModel>> getListaEvaluaciones();
+  Future<List<ListEvaluacionDataModel>> getListaEvaluaciones();
 
   Future<List<PreguntaDataModel>> getPreguntasPorCategoria(int idCategoria);
   Future<List<PreguntaDataModel>> getPreguntas();

@@ -1,4 +1,5 @@
 class Dimensions {
+
   // Margenes
   static const double marginMedium = 20.0;
   static const double marginSmall = 10.0;

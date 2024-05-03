@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:modernlogintute/modelos/categoria_pregunta_dm.dart';
-import 'package:modernlogintute/repository/repositorio_db_supabase.dart';
+import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
+import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 
 import '../modelos/pregunta_categoria_dm.dart';
 
@@ -31,7 +31,7 @@ class PreguntasError extends PreguntasState {
 
   const PreguntasError(this.errorMessage);
 
-  @override
+@override
   List<Object> get props => [errorMessage];
 }
 
@@ -44,7 +44,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   Future<void> getPreguntas() async {
     try {
       final preguntas = await repositorio.getPreguntas();
-      final categorias = await repositorio.getCategorias();
+      final categorias = await repositorio.getCategorias(); //TODO OBTENER SOLO CATEGORIAS....
       debugPrint("preguntas $preguntas");
 
       // Convertir el mapa de preguntas únicas de nuevo en una lista

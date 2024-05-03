@@ -39,6 +39,10 @@ class _DateSliderState extends State<DateSlider> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Text(
+          'Fecha de caducidad: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+          style: const TextStyle(fontSize: 18.0),
+        ),
         Slider(
           value: _sliderValue,
           onChanged: (newValue) {
@@ -53,10 +57,7 @@ class _DateSliderState extends State<DateSlider> {
             });
           },
         ),
-        Text(
-          'Fecha de caducidad: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-          style: TextStyle(fontSize: 18.0),
-        ),
+
       ],
     );
   }

@@ -11,7 +11,7 @@ class EvaluacionDataModel extends Equatable {
   final DateTime? fechaModificacion;
   final int idmaquina;
   final int idtipoeval;
-  final List<ImagenDataModel> imagenes; // Lista de imágenes
+  final List<ImagenDataModel> imagenes; // Lista de imágenes //TODO AÑADIR FECHA FABRICACION Y FECHA PUESTA SERVICIO
 
   EvaluacionDataModel({
     required this.ideval,
@@ -25,15 +25,6 @@ class EvaluacionDataModel extends Equatable {
     required this.imagenes,
   });
 
-  // Constructor adicional sin el parámetro 'ideval' y sin la fecha de caducidad
-  const EvaluacionDataModel.fromRealizacion(this.imagenes, {
-    required this.idinspector,
-    required this.idcentro,
-    required this.fechaRealizacion,
-    required this.fechaCaducidad,
-    required this.idmaquina,
-    required this.idtipoeval,
-  })  : ideval = 0, fechaModificacion = null;
 
   factory EvaluacionDataModel.fromMap(Map<String, dynamic> json) {
     return EvaluacionDataModel(

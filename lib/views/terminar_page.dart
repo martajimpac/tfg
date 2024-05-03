@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modernlogintute/components/my_button.dart';
-import 'package:modernlogintute/views/pdf_page.dart';
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/views/pdf_page.dart';
 
 import '../components/circle_tab_indicator.dart';
 

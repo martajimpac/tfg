@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:modernlogintute/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 class MyAppTheme {
   static final lightTheme = ThemeData(
 

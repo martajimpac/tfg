@@ -4,14 +4,14 @@ import 'package:dropdownfield2/dropdownfield2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modernlogintute/components/my_button.dart';
-import 'package:modernlogintute/components/my_textfield.dart';
-import 'package:modernlogintute/helpers/ConstantsHelper.dart';
-import 'package:modernlogintute/main.dart';
-import 'package:modernlogintute/theme/dimensions.dart';
-import 'package:modernlogintute/views/checklist_page.dart';
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/components/my_textfield.dart';
+import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/main.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modernlogintute/views/my_home_page.dart';
+import 'package:evaluacionmaquinas/views/my_home_page.dart';
 
 import '../components/custom_drop_down_field.dart';
 

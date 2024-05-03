@@ -1,9 +1,8 @@
+import 'package:evaluacionmaquinas/components/my_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modernlogintute/views/my_home_page.dart';
-
+import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import '../components/my_button.dart';
-import '../components/login_textfield.dart';
 import '../components/square_tile.dart';
 
 class LoginPage extends StatelessWidget {
@@ -44,14 +43,14 @@ class LoginPage extends StatelessWidget {
                   ),
 
                   // username textfield
-                  LoginTextField(
+                  MyTextField(
                     controller: usernameController,
                     hintText: 'Username',
                     obscureText: false,
                   ),
 
                   // password textfield
-                  LoginTextField(
+                  MyTextField(
                     controller: passwordController,
                     hintText: 'Password',
                     obscureText: true,

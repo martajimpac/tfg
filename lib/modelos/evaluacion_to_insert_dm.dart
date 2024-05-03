@@ -9,8 +9,10 @@ class EvaluacionToInsertDataModel extends Equatable {
   final DateTime? fechaModificacion;
   final int idmaquina;
   final int idtipoeval;
+  final DateTime? fechaFabricacion;
+  final DateTime? fechaPuestaServicio;
 
-  EvaluacionToInsertDataModel({
+  const EvaluacionToInsertDataModel({
     required this.ideval,
     required this.idinspector,
     required this.idcentro,
@@ -19,6 +21,8 @@ class EvaluacionToInsertDataModel extends Equatable {
     this.fechaModificacion,
     required this.idmaquina,
     required this.idtipoeval,
+    this.fechaFabricacion,
+    this.fechaPuestaServicio
   });
 
   // Constructor adicional sin el parámetro 'ideval' y sin la fecha de caducidad
@@ -29,6 +33,8 @@ class EvaluacionToInsertDataModel extends Equatable {
     required this.fechaCaducidad,
     required this.idmaquina,
     required this.idtipoeval,
+    this.fechaFabricacion,
+    this.fechaPuestaServicio
   })  : ideval = 0, fechaModificacion = null;
 
 
@@ -43,6 +49,8 @@ class EvaluacionToInsertDataModel extends Equatable {
       'fecha_modificacion': fechaModificacion?.toIso8601String(),
       'idmaquina': idmaquina,
       'idtipoeval': idtipoeval,
+      'fecha_fabricacion': fechaFabricacion,
+      'fecha_puesta_servicio': fechaPuestaServicio,
     };
   }
 
@@ -56,5 +64,7 @@ class EvaluacionToInsertDataModel extends Equatable {
     fechaModificacion,
     idmaquina,
     idtipoeval,
+    fechaFabricacion,
+    fechaPuestaServicio
   ];
 }
