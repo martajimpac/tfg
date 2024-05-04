@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/components/my_list_tile_check.dart';
-import 'package:evaluacionmaquinas/cubit/categorias_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';

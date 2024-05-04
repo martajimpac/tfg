@@ -89,11 +89,11 @@ final GoRouter _enrutador = GoRouter(
 
 
     ///Página de formulario de registro
-    GoRoute(
+    /*GoRoute(
       name: 'registro',
       path: "/registro",
       builder: (context, state) =>
       const RegisterPage(),
-    ),
+    ),*/
   ],
 );

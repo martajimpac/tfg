@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import '../theme/dimensions.dart';
 
-class MyTextField extends StatefulWidget {
+class MyLoginTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
+  final bool obscureText;
 
-  const MyTextField({super.key,
+  const MyLoginTextField({super.key,
     required this.controller,
     required this.hintText,
+    this.obscureText = false, //TODO METER VARIBLE DARK BORDE PARA LOGIN
   });
 
   @override
-  _MyTextFieldState createState() => _MyTextFieldState();
+  _MyLoginTextFieldState createState() => _MyLoginTextFieldState();
 }
 
-class _MyTextFieldState extends State<MyTextField> {
+class _MyLoginTextFieldState extends State<MyLoginTextField> {
   bool _isTyping = false;
 
   @override
@@ -28,6 +30,7 @@ class _MyTextFieldState extends State<MyTextField> {
       ),
       child: TextField(
         controller: widget.controller,
+        obscureText: widget.obscureText ?? false, // Corregir el operador ternario
         onChanged: (text) {
           setState(() {
             _isTyping = text.isNotEmpty;

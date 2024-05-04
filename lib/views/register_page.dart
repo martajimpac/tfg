@@ -1,39 +1,104 @@
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/views/my_home_page.dart';
+//import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:evaluacionmaquinas/components/my_textfield.dart';
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
+import '../components/my_login_textfield.dart';
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _repeatPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _repeatPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Registro'),
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            'Registro',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Nombre de usuario'),
+      body: Container(
+        /*decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("lib/images/default_pdf.png"),
+            fit: BoxFit.cover,
+          ),
+        ),*/
+        child: Padding(
+          padding: const EdgeInsets.all(Dimensions.marginMedium),
+          child: Container(
+            padding: const EdgeInsets.all(Dimensions.marginMedium),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background, // Establece el fondo blanco
+              borderRadius: BorderRadius.circular(Dimensions.cornerRadius), // Establece bordes redondeados
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Correo electrónico'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text("Correo electrónico"),
+                MyLoginTextField(
+                  controller: _emailController,
+                  hintText: "usuario@gmail.com",
+                ),
+                const SizedBox(height: Dimensions.marginMedium),
+                const Text("Contraseña"),
+                MyLoginTextField(
+                  controller: _passwordController,
+                  hintText: "*************",
+                  obscureText: true,
+                ),
+                const Text("Repite la contraseña"),
+                MyLoginTextField(
+                  controller: _repeatPasswordController,
+                  hintText: "*************",
+                  obscureText: true,
+                ),
+                const SizedBox(height: Dimensions.marginMedium),
+                MyButton(
+                  adaptableWidth: false,
+                  onTap: () {
+                    // Aquí puedes manejar la lógica de inicio de sesión
+                    final email = _emailController.text;
+                    final password = _passwordController.text;
+                    // Aquí puedes usar las variables email y password para iniciar sesión
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+                  },
+                  text:'Registrarse e iniciar sesión',
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Aquí puedes manejar la lógica de registro
-              },
-              child: const Text('Registrarse'),
-            ),
-          ],
+          )
         ),
       ),
     );

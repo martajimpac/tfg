@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:dropdownfield2/dropdownfield2.dart';
+import 'package:evaluacionmaquinas/components/custom_date_picker.dart';
+import 'package:evaluacionmaquinas/components/my_subtitle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,27 +76,50 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     );
   }
 
-  void _showDialogCheck(BuildContext context, String errorMessage) {
-    /*if(_idCentro == null || _nombreMaquina = null || _numeroSerie == null){
+  void _checkImageLimit() {
+    if(_imageList.length >= 3){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Límite de imágenes alcanzado.'),
+            content: Text('No es posible subir más de tres imágenes.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
-    }*/
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(errorMessage),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+  void _showDialogCheck(BuildContext context) {
+    if(_idCentro == null || _nombreMaquina == null || _numeroSerie == null){ //TODO NO PUEDE SER NULL
+      showDialog( //TODO MARCAR EN ROJO CAMPOS QUE FALTAN
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text("errorMessage"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }else{
+      _insertarEvaluacion();
+    }
   }
 
   Future<void> _insertarEvaluacion() async {
@@ -117,6 +142,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
     Future<void> _getImage() async {
+    _checkImageLimit();
     // Mostrar un diálogo con opciones
     showDialog(
       context: context,
@@ -171,7 +197,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           //GoRouter.of(context).go('/home'); //TODO
         }, child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
+
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(
             'Crea una nueva evaluación',
             style: Theme.of(context).textTheme.titleMedium,
@@ -182,19 +210,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()),);
               //GoRouter.of(context).go('/home');
             },
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings), // Icono de máquina (cambia esto por el icono que desees)
-              onPressed: () {
-                // Lógica para el botón de la máquina
-              },
-            ),
-          ],
+          )
         ),
 
         body: Padding(
-        padding: const EdgeInsets.all(8.0), // Puedes ajustar los valores según sea necesario
+        padding: const EdgeInsets.all(Dimensions.marginMedium), // Puedes ajustar los valores según sea necesario
         child:Column(
           children: [
             const SizedBox(height: Dimensions.marginSmall),
@@ -203,7 +223,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                 scrollDirection: Axis.vertical,
                 children: <Widget>[
                   /**********************DATOS EVALUACION***********************/
-                  const Text("Datos evaluacion"),
+                  const MySubtitle(text: "Datos evaluacion"),
                   const Text("Selecciona un centro"),
                   const SizedBox(height: 20.0,),
                   BlocBuilder<CentrosCubit, CentrosState>(
@@ -237,17 +257,22 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                       } else {  return SizedBox(); }
                     },
                   ),
-                  DateSlider(
+                  /*DateSlider(
                     initialDate: DateTime.now(), // Fecha inicial para el slider
                     onChanged: (newDate) {
                       setState(() {
                         _fechaCaducidad = newDate; // Actualiza la fecha de caducidad cuando cambia el slider
                       });
                     },
+                  ),*/
+                  CustomDatePicker(
+                    initialDate: DateTime.now(),
+                    onDateChanged: (DateTime newDate) {
+                    },
                   ),
 
                   /********************** DATOS MAQUINA***********************/
-                  const Text("Datos de la máquina"),
+                  const MySubtitle(text: "Datos de la máquina"),
                   const Text("*Denominación"),
                   MyTextField(controller: denominacionController, hintText: "Nombre de la máquina"),
                   const Text("Fabricante"),
@@ -256,7 +281,33 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   MyTextField(controller: numeroSerieController, hintText: "Número"),
                   const Text("Fecha de fabricación"),
                   const Text("Fecha de puesta en servicio"),
-                  MyButton(adaptableWidth: true, onTap:  _getImage, text: 'Seleccionar imagen'),
+                  Visibility(
+                    visible: _imageList.isEmpty,
+                    child: Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.add_a_photo),
+                            onPressed: _getImage,
+                            color: Colors.grey,
+                          ),
+                          const Text(
+                            'Añadir imagen',
+                            style: TextStyle(
+                              fontSize: Dimensions.smallTextSize,
+                              color: Colors.grey
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
                   SizedBox(
                     height: 200, // Ajusta la altura según lo necesites
                     child: _imageList.isNotEmpty
@@ -313,7 +364,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
               adaptableWidth: true,
               onTap: () {
                 //TODO COMPROBAR SI DATOS ESTAN SELECCIONADOS
-                _insertarEvaluacion();
+                _showDialogCheck(context);
               },
               text: "ir a checklist",
             ),

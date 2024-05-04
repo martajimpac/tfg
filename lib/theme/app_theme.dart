@@ -32,9 +32,9 @@ class MyAppTheme {
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         fontFamily: 'Manrope',
-        fontSize: Dimensions.bigTextSize,
+        fontSize: Dimensions.titleTextSize,
         fontWeight: FontWeight.bold,
-        color: Colors.black,
+        color:  Colors.black,
       ),
       bodyMedium: TextStyle(
         fontFamily: 'Manrope',
@@ -83,7 +83,7 @@ class MyAppTheme {
     textTheme: const TextTheme(
       titleMedium: TextStyle(
         fontFamily: 'Manrope',
-        fontSize: Dimensions.bigTextSize,
+        fontSize: Dimensions.titleTextSize,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),

@@ -1,152 +1,109 @@
-import 'package:evaluacionmaquinas/components/my_textfield.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
-import '../components/my_button.dart';
-import '../components/square_tile.dart';
+import 'package:evaluacionmaquinas/views/register_page.dart';
+//import 'package:evaluacionmaquinas/views/register_page.dart';
+import 'package:flutter/material.dart';
+import 'package:evaluacionmaquinas/components/my_textfield.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+import '../components/my_login_textfield.dart';
 
-  // text editing controllers
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[300],
-      body: SafeArea(
-        //avoid notch area
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+      //backgroundColor: Colors.black,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            'Inicio de sesión',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ),
+      body: Container(
+        /*decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("lib/images/default_pdf.png"),
+            fit: BoxFit.cover,
+          ),
+        ),*/
+        child: Padding(
+          padding: const EdgeInsets.all(Dimensions.marginMedium),
+          child: Container(
+            padding: const EdgeInsets.all(Dimensions.marginMedium),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onPrimaryContainer, // Establece el fondo blanco
+              borderRadius: BorderRadius.circular(Dimensions.cornerRadius), // Establece bordes redondeados
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text("Correo electrónico"),
+                MyLoginTextField(
+                  controller: _emailController,
+                  hintText: "usuario@gmail.com",
+                ),
+                const SizedBox(height: Dimensions.marginMedium),
+                const Text("Contraseña"),
+                MyLoginTextField(
+                  controller: _passwordController,
+                  hintText: "*************",
+                  obscureText: true,
+                ),
+                const SizedBox(height: Dimensions.marginMedium),
+                const Text(
+                    "¿Olvidaste la constraseña?",
+                    style: TextStyle(fontSize: Dimensions.smallTextSize,decoration: TextDecoration.underline)
+                ),
+                const SizedBox(height: Dimensions.marginMedium),
+                MyButton(
+                  adaptableWidth: false,
+                  onTap: () {
+                    // Aquí puedes manejar la lógica de inicio de sesión
+                    final email = _emailController.text;
+                    final password = _passwordController.text;
+                    // Aquí puedes usar las variables email y password para iniciar sesión
 
-                  // logo
-                  const Icon(
-                    Icons.lock,
-                    size: 100,
-                  ),
-
-                  // welcome back, you've been missed!
-                  Text(
-                    'Welcome back you\'ve been missed!',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 16,
-                    ),
-                  ),
-
-                  // username textfield
-                  MyTextField(
-                    controller: usernameController,
-                    hintText: 'Username',
-                    obscureText: false,
-                  ),
-
-                  // password textfield
-                  MyTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true,
-                  ),
-
-                  // forgot password?
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // sign in button
-                  MyButton(
-                      adaptableWidth: false,
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
-                        //GoRouter.of(context).go('/home');
-                    },
-                    text: "Iniciar sesión",
-                  ),
-
-
-                  // or continue with
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'Or continue with',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-
-                  // google + apple sign in buttons
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // google button
-                      SquareTile(imagePath: 'lib/images/google.png'),
-
-                      SizedBox(width: 25),
-
-                      // apple button
-                      SquareTile(imagePath: 'lib/images/apple.png')
-                    ],
-                  ),
-
-
-                  // not a member? register now
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Not a member?',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+                  },
+                  text:'Iniciar sesión',
+                ),
+                MyButton(
+                  adaptableWidth: false,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage()),);
+                  },
+                  text:'Registrarse',
+                ),
+              ],
+            ),
+          )
         ),
       ),
     );

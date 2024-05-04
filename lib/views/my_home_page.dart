@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:evaluacionmaquinas/views/mis_evaluaciones_page.dart';
-import 'package:evaluacionmaquinas/views/nueva_evaluacion_page_old.dart';
 import 'package:evaluacionmaquinas/views/profile_page.dart';
 
 import 'nueva_evaluacion_page.dart';

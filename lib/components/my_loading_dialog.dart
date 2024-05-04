@@ -11,8 +11,8 @@ class LoadingAlertDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(), // Aquí colocamos el CircularProgressIndicator
-          SizedBox(height: 16), // Espacio entre el CircularProgressIndicator y el texto de descripción
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
         ],
       ),
     );
