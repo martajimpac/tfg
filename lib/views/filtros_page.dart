@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:evaluacionmaquinas/components/my_textfield.dart';
+import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
 
-import '../components/custom_drop_down_field.dart';
+import '../components/textField/custom_drop_down_field.dart';
 import '../main.dart';
 
 

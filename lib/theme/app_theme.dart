@@ -12,8 +12,9 @@ class MyAppTheme {
       background: Colors.grey.shade200, //Fondo
       onPrimary: const Color(0xFF000405), //texto
 
-      primaryContainer: const Color(0xE2DA105E), //color que cojen los botones por defecto, tambien lo he usado para el fondo de text view
-      secondaryContainer: const Color(0xE2EC6498),
+      primaryContainer: const Color(0xFF00A7B3), //color que cojen los botones por defecto, tambien lo he usado para el fondo de text view
+      secondaryContainer: const Color(0xFF005D71),
+
       onPrimaryContainer: Colors.white,
       inversePrimary: Colors.grey.shade600,
       //Text view
@@ -49,6 +50,12 @@ class MyAppTheme {
         fontWeight: FontWeight.bold,
         color:  Colors.white,
       ),
+      headlineMedium: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: Dimensions.defaultTextSize,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF00A7B3),
+      )
     ),
   );
 

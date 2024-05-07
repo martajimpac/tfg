@@ -9,7 +9,7 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/terminar_page.dart';
 
 import '../components/my_button.dart';
-import '../components/my_textfield.dart';
+import '../components/textField/my_textfield.dart';
 import '../modelos/pregunta_categoria_dm.dart';
 
 class CheckListPage extends StatefulWidget {

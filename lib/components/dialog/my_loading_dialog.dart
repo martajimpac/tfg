@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class LoadingAlertDialog extends StatelessWidget {
+class MyLoadingAlertDialog extends StatelessWidget {
 
-  const LoadingAlertDialog({super.key});
+  const MyLoadingAlertDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,15 @@
+import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class CustomDatePicker extends StatefulWidget {
+import '../../theme/dimensions.dart';
+
+class CustomDatePickerScroll extends StatefulWidget {
   final DateTime initialDate;
   final Function(DateTime) onDateChanged;
 
-  const CustomDatePicker({
+  const CustomDatePickerScroll({
     Key? key,
     required this.initialDate,
     required this.onDateChanged,
@@ -16,8 +19,9 @@ class CustomDatePicker extends StatefulWidget {
   _CustomDatePickerState createState() => _CustomDatePickerState();
 }
 
-class _CustomDatePickerState extends State<CustomDatePicker> {
+class _CustomDatePickerState extends State<CustomDatePickerScroll> {
   late DateTime _selectedDate;
+  bool _showDatePicker = false;
 
   @override
   void initState() {
@@ -30,12 +34,12 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.grey, width: 0.5),
             ),
           ),
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 10,
           ),
@@ -43,25 +47,28 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Due date',
-                style: TextStyle(
+                DateFormat(DateFormatString).format(_selectedDate),
+                style: const TextStyle(
                   color: Colors.grey,
-                  fontSize: 17,
+                  fontSize: Dimensions.smallTextSize,
                 ),
               ),
-              Text(
-                DateFormat('MMM, dd yyyy').format(_selectedDate),
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 17,
-                ),
-              ),
+              GestureDetector(
+                child: Text('Cambiar'),
+                onTap: () {
+                  setState(() {
+                    _showDatePicker = !_showDatePicker;
+                  });
+                },
+              )
             ],
           ),
         ),
-        Container(
-          height: MediaQuery.of(context).size.height / 3,
-          child: CupertinoDatePicker(
+        AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          height: _showDatePicker ? MediaQuery.of(context).size.height / 3 : 0,
+          child: _showDatePicker
+              ? CupertinoDatePicker(
             initialDateTime: _selectedDate,
             onDateTimeChanged: (DateTime newDate) {
               setState(() {
@@ -72,12 +79,11 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
               }
             },
             use24hFormat: true,
-            maximumDate: DateTime(2050, 12, 30),
-            minimumYear: 2010,
-            maximumYear: 2018,
-            minuteInterval: 1,
-            mode: CupertinoDatePickerMode.dateAndTime,
-          ),
+            minimumYear: widget.initialDate.year - 1,
+            maximumYear: widget.initialDate.year + 8,
+            mode: CupertinoDatePickerMode.date,
+          )
+              : null,
         ),
       ],
     );

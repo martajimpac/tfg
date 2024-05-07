@@ -1,5 +1,7 @@
 import 'package:evaluacionmaquinas/components/dialog/my_ok_dialog.dart';
+import 'package:evaluacionmaquinas/components/dialog/my_two_buttons_dialog.dart';
 import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,30 +11,28 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:evaluacionmaquinas/views/filtros_page.dart';
 import '../components/dialog/my_loading_dialog.dart';
-import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/evaluaciones_cubit.dart';
-import '../helpers/ConstantsHelper.dart';
 import 'detalle_evaluacion_page.dart';
 
 import 'package:flutter/material.dart';
 import 'detalle_evaluacion_page.dart';
 
-class MisEvaluaccionesPage extends StatefulWidget {
-  const MisEvaluaccionesPage({Key? key}) : super(key: key);
+class MisEvaluaccionesOldPage extends StatefulWidget {
+  const MisEvaluaccionesOldPage({Key? key}) : super(key: key);
 
   @override
-  _MisEvaluaccionesPageState createState() => _MisEvaluaccionesPageState();
+  _MisEvaluaccionesOldPageState createState() => _MisEvaluaccionesOldPageState();
 }
 
-class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
+class _MisEvaluaccionesOldPageState extends State<MisEvaluaccionesOldPage> {
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<EvaluacionesCubit>(context).getEvaluaciones();
-    _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
+    _cubitEvaluacion =   BlocProvider.of<EvaluacionesCubit>(context);
+    _cubitEvaluacion.getEvaluaciones();
   }
-  late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
+  late EvaluacionesCubit _cubitEvaluacion;
 
   late int _indexToDelete;
   late List<ListEvaluacionDataModel> _evaluaciones;
@@ -49,7 +49,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           primaryButtonText: "Confirmar",
           secondaryButtonText: "Cancelar",
           onPrimaryButtonTap: (){
-            _cubitEliminarEvaluacion.eliminarEvaluacion(idEvaluacion);
+            _cubitEvaluacion.eliminarEvaluacion(idEvaluacion);
             Navigator.of(context).pop();
           },
           onSecondaryButtonTap: (){
@@ -57,7 +57,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           },
         );
       },
+
     );
+
   }
 
   @override
@@ -159,7 +161,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               ),
             ),
             Expanded(
-              child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
+              child: BlocConsumer<EvaluacionesCubit, EvaluacionesState>(
                 builder: (context, state) {
                   if (state is EvaluacionesLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -251,38 +253,27 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                         );
                       },
                     );
-                  } else if (state is EvaluacionesError) {
-                    return Center(child: Text(state.errorMessage));
-                  } else {
-                    return SizedBox();
+                  } else{
+                    return const SizedBox();
+                  }
+                }, listener: (BuildContext context, EvaluacionesState state) {
+                  if(state is EliminarEvaluacionCompletada){
+                    _evaluaciones.removeAt(_indexToDelete);
+                  }else if (state is EvaluacionesError) {
+                    ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                      Navigator.of(context).pop();
+                    });
+                  } else if(state is EvaluacionEliminada){
+                    ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada!", "La evaluación se ha eliminado correctamente.", () {
+                      Navigator.of(context).pop();
+                    });
                   }
                 },
               ),
             ),
-            BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
-                listener: (context, state) {
-                  if(state is EliminarEvaluacionCompletada){
-                    setState(() {
-                      _evaluaciones.removeAt(_indexToDelete);
-                    });
-                  }else if (state is EliminarEvaluacionLoading) {
-                    ConstantsHelper.showLoadingDialog(context);
-                  } else if (state is EliminarEvaluacionError) {
-                    ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
-                      Navigator.of(context).pop();
-                    });
-                  } else {
-                    ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
-                      Navigator.of(context).pop();
-                    });
-                  }
-                },child: SizedBox()
-            )
-
           ],
         ),
       ),
     );
   }
-
 }

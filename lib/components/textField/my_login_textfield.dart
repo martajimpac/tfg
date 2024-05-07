@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
-import '../theme/dimensions.dart';
+import '../../theme/dimensions.dart';
 
-class MyTextField extends StatefulWidget {
+class MyLoginTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
+  final bool obscureText;
 
-  const MyTextField({super.key,
+  const MyLoginTextField({super.key,
     required this.controller,
     required this.hintText,
+    this.obscureText = false, //TODO METER VARIBLE DARK BORDE PARA LOGIN
   });
 
   @override
-  _MyTextFieldState createState() => _MyTextFieldState();
+  _MyLoginTextFieldState createState() => _MyLoginTextFieldState();
 }
 
-class _MyTextFieldState extends State<MyTextField> {
+class _MyLoginTextFieldState extends State<MyLoginTextField> {
   bool _isTyping = false;
+  bool _obscureTextIsOn = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _obscureTextIsOn = widget.obscureText;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         0, // Izquierda
-        Dimensions.marginSmall, // Arriba
+        Dimensions.marginTextField, // Arriba
         0, // Derecha
-        Dimensions.marginSmall, // Abajo (añadiendo un espacio extra)
+        Dimensions.marginTextField, // Abajo (añadiendo un espacio extra)
       ),
       child: TextField(
         controller: widget.controller,
+        obscureText: _obscureTextIsOn, // Corregir el operador ternario
         onChanged: (text) {
           setState(() {
             _isTyping = text.isNotEmpty;
@@ -42,7 +52,7 @@ class _MyTextFieldState extends State<MyTextField> {
             borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
-          fillColor: Theme.of(context).colorScheme.onBackground,
+          fillColor: Theme.of(context).colorScheme.background,
           filled: true,
           hintText: widget.hintText,
           hintStyle: const TextStyle(
@@ -50,7 +60,20 @@ class _MyTextFieldState extends State<MyTextField> {
             fontSize: Dimensions.defaultTextSize,
             fontWeight: FontWeight.w100
           ),
-          suffixIcon: _isTyping
+          suffixIcon: widget.obscureText ?
+          IconButton(
+            icon: Icon(
+              _obscureTextIsOn ? Icons.visibility_off : Icons.visibility,
+              color: _obscureTextIsOn ? Colors.grey : Theme.of(context).colorScheme.primaryContainer,
+            ),
+            onPressed: () {
+              setState(() {
+                _obscureTextIsOn = !_obscureTextIsOn;
+              });
+            },
+          )
+
+          : _isTyping
               ? IconButton(
             icon: Icon(Icons.clear),
             onPressed: () {

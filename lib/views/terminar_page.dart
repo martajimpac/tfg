@@ -1,3 +1,4 @@
+import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
@@ -66,8 +67,7 @@ class _TerminarPageState extends State<TerminarPage> {
                     child: MyButton(
                         adaptableWidth: false,
                         onTap: () {
-                          _mostrarDialogo(context);
-
+                          ConstantsHelper.showMyOkDialog(context, "title", "desc", () => null);
                         },
                         text: "Modificar"
                     )
@@ -90,27 +90,6 @@ class _TerminarPageState extends State<TerminarPage> {
         )
     );
   }
-}
-
-void _mostrarDialogo(BuildContext context){
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Título del Diálogo'),
-        content: const Text('Contenido del diálogo.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Acción cuando se presiona el botón en el diálogo
-              Navigator.of(context).pop(); // Cierra el diálogo
-            },
-            child: const Text('Aceptar'),
-          ),
-        ],
-      );
-    },
-  );
 }
 
 

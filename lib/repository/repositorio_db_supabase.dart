@@ -39,6 +39,9 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
     }
   }
 
+
+
+
   /***************** GET EVALUACIONES *************************/
 
   @override
@@ -65,6 +68,20 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
           value.map((e) => ListEvaluacionDataModel.fromMap(e)).toList()));
     } catch (e) {
       log.e('Se ha producido un error al intentar obtener las evaluaciones de la base de datos: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> eliminarEvaluacion(int idEvaluacion) async {
+    try {
+      var resConsulta = _supabase.client.rpc(
+        'eliminar_evaluacion',
+        params: {'id_evaluacion': idEvaluacion},
+      );
+      await resConsulta;
+    } catch (e) {
+      log.e('Se ha producido un error al intentar eliminar la evaluación: $e');
       rethrow;
     }
   }
@@ -132,6 +149,27 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
 
 
   /************** INSERTAR ******************/
+
+  /*@override
+  Future<int> insertarMaquina(int idMaquina, String nombreMaquina, String fabricante, int numeroSerie) async {
+    try {
+
+      var idEvaluacion = await _supabase.client.rpc('insert_maquina', params: {
+        'idinspector': evaluacion.idinspector,
+        'idcentro': evaluacion.idcentro,
+        'fecha_realizacion': evaluacion.fechaRealizacion.toIso8601String(), //pasar a timestamp
+        'fecha_caducidad': evaluacion.fechaCaducidad.toIso8601String(),
+        'idmaquina': evaluacion.idmaquina,
+        'idtipoeval': evaluacion.idtipoeval
+      });
+
+      return idEvaluacion as int;
+    } catch (e) {
+      debugPrint('Se ha producido un error al intentar almacenar el ítem en la base de datos: $e');
+      rethrow;
+    }
+  }*/
+
   @override
   Future<int> insertarEvaluacion(
       EvaluacionToInsertDataModel evaluacion

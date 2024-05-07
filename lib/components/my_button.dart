@@ -7,11 +7,11 @@ class MyButton extends StatelessWidget {
   final bool adaptableWidth;
 
   const MyButton({
-    Key? key, // Agregué la declaración de la clave
+    Key? key,
     required this.adaptableWidth,
     required this.onTap,
     required this.text,
-  }) : super(key: key); // Pasé la clave al constructor de la superclase
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +20,13 @@ class MyButton extends StatelessWidget {
       child: Wrap(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric( // Reduje el padding vertical
+            padding: const EdgeInsets.symmetric(
               vertical: Dimensions.marginButtonVertical,
-              horizontal: Dimensions.marginButton, // Mantuve el padding horizontal
+              horizontal: Dimensions.marginButton,
             ),
-            margin: const EdgeInsets.symmetric(vertical: Dimensions.marginSmall),
+            //margin: const EdgeInsets.symmetric(vertical: Dimensions.marginSmall),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton), // Reduje el radio de la esquina
+              borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
               color: Theme.of(context).colorScheme.primaryContainer,
             ),
             constraints: BoxConstraints(

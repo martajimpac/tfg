@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
-import 'package:evaluacionmaquinas/components/my_textfield.dart';
+import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
 import 'package:evaluacionmaquinas/main.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';

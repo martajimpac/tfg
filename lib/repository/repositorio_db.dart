@@ -15,6 +15,7 @@ abstract class RepositorioDBInspecciones {
   Future<List<ImagenDataModel>> getImagenes();
 
   Future<List<ListEvaluacionDataModel>> getListaEvaluaciones();
+  Future<void> eliminarEvaluacion(int idEvaluacion);
 
   Future<List<PreguntaDataModel>> getPreguntasPorCategoria(int idCategoria);
   Future<List<PreguntaDataModel>> getPreguntas();

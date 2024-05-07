@@ -33,6 +33,9 @@ class EvaluacionesError extends EvaluacionesState {
   List<Object> get props => [errorMessage];
 }
 
+class EvaluacionEliminada extends EvaluacionesState {
+}
+
 // Define el cubit
 class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   final RepositorioDBSupabase repositorio;
@@ -42,10 +45,20 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   Future<void> getEvaluaciones() async {
     try {
       final evaluaciones = await repositorio.getListaEvaluaciones();
-      if (kDebugMode) {
-        print("evaluaciones: ${evaluaciones.map((e) => e.imagen)}"); //TODO VER EN QUE FORMATO SE DEVUELVE IMAGEN
-      }
+      /*if (kDebugMode) {
+        print("evaluaciones: ${evaluaciones.map((e) => e.imagen)}");
+      }*/
       emit(EvaluacionesLoaded(evaluaciones));
+    } catch (e) {
+      emit(EvaluacionesError('Error al obtener las evaluaciones: $e'));
+    }
+  }
+
+  Future<void> eliminarEvaluacion(int idEvaluacion) async {
+    emit(EvaluacionesLoading());
+    try {
+      await repositorio.eliminarEvaluacion(idEvaluacion);
+      emit(EvaluacionEliminada());
     } catch (e) {
       emit(EvaluacionesError('Error al obtener las evaluaciones: $e'));
     }

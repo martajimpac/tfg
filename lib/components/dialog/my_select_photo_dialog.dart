@@ -1,0 +1,67 @@
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:flutter/material.dart';
+
+import '../../theme/dimensions.dart';
+
+class MySelectPhotoDialog extends StatelessWidget {
+  final Function()? onCameraButtonTap;
+  final Function()? onGalleryButtonTap;
+
+  const MySelectPhotoDialog({
+    Key? key,
+    this.onCameraButtonTap,
+    this.onGalleryButtonTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      contentPadding: EdgeInsets.zero,
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(Dimensions.marginMedium),
+      content: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
+          padding: const EdgeInsets.all(Dimensions.marginMedium),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Hacer que la columna sea del tamaño mínimo
+            children: [
+              const Text(
+                "¿Cómo desea completar la acción?",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Dimensions.marginMedium), // Espacio entre el título y el texto siguiente
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: onGalleryButtonTap,
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(20),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                    child: Icon(Icons.photo_library_rounded, color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    onPressed: onCameraButtonTap,
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(20),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                    child: Icon(Icons.camera_alt, color: Colors.white),
+                  )
+                ],
+              ),
+            ],
+          )
+      ),
+    );
+  }
+}

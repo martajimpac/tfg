@@ -1,22 +1,24 @@
-import 'package:flutter/material.dart';
-import '../theme/dimensions.dart';
+import 'dart:ffi';
 
-class MyLoginTextField extends StatefulWidget {
+import 'package:flutter/material.dart';
+import '../../theme/dimensions.dart';
+
+class MyTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
-  final bool obscureText;
+  final bool isRed;
 
-  const MyLoginTextField({super.key,
+  const MyTextField({super.key,
     required this.controller,
     required this.hintText,
-    this.obscureText = false, //TODO METER VARIBLE DARK BORDE PARA LOGIN
+    this.isRed = false,
   });
 
   @override
-  _MyLoginTextFieldState createState() => _MyLoginTextFieldState();
+  _MyTextFieldState createState() => _MyTextFieldState();
 }
 
-class _MyLoginTextFieldState extends State<MyLoginTextField> {
+class _MyTextFieldState extends State<MyTextField> {
   bool _isTyping = false;
 
   @override
@@ -24,13 +26,12 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         0, // Izquierda
-        Dimensions.marginSmall, // Arriba
+        Dimensions.marginTextField, // Arriba
         0, // Derecha
-        Dimensions.marginSmall, // Abajo (añadiendo un espacio extra)
+        Dimensions.marginTextField, // Abajo (añadiendo un espacio extra)
       ),
       child: TextField(
         controller: widget.controller,
-        obscureText: widget.obscureText ?? false, // Corregir el operador ternario
         onChanged: (text) {
           setState(() {
             _isTyping = text.isNotEmpty;
@@ -38,7 +39,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
         },
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: BorderSide(color: widget.isRed ? Colors.red : Colors.transparent),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           focusedBorder: OutlineInputBorder(
@@ -49,13 +50,13 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
           filled: true,
           hintText: widget.hintText,
           hintStyle: const TextStyle(
-            color: Colors.grey,
-            fontSize: Dimensions.defaultTextSize,
-            fontWeight: FontWeight.w100
+              color: Colors.grey,
+              fontSize: Dimensions.smallTextSize,
+              fontWeight: FontWeight.normal
           ),
           suffixIcon: _isTyping
               ? IconButton(
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: () {
               setState(() {
                 widget.controller.clear();
