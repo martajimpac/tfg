@@ -10,9 +10,6 @@ import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../modelos/evaluacion_details_dm.dart';
-import '../modelos/evaluacion_to_insert_dm.dart';
 import '../modelos/imagen_dm.dart';
 import '../modelos/opcion_pregunta_dm.dart';
 import '../modelos/pregunta_categoria_dm.dart';
@@ -150,40 +147,45 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
 
   /************** INSERTAR ******************/
 
-  /*@override
-  Future<int> insertarMaquina(int idMaquina, String nombreMaquina, String fabricante, int numeroSerie) async {
+  @override
+  Future<int> insertarMaquina(String nombreMaquina, String? fabricante, String numeroSerie) async {
     try {
 
-      var idEvaluacion = await _supabase.client.rpc('insert_maquina', params: {
-        'idinspector': evaluacion.idinspector,
-        'idcentro': evaluacion.idcentro,
-        'fecha_realizacion': evaluacion.fechaRealizacion.toIso8601String(), //pasar a timestamp
-        'fecha_caducidad': evaluacion.fechaCaducidad.toIso8601String(),
-        'idmaquina': evaluacion.idmaquina,
-        'idtipoeval': evaluacion.idtipoeval
+      var idMaq = await _supabase.client.rpc('insert_maquina', params: {
+        'maquina': nombreMaquina,
+        'fabricante': fabricante,
+        'numero_serie': numeroSerie,
       });
 
-      return idEvaluacion as int;
+      return idMaq as int;
     } catch (e) {
       debugPrint('Se ha producido un error al intentar almacenar el ítem en la base de datos: $e');
       rethrow;
     }
-  }*/
+  }
 
   @override
   Future<int> insertarEvaluacion(
-      EvaluacionToInsertDataModel evaluacion
+      int idMaquina,
+      int idInspector,
+      int idCentro,
+      int idTipoEval,
+      DateTime fechaRealizacion,
+      DateTime fechaCaducidad,
+      DateTime? fechaFabricacion,
+      DateTime? fechaPuestaServicio
       ) async {
     try {
-      debugPrint('Evaluacion: $evaluacion');
 
       var idEvaluacion = await _supabase.client.rpc('insert_evaluacion', params: {
-        'idinspector': evaluacion.idinspector,
-        'idcentro': evaluacion.idcentro,
-        'fecha_realizacion': evaluacion.fechaRealizacion.toIso8601String(), //pasar a timestamp
-        'fecha_caducidad': evaluacion.fechaCaducidad.toIso8601String(),
-        'idmaquina': evaluacion.idmaquina,
-        'idtipoeval': evaluacion.idtipoeval
+        'idinspector': idInspector,
+        'idcentro': idCentro,
+        'fecha_realizacion': fechaRealizacion.toIso8601String(), //pasar a timestamp
+        'fecha_caducidad': fechaCaducidad.toIso8601String(),
+        'idmaquina': idMaquina,
+        'idtipoeval': idTipoEval,
+        'fecha_fabricacion': fechaFabricacion,
+        'fecha_puesta_servicio': fechaPuestaServicio
       });
 
       return idEvaluacion as int;

@@ -3,10 +3,12 @@ import 'package:equatable/equatable.dart';
 class CategoriaPreguntaDataModel extends Equatable {
   final int idcat;
   final String categoria;
+  bool isExpanded;
 
-  const CategoriaPreguntaDataModel({
+  CategoriaPreguntaDataModel({
     required this.idcat,
     required this.categoria,
+    this.isExpanded = false,
   });
 
   factory CategoriaPreguntaDataModel.fromMap(Map<String, dynamic> json) {
@@ -24,5 +26,5 @@ class CategoriaPreguntaDataModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [idcat, categoria];
+  List<Object?> get props => [idcat, categoria, isExpanded];
 }

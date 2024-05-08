@@ -21,29 +21,16 @@ class _MyListTileState extends State<MyListTile> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(Dimensions.marginMedium),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
+          borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               widget.name,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
             ),
             SizedBox(height: 16.0),
             Row(

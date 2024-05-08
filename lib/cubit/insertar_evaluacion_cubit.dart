@@ -1,47 +1,68 @@
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
-
-import '../modelos/evaluacion_to_insert_dm.dart';
 import '../repository/repositorio_db_supabase.dart';
 
 
 // Define los estados para el cubit
-abstract class EvaluacionState {}
+abstract class InsertarEvaluacionState {}
 
-class EvaluacionInicial extends EvaluacionState {}
+class InsertarEvaluacionInicial extends InsertarEvaluacionState {}
 
-class EvaluacionLoading extends EvaluacionState {
-  EvaluacionLoading();
+class InsertarEvaluacionLoading extends InsertarEvaluacionState {
+  InsertarEvaluacionLoading();
 }
 
-class EvaluacionInsertada extends EvaluacionState {
+class EvaluacionInsertada extends InsertarEvaluacionState {
   final int idEvaluacion;
 
   EvaluacionInsertada(this.idEvaluacion);
 }
 
-class EvaluacionError extends EvaluacionState {
+class InsertarEvaluacionError extends InsertarEvaluacionState {
   final String errorMessage;
 
-  EvaluacionError(this.errorMessage);
+  InsertarEvaluacionError(this.errorMessage);
 }
 
 // Define el cubit
-class InsertarEvaluacionCubit extends Cubit<EvaluacionState> {
+class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
   final RepositorioDBSupabase repositorio;
-  InsertarEvaluacionCubit(this.repositorio) : super(EvaluacionInicial());
+  InsertarEvaluacionCubit(this.repositorio) : super(InsertarEvaluacionInicial());
 
-  Future<void> insertarEvaluacion(EvaluacionToInsertDataModel item, List<Uint8List> imagenes) async {
-    emit(EvaluacionLoading());
+  Future<void> insertarEvaluacion(
+      int idInspector,
+      int idCentro,
+      int idTipoEval,
+      DateTime fechaRealizacion,
+      DateTime fechaCaducidad,
+      DateTime? fechaFabricacion,
+      DateTime? fechaPuestaServicio,
+      String nombreMaquina,
+      String fabricante,
+      String numeroSerie,
+      List<Uint8List> imagenes) async {
+    emit(InsertarEvaluacionLoading());
+
     try {
-      final idEvaluacion = await repositorio.insertarEvaluacion(item);
+      final idMaquina = await repositorio.insertarMaquina(nombreMaquina, fabricante, numeroSerie);
+
+      final idEvaluacion = await repositorio.insertarEvaluacion(
+          idMaquina,
+          idInspector,
+          idCentro,
+          idTipoEval,
+          fechaRealizacion,
+          fechaCaducidad,
+          fechaFabricacion,
+          fechaPuestaServicio
+      );
       repositorio.insertarImagenes(imagenes, idEvaluacion);
       emit(EvaluacionInsertada(idEvaluacion));
     } catch (e) {
-      emit(EvaluacionError('Error al insertar la evaluación: $e'));
+      emit(InsertarEvaluacionError('Error al insertar la evaluación: $e'));
     }
+
   }
 }
 

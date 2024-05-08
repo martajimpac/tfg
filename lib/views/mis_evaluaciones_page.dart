@@ -243,7 +243,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                     width: 50, // Ajusta el tamaño de la imagen según sea necesario
                                     height: 50,
                                   )
-                                      : const SizedBox(), // O cualquier otro widget que desees mostrar cuando no haya imagen
+                                      : const SizedBox(),
                                 ),
                               ),
                             ),
@@ -262,6 +262,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                 listener: (context, state) {
                   if(state is EliminarEvaluacionCompletada){
+                    Navigator.of(context).pop();
                     setState(() {
                       _evaluaciones.removeAt(_indexToDelete);
                     });
@@ -272,9 +273,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                       Navigator.of(context).pop();
                     });
                   } else {
-                    ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
-                      Navigator.of(context).pop();
-                    });
+                    // ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
+                    //   Navigator.of(context).pop();
+                    // });
                   }
                 },child: SizedBox()
             )

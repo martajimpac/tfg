@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
+import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
 import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,6 @@ import '../components/dialog/my_ok_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/centros_cubit.dart';
 import '../cubit/insertar_evaluacion_cubit.dart';
-import '../cubit/settings_cubit.dart';
-import '../modelos/evaluacion_to_insert_dm.dart';
-import '../theme/app_theme.dart';
 
 class NuevaEvaluacionPage extends StatefulWidget {
   const NuevaEvaluacionPage({Key? key}) : super(key: key);
@@ -173,15 +171,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   Future<void> _insertarEvaluacion() async {
-    final evaluacion = EvaluacionToInsertDataModel.fromRealizacion(
-      idinspector: 1,
-      idcentro: 1,//_idCentro,
-      fechaRealizacion: DateTime.now(),
-      fechaCaducidad: _fechaCaducidad,//TODO METER AQUI VALOR POR DEFECTO FECHA CADUCIDAD por defecto 2 años, si no selecciona fecha...
-      idmaquina: 1, //TODO METER LISTA DE MAQUINAS
-      idtipoeval: 1 //todo que significa esto??
+    _cubitInsertarEvaluacion.insertarEvaluacion(
+        1, //idinspector (de supabase)
+        _idCentro!,
+        1, //idtipoeval
+        DateTime.now(),
+        _fechaCaducidad,
+        _fechaFabricacion,
+        _fechaPuestaServicio,
+        _denominacionController.text,
+        _fabricanteController.text,
+        _numeroSerieController.text,
+        _imageList
     );
-    _cubitInsertarEvaluacion.insertarEvaluacion(evaluacion, _imageList);
   }
 
   @override
@@ -318,7 +320,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("Fecha de caducidad"),
+                  const Text("*Fecha de caducidad"),
                   CustomDatePickerScroll(
                     initialDate: _fechaCaducidad,
                     onDateChanged: (DateTime newDate) {
@@ -477,23 +479,23 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                     },
                     text: "Continuar",
                   ),
-                  BlocConsumer<InsertarEvaluacionCubit, EvaluacionState>(
+                  BlocListener<InsertarEvaluacionCubit, InsertarEvaluacionState>(
                       listener: (context, state) {
                         // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
-                        if (state is EvaluacionInsertada) {
+                        if(state is InsertarEvaluacionLoading){
+                          Navigator.of(context).pop(); //cerrar resumen
+                          ConstantsHelper.showLoadingDialog(context);
+                        }else if(state is EvaluacionInsertada) {
                           // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
+                          Navigator.of(context).pop(); //cerrar cargando
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),);
+                        }else if(state is InsertarEvaluacionError){
+                          Navigator.of(context).pop(); //cerrar cargando
+                          ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                            Navigator.of(context).pop();
+                          });
                         }
-                      },
-                      builder: (context, state) {
-                        if (state is EvaluacionLoading) {
-                          return const MyLoadingAlertDialog(); //TODO DIALOGO
-                        } else if (state is EvaluacionError) {
-                          return SizedBox();
-                        } else {
-                          return SizedBox();
-                        }
-                      }
+                      }, child: SizedBox(),
                   )
                 ],
               ),

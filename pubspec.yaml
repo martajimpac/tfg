@@ -28,10 +28,16 @@ dependencies:
   flutter_native_splash: ^2.4.0
   envied: ^0.5.4+1
   shared_preferences: ^2.0.8
+
   fluttertoast: ^8.0.8
+
   flutter_localizations:
     sdk: flutter
   intl: ^0.18.1 #para formatear fechas
+
+
+  expandable: ^5.0.1
+  expandable_menu: 0.0.5
 
   #http: ^1.2.1
 

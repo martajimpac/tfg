@@ -103,13 +103,7 @@ class _CheckListPageState extends State<CheckListPage> {
                   children: [
                     Container(
                       height: 66, //(50 + 16 margen)
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(Dimensions.cornerRadius),
-                          bottomRight: Radius.circular(Dimensions.cornerRadius),
-                        ),
-                      ),
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       child:
                       ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -126,41 +120,18 @@ class _CheckListPageState extends State<CheckListPage> {
                                 pageViewController.animateToPage(
                                   index,
                                   duration: const Duration(seconds: 1),
-                                  curve: Curves.easeInOut,
+                                  curve: Curves.linear, //TODO CAMBIAR ESTA ANIMACION
                                 );
                               },
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 600),
-                                width: _selectedCircle == index ? 400 : 50, //TODO WRAP CONTENT
+                              child: Container(
+                                height: 50,
+                                width: 50,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
                                   color: index == _selectedCircle ? Colors.black : Theme.of(context).colorScheme.secondaryContainer,
                                 ),
                                 child: Center(
-                                  child: _selectedCircle == index
-                                      ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 50, // Ancho fijo deseado
-                                        child: Text(
-                                          categorias[index].idcat.toString(), //TODO ORDENAR POR ID CATEGORIA
-                                          style: const TextStyle(fontSize: 15, color: Colors.white),
-                                          textAlign: TextAlign.center, // Alinear el texto al centro
-                                          overflow: TextOverflow.ellipsis, // Controlar el desbordamiento del texto
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          categorias[index].categoria.toString(),
-                                          style: const TextStyle(fontSize: 15, color: Colors.white),
-                                          textAlign: TextAlign.start, // Alinear el texto al centro
-                                          overflow: TextOverflow.ellipsis, // Controlar el desbordamiento del texto
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                      : Text(
+                                  child: Text(
                                     categorias[index].idcat.toString(),
                                     style: const TextStyle(fontSize: 15, color: Colors.white),
                                   ),
@@ -173,6 +144,7 @@ class _CheckListPageState extends State<CheckListPage> {
                       ),
 
                     ),
+                    Text(categorias[_selectedCircle].categoria, style: Theme.of(context).textTheme.headlineMedium),
                     Expanded(
                         child : Column(
                           children: [
