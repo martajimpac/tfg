@@ -20,6 +20,8 @@ class MyAppTheme {
       //Text view
       primary: Colors.grey.shade400, // Color primario, text indicator...
       onBackground: Colors.white, //color para el fondo de text view
+
+      onSecondary: Colors.grey.shade700 //color de texto claro
     ),
 
     appBarTheme: const AppBarTheme(
@@ -52,7 +54,7 @@ class MyAppTheme {
       ),
       headlineMedium: TextStyle(
         fontFamily: 'Manrope',
-        fontSize: Dimensions.defaultTextSize,
+        fontSize: Dimensions.subTitleTextSize,
         fontWeight: FontWeight.bold,
         color: Color(0xFF00A7B3),
       )
@@ -77,6 +79,8 @@ class MyAppTheme {
 
       primary: Colors.grey.shade400,
       onBackground: Colors.grey.shade800,
+
+      onSecondary: Colors.grey.shade200 //color de texto claro
     ),
 
     appBarTheme: const AppBarTheme(

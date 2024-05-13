@@ -1,13 +1,19 @@
+import 'dart:math';
+
+import 'package:evaluacionmaquinas/components/caducidad_indicator.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_ok_dialog.dart';
+import 'package:evaluacionmaquinas/components/empty_view.dart';
 import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/cubit/insertar_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:evaluacionmaquinas/views/filtros_page.dart';
+import 'package:intl/intl.dart';
 import '../components/dialog/my_loading_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/evaluaciones_cubit.dart';
@@ -24,104 +30,170 @@ class MisEvaluaccionesPage extends StatefulWidget {
   _MisEvaluaccionesPageState createState() => _MisEvaluaccionesPageState();
 }
 
+// Añadir un estado local para controlar la visibilidad de la cruz en cada evaluación
 class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
+  late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
+  late EvaluacionesCubit _cubitEvaluaciones;
+  late int _indexToDelete;
+  late List<EvaluacionDataModel> _evaluaciones;
+
+  Map<String, dynamic> _filtros = {};
+
+  bool _showDeleteIcons = false;
+
+  bool _sortedByDate = true;
+  bool _sortDateDescendent = true;
+  bool _sortNameDescendent = true;
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<EvaluacionesCubit>(context).getEvaluaciones();
+    _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
+    _cubitEvaluaciones.getEvaluaciones();
+    _filtros = _cubitEvaluaciones.filtros;
   }
-  late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
 
-  late int _indexToDelete;
-  late List<ListEvaluacionDataModel> _evaluaciones;
-  List<String> filterList = ["Filtro 1", "Filtro 2", "Filtro 3", "Filtro 4", "Filtro 5", "Filtro 6", "Filtro 4", "Filtro 5", "Filtro 6", "Filtro 4", "Filtro 5", "Filtro 6"];
-
-
-  void _eliminarEvaluacion(int idEvaluacion) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MyTwoButtonsDialog(
-          title: "¿Está seguro de que desea eliminar la evaluación?",
-          desc: "Una vez eliminada, no podrá recuperar los datos",
-          primaryButtonText: "Confirmar",
-          secondaryButtonText: "Cancelar",
-          onPrimaryButtonTap: (){
-            _cubitEliminarEvaluacion.eliminarEvaluacion(idEvaluacion);
-            Navigator.of(context).pop();
-          },
-          onSecondaryButtonTap: (){
-            Navigator.of(context).pop();
-          },
-        );
-      },
-    );
+  @override
+  void dispose() {
+    //_cubitEvaluaciones.close(); //TODO ESTO DA PROBLEMAS SI VAS A OTRA PAGINA ANTES DE QUE SE HAYA TERMINADO DE CARGAR
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop){
+        setState(() {
+          _showDeleteIcons = false;
+        });
+      }, child: SafeArea(
       child: Scaffold(
-        appBar:  AppBar(
+        appBar: AppBar(
           title: Text(
-            'Mis evaluaciones',
+            _showDeleteIcons ? '' : 'Mis evaluaciones',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          automaticallyImplyLeading: false, // Elimina la flecha de retroceso
-          leading: null, // Sin botón en el lado izquierdo
-          actions: null, // Sin botones en el lado derecho
+          actions: [
+          Visibility(
+              visible: _showDeleteIcons,
+              child: IconButton(
+              icon: const Icon(Icons.close), // Icono de cruz
+              onPressed: () {
+                setState(() {
+                  _showDeleteIcons = false;
+                });
+              },
+            ),
+          )
+        ],
+          automaticallyImplyLeading: false,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            // Resto del código permanece igual
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Para alinear los contenedores a los extremos
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0), // Margen horizontal entre los botones
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.primaryContainer, // Color de fondo del círculo
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.filter_alt),
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      onPressed: () {
-                        //GoRouter.of(context).go('/filtros');
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()),);
-                      },
-                    ),
+                const SizedBox(width: Dimensions.marginSmall),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.filter_alt),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()),);
+                    },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0), // Margen horizontal entre los botones
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.primaryContainer, // Color de fondo del círculo
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.sort_by_alpha),
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      onPressed: () {
-                        // Acción al presionar el botón de ordenar por orden alfabético
-                      },
-                    ),
+                const Spacer(), // Para separar los contenedores de la izquierda y de la derecha
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: (!_sortedByDate) ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  child: IconButton(
+                    icon: (_sortNameDescendent)
+                        ? Image.asset('lib/images/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize)
+                        : Image.asset('lib/images/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    onPressed: () {
+                        setState(() {
+
+                        });
+
+                        Fluttertoast.showToast(
+                          msg: _sortNameDescendent
+                              ? "Evaluaciones ordenadas por el nombre de la máquina en orden descendente."
+                              : "Evaluaciones ordenadas por el nombre de la máquina." ,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.white,
+                        );
+                        //si ya estabamos ordenando por nombre ordenar al reves
+                        if(!_sortedByDate){
+                          _sortNameDescendent = !_sortNameDescendent;
+                        }
+                        _sortedByDate = false;
+                    },
                   ),
                 ),
+                const SizedBox(width: Dimensions.marginSmall),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: (_sortedByDate) ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  child: IconButton(
+                    icon: (_sortDateDescendent)
+                        ? Image.asset('lib/images/ic_calendar_down.png', height: 27, width: 27)
+                        : Image.asset('lib/images/ic_calendar_up.png', height: 27, width: 27),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    onPressed: () {
+
+                      setState(() {
+
+                      });
+
+                      Fluttertoast.showToast(
+                        msg: _sortDateDescendent
+                            ? "Evaluaciones ordenadas por la fecha de realización en orden descendente"
+                            : "Evaluaciones ordenadas por la fecha de realización",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                      );
+
+                      //si ya estabamos ordenando por fecha ordenar al reves
+                      if(_sortedByDate){
+                        _sortDateDescendent = !_sortDateDescendent;
+                      }
+                      _sortedByDate = true;
+                    },
+                  ),
+                ),
+                const SizedBox(width: Dimensions.marginSmall),
               ],
             ),
-            SizedBox(
-              height: 50, // Ajusta la altura según lo necesites
+
+
+            /****************** FILTROS **************************************************************************/
+            SizedBox( //TODO TAL VEZ ESTO SE PODRIA METER DENTRO DEL BLOC
+              height: _filtros.entries.isEmpty ? 0 : 50,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
                 children: [
-                  for (int index = 0; index < filterList.length; index++)
+                  for (final filtro in _filtros.entries)
                     Stack(
                       children: [
                         Container(
@@ -135,13 +207,17 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                filterList[index],
-                                style: Theme.of(context).textTheme.labelMedium, // Color del texto del filtro
+                                (filtro.key == filtroFechaRealizacion || filtro.key == filtroFechaCaducidad)
+                                    ? "${filtro.key}: ${DateFormat(DateFormatString).format(filtro.value)}"
+                                    : "${filtro.key}: ${filtro.value}",
+                                style: Theme.of(context).textTheme.labelMedium,
                               ),
+                              const SizedBox(width: Dimensions.marginSmall),
                               GestureDetector(
                                 onTap: () {
+                                  _cubitEvaluaciones.removeFilter(filtro.key);
+                                  _filtros.remove(filtro.key);
                                   setState(() {
-                                    filterList.removeAt(index);
                                   });
                                 },
                                 child: Icon(
@@ -158,6 +234,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 ],
               ),
             ),
+
+            /****************** FIN FILTROS **************************************************************************/
             Expanded(
               child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
                 builder: (context, state) {
@@ -165,96 +243,122 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is EvaluacionesLoaded) {
                     _evaluaciones = state.evaluaciones;
-                    return ListView.builder(
-                      itemCount: state.evaluaciones.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final evaluacion = _evaluaciones[index];
-                        return Dismissible(
-                          key: UniqueKey(), // Se necesita una clave única para cada elemento Dismissible
-                          onDismissed: (direction) {
-                            // Remover el elemento de la lista cuando se desliza
-                            setState(() {
-                              _indexToDelete = index;
-                              _eliminarEvaluacion(evaluacion.ideval);
-                            });
+
+                    //ordenar
+                    if(_sortedByDate){
+                      _evaluaciones.sort((a, b) => a.fechaRealizacion.compareTo(b.fechaRealizacion));
+                      if(!_sortDateDescendent){
+                        _evaluaciones = _evaluaciones.reversed.toList();
+                      }
+                    }else{
+                      _evaluaciones.sort((a, b) => a.nombreMaquina.compareTo(b.nombreMaquina));
+                      if(!_sortNameDescendent){
+                        _evaluaciones = _evaluaciones.reversed.toList();
+                      }
+                    }
+
+                    if (_evaluaciones.isEmpty) {
+                      return Center(
+                        child: EmptyView(
+                          onRetry: () {
+                            _cubitEvaluaciones.getEvaluaciones();
                           },
-                          background: Container(
-                            color: Colors.red, // Color de fondo cuando se desliza
-                            child: Icon(Icons.delete, color: Colors.white),
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20.0),
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const DetalleEvaluaccionPage()),
-                              );
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.all(10),
-                              elevation: 0,
-                              color: Theme.of(context).colorScheme.onBackground,
-                              child: ListTile(
-                                title: Text(
-                                  evaluacion.nombreMaquina,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: Colors.green),
-                                      ),
-                                      padding: const EdgeInsets.all(8.0),
-                                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                      );
+                    } else{
+                      return GestureDetector(
+                        // Detecta un clic largo en la lista
+                        onLongPress: () {
+                          setState(() {
+                            _showDeleteIcons = true;
+                          });
+                        },
+                        child: ListView.builder(
+                          itemCount: state.evaluaciones.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final evaluacion = _evaluaciones[index];
+                            debugPrint("evalmarta:: ${_evaluaciones[0].nombreMaquina}");
+                            return GestureDetector(
+                              onTap: () {
+                                if(!_showDeleteIcons){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetalleEvaluaccionPage(idEvaluacion: _evaluaciones[index].ideval),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Stack(
+                                children: [
+                                  Card(
+                                    margin: const EdgeInsets.all(Dimensions.marginSmall),
+                                    elevation: 0,
+                                    color: Theme.of(context).colorScheme.onBackground,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(Dimensions.marginSmall),
                                       child: Column(
                                         children: [
                                           Text(
-                                            'Fecha de realización: ${evaluacion.fechaRealizacion.toString()}',
+                                            evaluacion.nombreMaquina,
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
                                           ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.business,size: 15, color: Theme.of(context).colorScheme.onSecondary), // Aquí debes agregar el icono que desees, por ejemplo, Icons.centro
+                                              const SizedBox(width: 8), // Espacio entre el icono y el texto
+                                              Text(evaluacion.centro, style: TextStyle( color: Theme.of(context).colorScheme.onSecondary)),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: const TextStyle(color: Colors.green)),
+                                              const Text(" - "),
+                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: const TextStyle(color: Colors.red)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: Dimensions.marginSmall),
+                                          CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
                                         ],
                                       ),
+                                    )
+                                  ),
+                                  Positioned.fill(
+                                    child: Container(
+                                      color: _showDeleteIcons? Theme.of(context).colorScheme.background.withOpacity(0.5) : Colors.transparent,
                                     ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: Colors.red),
-                                      ),
-                                      padding: const EdgeInsets.all(8.0),
-                                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            'Fecha de caducidad: ${evaluacion.fechaCaducidad.toString()}',
+                                  ),
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
+                                        ? IconButton(
+                                          icon: Image.asset(
+                                            'lib/images/ic_close.png',
+                                            height: 40, // Ajusta el tamaño de la imagen según sea necesario
+                                            width: 40,
+                                            color: Colors.red,
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: ClipRRect(
-                                  borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-                                  child: evaluacion.imagen != null
-                                      ? Image.memory(
-                                    evaluacion.imagen!,
-                                    width: 50, // Ajusta el tamaño de la imagen según sea necesario
-                                    height: 50,
-                                  )
-                                      : const SizedBox(),
-                                ),
+                                          onPressed: () {
+                                            _indexToDelete = index;
+                                            _eliminarEvaluacion(evaluacion.ideval, evaluacion.idMaquina);
+                                          },
+                                        )
+                                        : const SizedBox(),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
+                            );
+                          },
+                        ),
+                      );
+                    }
                   } else if (state is EvaluacionesError) {
                     return Center(child: Text(state.errorMessage));
                   } else {
-                    return SizedBox();
+                    return const SizedBox();
                   }
                 },
               ),
@@ -269,21 +373,45 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   }else if (state is EliminarEvaluacionLoading) {
                     ConstantsHelper.showLoadingDialog(context);
                   } else if (state is EliminarEvaluacionError) {
+                    Navigator.of(context).pop();
                     ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
                       Navigator.of(context).pop();
                     });
                   } else {
-                    // ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
-                    //   Navigator.of(context).pop();
-                    // });
+                   /* Navigator.of(context).pop();
+                    ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
+                      Navigator.of(context).pop();
+                    });*/
                   }
-                },child: SizedBox()
+                },child: const SizedBox()
             )
-
           ],
         ),
       ),
+    ),
     );
   }
 
+  void _eliminarEvaluacion(int idEvaluacion, int idMaquina) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MyTwoButtonsDialog(
+          title: "¿Está seguro de que desea eliminar la evaluación?",
+          desc: "Una vez eliminada, no podrá recuperar los datos",
+          primaryButtonText: "Confirmar",
+          secondaryButtonText: "Cancelar",
+          onPrimaryButtonTap: () {
+            Navigator.of(context).pop();
+            _cubitEliminarEvaluacion.eliminarEvaluacion(idEvaluacion, idMaquina);
+          },
+          onSecondaryButtonTap: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
 }
+
+

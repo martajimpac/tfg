@@ -6,13 +6,13 @@ import 'package:intl/intl.dart';
 import '../../theme/dimensions.dart';
 
 class CustomDatePickerScroll extends StatefulWidget {
-  final DateTime initialDate;
   final Function(DateTime) onDateChanged;
+  final DateTime initialDate;
 
   const CustomDatePickerScroll({
     Key? key,
-    required this.initialDate,
     required this.onDateChanged,
+    required this.initialDate, // Agregar el parámetro de fecha inicial
   }) : super(key: key);
 
   @override
@@ -26,7 +26,8 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = widget.initialDate ?? DateTime.now();
+    // Utiliza la fecha inicial proporcionada en lugar de calcularla
+    _selectedDate = widget.initialDate;
   }
 
   @override
@@ -40,8 +41,8 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
             ),
           ),
           padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
+            horizontal: Dimensions.marginSmall,
+            vertical: Dimensions.marginSmall,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,9 +55,12 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
                 ),
               ),
               GestureDetector(
-                child: Text('Cambiar'),
+                child: _showDatePicker ? const Text('Guardar', style: TextStyle(color: Colors.red),) : const Text('Cambiar'),
                 onTap: () {
                   setState(() {
+                    if(_showDatePicker){
+                      widget.onDateChanged(_selectedDate);
+                    }
                     _showDatePicker = !_showDatePicker;
                   });
                 },
@@ -65,22 +69,18 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
           ),
         ),
         AnimatedContainer(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           height: _showDatePicker ? MediaQuery.of(context).size.height / 3 : 0,
           child: _showDatePicker
               ? CupertinoDatePicker(
             initialDateTime: _selectedDate,
             onDateTimeChanged: (DateTime newDate) {
-              setState(() {
-                _selectedDate = newDate;
-              });
-              if (widget.onDateChanged != null) {
-                widget.onDateChanged(newDate);
-              }
-            },
+              _selectedDate = newDate;
+              },
             use24hFormat: true,
-            minimumYear: widget.initialDate.year - 1,
-            maximumYear: widget.initialDate.year + 8,
+            //minimumYear: widget.initialDate.year - 2,
+            maximumYear: ConstantsHelper.calculateDate(context, 10).year, //máximo 10 años
+            minimumDate: DateTime.now().add(const Duration(days: 1)), //fecha minima, la fecha de hoy mas 1 día
             mode: CupertinoDatePickerMode.date,
           )
               : null,

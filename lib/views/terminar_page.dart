@@ -1,4 +1,6 @@
 import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/views/mis_evaluaciones_page.dart';
+import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
@@ -78,7 +80,7 @@ class _TerminarPageState extends State<TerminarPage> {
                         adaptableWidth: false,
                         onTap: () {
                           //GoRouter.of(context).go('/pdf');
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const PdfPage(),),);
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
                         },
                         text: "Terminar"
                     )

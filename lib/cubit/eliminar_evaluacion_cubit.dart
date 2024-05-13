@@ -20,10 +20,11 @@ class EliminarEvaluacionCubit extends Cubit<EliminarEvaluacionState> {
   final RepositorioDBSupabase repositorio;
   EliminarEvaluacionCubit(this.repositorio) : super(EliminarEvaluacionInicial());
 
-  Future<void> eliminarEvaluacion(int idEvaluacion) async {
+  Future<void> eliminarEvaluacion(int idEvaluacion, int idMaquina) async {
     emit(EliminarEvaluacionLoading());
     try {
       await repositorio.eliminarEvaluacion(idEvaluacion);
+      await repositorio.eliminarMaquina(idMaquina);
       emit(EliminarEvaluacionCompletada());
     } catch (e) {
       emit(EliminarEvaluacionError('Error al eliminar la evaluación: $e'));

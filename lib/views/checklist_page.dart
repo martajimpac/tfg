@@ -94,10 +94,11 @@ class _CheckListPageState extends State<CheckListPage> {
         child: BlocBuilder<PreguntasCubit, PreguntasState>(
           builder: (context, state) {
             if (state is PreguntasLoading) {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             } else if (state is PreguntasLoaded) {
               final List<PreguntaDataModel> preguntas = state.preguntas;
               final List<CategoriaPreguntaDataModel> categorias = state.categorias;
+              _preguntasFiltradas = preguntas.where((pregunta) => pregunta.idCategoria == categorias[0].idcat).toList();
               return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

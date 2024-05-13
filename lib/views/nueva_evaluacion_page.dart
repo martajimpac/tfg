@@ -5,6 +5,8 @@ import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
 import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
 import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
+import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,20 +31,23 @@ import '../components/dialog/my_content_dialog.dart';
 import '../components/dialog/my_ok_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/centros_cubit.dart';
+import '../cubit/eliminar_evaluacion_cubit.dart';
 import '../cubit/insertar_evaluacion_cubit.dart';
 
 class NuevaEvaluacionPage extends StatefulWidget {
-  const NuevaEvaluacionPage({Key? key}) : super(key: key);
+  final EvaluacionDetailsDataModel? evaluacion;
+  final List<ImagenDataModel>? imagenes;
+
+  const NuevaEvaluacionPage({Key? key, this.evaluacion, this.imagenes}) : super(key: key);
 
   @override
   _NuevaEvaluacionPageState createState() => _NuevaEvaluacionPageState();
-
-
 }
 
 class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   late InsertarEvaluacionCubit _cubitInsertarEvaluacion;
-  late Timer _timer;
+  late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
+  bool _isModifiying = false;
 
   final _centrosController = TextEditingController();
   final _denominacionController = TextEditingController();
@@ -52,13 +57,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   List<CentroDataModel> _centros = [];
 
   //valores evaluacion
+  int? _idEvaluacion;
+  int? _idMaquina;
+
   int? _idCentro;
   String _nombreCentro = "";
   final List<Uint8List> _imageList = [];
   late DateTime _fechaCaducidad;
   DateTime? _fechaFabricacion;
   DateTime? _fechaPuestaServicio;
+  final _fechaFabricacionNotifier = ValueNotifier<DateTime?>(null);
+  final _fechaPuestaServicioNotifier = ValueNotifier<DateTime?>(null);
 
+  bool _isFechasRed = false;
   bool _isCentroRed = false;
   bool _isNombreMaquinaRed = false;
   bool _isNumeroSerieRed = false;
@@ -71,7 +82,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           return MyOkDialog(
             title: 'Límite de imágenes alcanzado.',
             desc: 'No es posible subir más de tres imágenes.',
-            onTap: (){Navigator.of(context).pop(); },
+            onTap: (){ Navigator.of(context).pop(); },
           );
         },
       );
@@ -81,13 +92,13 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   void _showDialogCheck(BuildContext context) {
-    _nombreCentro = _centrosController.text;
+    _nombreCentro = _centrosController.text.trim();
     if (_nombreCentro.isNotEmpty) {
       _idCentro = _centros.firstWhere((it) => it.denominacion == _nombreCentro).idCentro;
     } else {
       _idCentro = null;
     }
-    if (_idCentro == null || _nombreCentro == "" || _denominacionController.text == "" || _numeroSerieController.text == "") {
+    if (_idCentro == null  || _nombreCentro == "" || _denominacionController.text.trim() == "" || _numeroSerieController.text.trim() == "") {
       // Lista para almacenar los nombres de los campos que son null
       List<String> camposNull = [];
 
@@ -97,22 +108,38 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           camposNull.add('Centro');
           _isCentroRed = true;
         }
-        if (_denominacionController.text == "") {
+        if (_denominacionController.text.trim() == "") {
           camposNull.add('Denominación');
           _isNombreMaquinaRed = true;
         }
-        if (_numeroSerieController.text == "") {
-          camposNull.add('Número de serie');
+        if (_numeroSerieController.text.trim() == "") {
+          camposNull.add('Nº de fabricante / Nº de serie');
           _isNumeroSerieRed = true;
         }
       });
 
       // Construir el mensaje de error
-      String errorMessage = 'Los siguientes campos son obligatorios y no pueden estar vacíos:\n';
-      errorMessage += camposNull.join(', ');
+      String errorMessage = 'Los siguientes campos son obligatorios y no pueden estar vacíos:\n\n';
+      errorMessage += camposNull.join('\n');
 
       // Mostrar el diálogo con el mensaje de error
       ConstantsHelper.showMyOkDialog(context, "Error", errorMessage, () =>  Navigator.of(context).pop());
+    }else if(_fechaFabricacion != null && _fechaPuestaServicio != null){
+
+      if(_fechaFabricacion!.isBefore(_fechaPuestaServicio!)){
+        _showResume(context);
+      }else{
+        setState(() {
+          _isFechasRed = true;
+          _isCentroRed = false;
+          _isNumeroSerieRed = false;
+          _isNumeroSerieRed = false;
+        });
+
+        // Mostrar el diálogo con el mensaje de error
+        ConstantsHelper.showMyOkDialog(context, "Error", "La fecha de puesta en servicio no puede ser anterior a la fecha de fabricación", () =>  Navigator.of(context).pop());
+      }
+
     }else{
       _showResume(context);
     }
@@ -133,7 +160,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   Text("Fecha de caducidad: ${ DateFormat(DateFormatString).format(_fechaCaducidad) }"),
                   Text("Datos evaluacion", style: Theme.of(context).textTheme.headlineMedium),
                   Text("Denominacion: ${_denominacionController.text}"),
-                  Text("Fabricante: ${_fabricanteController.text}"),
+                  if(_fabricanteController.text.trim().isNotEmpty) Text("Fabricante: ${_fabricanteController.text}"),
+                  Text("Nº de fabricante / Nº de serie: ${_numeroSerieController.text}"),
                   if (_fechaFabricacion != null) Text("Fecha de fabricación: ${DateFormat(DateFormatString).format(_fechaFabricacion!)}"),
                   if (_fechaPuestaServicio != null) Text("Fecha de puesta en servicio: ${DateFormat(DateFormatString).format(_fechaPuestaServicio!)}")
                 ],
@@ -142,7 +170,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           primaryButtonText: "Continuar",
           secondaryButtonText: "Modificar",
           onPrimaryButtonTap: () {
-            _insertarEvaluacion();
+            if(_isModifiying){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),); //_modificarEvaluacion();
+            }else{
+              _insertarEvaluacion();
+            }
           },
           onSecondaryButtonTap: () {
             Navigator.of(context).pop();
@@ -158,16 +190,38 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       builder: (BuildContext context) {
         return MyTwoButtonsDialog(
           title: 'Confirmación',
-          desc: '¿Estás seguro de que quieres salir?\nLos datos de la evaluación no se guardaran',
-          primaryButtonText: "Aceptar",
+          desc: '¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.',
+          primaryButtonText: "Salir",
           onPrimaryButtonTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()),);
+            if(_idEvaluacion != null && _idMaquina != null){
+              //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
+              Navigator.of(context).pop();
+              _cubitEliminarEvaluacion.eliminarEvaluacion(_idEvaluacion!, _idMaquina!);
+            }else{
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+            }
           },
           secondaryButtonText: "Cancelar",
           onSecondaryButtonTap: (){Navigator.of(context).pop(); },
         );
       },
     );
+  }
+
+  Future<void> _modificarEvaluacion() async {
+    /*_cubitInsertarEvaluacion.insertarEvaluacion(
+        1, //idinspector (de supabase)
+        _idCentro!,
+        1, //idtipoeval
+        DateTime.now(),
+        _fechaCaducidad,
+        _fechaFabricacion,
+        _fechaPuestaServicio,
+        _denominacionController.text.trim(),
+        _fabricanteController.text.trim(),
+        _numeroSerieController.text.trim(),
+        _imageList
+    );*/
   }
 
   Future<void> _insertarEvaluacion() async {
@@ -179,9 +233,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _fechaCaducidad,
         _fechaFabricacion,
         _fechaPuestaServicio,
-        _denominacionController.text,
-        _fabricanteController.text,
-        _numeroSerieController.text,
+        _denominacionController.text.trim(),
+        _fabricanteController.text.trim(),
+        _numeroSerieController.text.trim(),
         _imageList
     );
   }
@@ -191,12 +245,53 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     super.initState();
     BlocProvider.of<CentrosCubit>(context).getCentros();
     _cubitInsertarEvaluacion = BlocProvider.of<InsertarEvaluacionCubit>(context, listen: false);
+    _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
     _fechaCaducidad = ConstantsHelper.calculateDate(context, 2);
+
+    if(widget.evaluacion != null){
+      _isModifiying = true;
+
+      if(widget.evaluacion!.nombreCentro.isNotEmpty){
+        _centrosController.text = widget.evaluacion!.nombreCentro;
+      }
+      _fechaCaducidad = widget.evaluacion!.fechaCaducidad;
+
+      if(widget.evaluacion!.fechaFabricacion != null){
+        _fechaFabricacionNotifier.value = widget.evaluacion!.fechaFabricacion;
+      }
+      if(widget.evaluacion!.fechaPuestaServicio != null){
+        _fechaPuestaServicioNotifier.value = widget.evaluacion!.fechaPuestaServicio;
+      }
+      if(widget.evaluacion!.nombreMaquina.isNotEmpty){
+        _denominacionController.text = widget.evaluacion!.nombreMaquina;
+      }
+      if(widget.evaluacion!.fabricante != null && widget.evaluacion!.fabricante!.isNotEmpty){
+        _fabricanteController.text = widget.evaluacion!.fabricante!;
+      }
+      if(widget.evaluacion!.numeroSerie.isNotEmpty){
+        _numeroSerieController.text = widget.evaluacion!.numeroSerie;
+      }
+
+
+      //TODO FECHA DE CADUCIDAD???
+
+
+    }
+
+    if (widget.imagenes != null && widget.imagenes!.isNotEmpty) {
+      _imageList.addAll(widget.imagenes!.map((imagen) => imagen.imagen));
+    }
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _centrosController.dispose();
+    _denominacionController.dispose();
+    _fabricanteController.dispose();
+    _numeroSerieController.dispose();
+    _fechaFabricacionNotifier.dispose();
+    _fechaPuestaServicioNotifier.dispose();
+    _centrosController.dispose();
     super.dispose();
   }
 
@@ -240,7 +335,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop){
-          //TODO HACER QUE AL DAR A ACEPTAR SALGA DE LA APP
           _showExitDialog(context);
           //GoRouter.of(context).go('/home');
         }, child: Scaffold(
@@ -285,21 +379,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                 scrollDirection: Axis.vertical,
                 children: <Widget>[
                   /**********************DATOS EVALUACION***********************/
-                  Text("Datos evaluacion", style: Theme.of(context).textTheme.headlineMedium,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Datos de la evaluación", style: Theme.of(context).textTheme.headlineMedium),
+                    ],
+                  ),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("*Centro"),
                   BlocBuilder<CentrosCubit, CentrosState>(
                     builder: (context, state) {
                       if (state is CentrosLoading) {
-                        List<CentroDataModel> centros = [];
-                        return CustomDropdownField(
-                          controller: _centrosController,
-                          hintText: "Nombre del centro",
-                          items: centros,
-                          numItems: 0,
-                          onValueChanged: (value) {},
-                        );
+                        return const SizedBox();
                       } else if (state is CentrosLoaded) {
                         _centros = state.centros;
 
@@ -308,8 +400,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           hintText: "Nombre del centro",
                           items: _centros,
                           numItems: 5,
-                          onValueChanged: (value) {
-                          },
                           isRed: _isCentroRed,
                         );
                       } else if (state is CentrosError) {
@@ -322,25 +412,27 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("*Fecha de caducidad"),
                   CustomDatePickerScroll(
-                    initialDate: _fechaCaducidad,
                     onDateChanged: (DateTime newDate) {
                       _fechaCaducidad = newDate;
-                      _timer.cancel(); //TODO NO SE PORQUE ESTO NO FUNCIONA
-                      _timer = Timer(const Duration(seconds: 1), () {
-                        Fluttertoast.showToast(
-                          msg:  ConstantsHelper.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                        );
-                      });
+                      Fluttertoast.showToast(
+                        msg:  ConstantsHelper.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                      );
                     },
+                    initialDate: _fechaCaducidad,
                   ),
 
                   /********************** DATOS MAQUINA***********************/
                   const SizedBox(height: Dimensions.marginBig),
-                  Text("Datos de la máquina", style: Theme.of(context).textTheme.headlineMedium),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Datos de la máquina", style: Theme.of(context).textTheme.headlineMedium),
+                    ],
+                  ),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("*Denominación"),
@@ -357,9 +449,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("Fecha de fabricación"),
                   CustomDatePicker(
-                    onDateChanged: (DateTime newDate) {
+                    onDateChanged: (DateTime? newDate) {
                       _fechaFabricacion = newDate;
                     },
+                    selectedDateNotifier: _fechaFabricacionNotifier,
+                    isRed: _isFechasRed,
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
@@ -367,9 +461,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   CustomDatePicker(
-                    onDateChanged: (DateTime newDate) {
+                    onDateChanged: (DateTime? newDate) {
                       _fechaPuestaServicio = newDate;
                     },
+                    selectedDateNotifier: _fechaPuestaServicioNotifier,
+                    isRed: _isFechasRed,
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
@@ -486,6 +582,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           Navigator.of(context).pop(); //cerrar resumen
                           ConstantsHelper.showLoadingDialog(context);
                         }else if(state is EvaluacionInsertada) {
+                          _isModifiying = true;
+                          _idEvaluacion = state.idEvaluacion;
+                          _idMaquina = state.idMaquina;
                           // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
                           Navigator.of(context).pop(); //cerrar cargando
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),);
@@ -495,7 +594,22 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                             Navigator.of(context).pop();
                           });
                         }
-                      }, child: SizedBox(),
+                      }, child: const SizedBox(),
+                  ),
+                  BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
+                      listener: (context, state) {
+                        if(state is EliminarEvaluacionCompletada){
+                          Navigator.of(context).pop();
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+                        }else if (state is EliminarEvaluacionLoading) {
+                          ConstantsHelper.showLoadingDialog(context);
+                        } else if (state is EliminarEvaluacionError) {
+                          Navigator.of(context).pop();
+                          ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                            Navigator.of(context).pop();
+                          });
+                        } else {}
+                      },child: const SizedBox()
                   )
                 ],
               ),

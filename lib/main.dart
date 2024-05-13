@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:evaluacionmaquinas/cubit/detalles_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,28 +11,15 @@ import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/settings_cubit.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_autenticacion.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
-import 'package:evaluacionmaquinas/views/checklist_page.dart';
-import 'package:evaluacionmaquinas/views/detalle_evaluacion_page.dart';
-import 'package:evaluacionmaquinas/views/filtros_page.dart';
-import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
-import 'package:evaluacionmaquinas/views/nueva_evaluacion_page.dart';
-import 'package:evaluacionmaquinas/views/pdf_page.dart';
-import 'package:evaluacionmaquinas/views/terminar_page.dart';
 import 'cubit/centros_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cubit/evaluaciones_cubit.dart';
 import 'cubit/simple_bloc_observer.dart';
-import 'env/env.dart';
 import 'helpers/ConstantsHelper.dart';
 import 'package:go_router/go_router.dart';
-
 import '../views/error_page.dart';
-import '../views/mis_evaluaciones_page.dart';
-import '../views/my_home_page.dart';
-import '../views/profile_page.dart';
-import '../views/register_page.dart';
 import '../views/splash_page.dart';
 
 part 'enrutamiento/rutas.dart';
@@ -145,7 +133,8 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => SettingsCubit()),
           BlocProvider(create: (context) => InsertarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => EvaluacionesCubit(RepositorioDBSupabase(widget.supabase))),
+          BlocProvider(create: (context) => EvaluacionesCubit(RepositorioDBSupabase(widget.supabase), {})),
+          BlocProvider(create: (context) => DetallesEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => EliminarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
         ],

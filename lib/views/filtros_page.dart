@@ -1,8 +1,17 @@
+import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
+import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../components/datePicker/custom_date_picker.dart';
 import '../components/textField/custom_drop_down_field.dart';
+import '../cubit/centros_cubit.dart';
+import '../helpers/ConstantsHelper.dart';
 import '../main.dart';
+import '../modelos/centro_dm.dart';
+import '../theme/dimensions.dart';
 
 
 class FiltrosPage extends StatefulWidget {
@@ -13,120 +22,185 @@ class FiltrosPage extends StatefulWidget {
 }
 
 class _FiltrosPageState extends State<FiltrosPage> {
-  late DateTime _selectedDate;
-  late TextEditingController _descripcionController;
-  late List<dynamic> data = [];
+  late EvaluacionesCubit _cubitEvaluaciones;
+  Map<String, dynamic> _filtros = {};
 
-  final dropDownController = TextEditingController();
-  String _currentDropDownSelectedValue = '';
+  final _fechaRealizacionNotifier = ValueNotifier<DateTime?>(null);
+  final _fechaCaducidadNotifier = ValueNotifier<DateTime?>(null);
+  final _centrosController = TextEditingController();
+
+  DateTime? _fechaRealizacion;
+  DateTime? _fechaCaducidad;
+  List<CentroDataModel> _centros = [];
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime.now();
-    _descripcionController = TextEditingController();
-    //getData();
+    BlocProvider.of<CentrosCubit>(context).getCentros();
+    _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
+    _filtros = _cubitEvaluaciones.filtros;
+
+    if(_filtros[filtroFechaRealizacion] != null){
+      _fechaCaducidadNotifier.value = (_filtros[filtroFechaRealizacion] as DateTime);
+    }
+
+    if(_filtros[filtroFechaCaducidad] != null){
+      _fechaCaducidadNotifier.value = (_filtros[filtroFechaCaducidad] as DateTime);
+    }
+
   }
 
-  /*Future<List<dynamic>> getDataFromTable(String tableName) async {
-    final response = await supabase.from(tableName).select();
-    return response;
-  }*/
+  @override
+  void dispose() {
+    _fechaRealizacionNotifier.dispose();
+    _fechaCaducidadNotifier.dispose();
+    _centrosController.dispose();
+    super.dispose();
+  }
 
- /* Future<void> getData() async {
-    data = await getDataFromTable('maq_centro');
-    setState(() {});
-  }*/
 
-/*  List<String> getDropdownValues() {
-    return data.map((row) => row['denominacion'].toString()).toList();
-  }*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'Filtros',
-            style: Theme.of(context).textTheme.titleMedium,
+          'Filtros',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Centro:',
+      body: Container(
+        height: MediaQuery.of(context).size.height, // Altura total de la pantalla
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+              child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Centro"),
+                  BlocBuilder<CentrosCubit, CentrosState>(
+                    builder: (context, state) {
+                      if (state is CentrosLoading) {
+                        return const SizedBox();
+                      } else if (state is CentrosLoaded) {
+                        _centros = state.centros;
+
+                        if(_filtros[filtroCentro] != null && _filtros[filtroCentro].toString().isNotEmpty){
+                          _centrosController.text = _filtros[filtroCentro] as String;
+                        }
+
+                        return CustomDropdownField(
+                          controller: _centrosController,
+                          hintText: "Nombre del centro",
+                          items: _centros,
+                          numItems: 5
+                        );
+                      } else if (state is CentrosError) {
+                        ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () => null);
+                        return const SizedBox();
+                      } else {  return const SizedBox(); }
+                    },
+                  ),
+
+                  const SizedBox(height: Dimensions.marginSmall),
+                  const Text("La fecha de realización debe ser posterior a..."),
+                  CustomDatePicker(
+                    onDateChanged: (DateTime? newDate) {
+                      _fechaRealizacion = newDate;
+                    },
+                    selectedDateNotifier: _fechaRealizacionNotifier,
+                    hasLimitDay: false,
+                  ),
+
+                  const SizedBox(height: Dimensions.marginSmall),
+                  const Text("La fecha de caducidad debe ser anterior a...."),
+
+                  const SizedBox(height: Dimensions.marginSmall),
+                  CustomDatePicker(
+                    onDateChanged: (DateTime? newDate) {
+                      _fechaCaducidad = newDate;
+                    },
+                    selectedDateNotifier: _fechaCaducidadNotifier,
+                    hasLimitDay: false,
+                  ),
+                ],
               ),
-              /*CustomDropdownField(
-                controller: dropDownController,
-                hintText: "Selecciona un centro",
-                items: getDropdownValues(),
-                numItems: 5,
-                onValueChanged: (value) {
-                  setState(() {
-                    _currentDropDownSelectedValue = value;
-                  });
-                },
-              ),*/
-              const Text(
-                'Fecha:',
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  _showDatePicker(context);
-                },
-                child: Row(
-                  children: [
-                    const Icon(Icons.calendar_today),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Descripción:',
-              ),
-              const SizedBox(height: 8),
-              MyTextField(controller: _descripcionController, hintText: "Ingrese la descripcion"),
-            ],
+            ),
           ),
         ),
+
+            Container(
+              margin: const EdgeInsets.only(top: 20), // Espacio entre el contenido y la línea gris
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey,
+                    width: 1.0,
+                  ),
+                ),
+              ),
+            ),
+            // Fila para el texto "Restablecer" y el botón de búsqueda
+            Padding(
+              padding: const  EdgeInsets.only(
+                top: Dimensions.marginSmall,   // Espacio en la parte superior
+                bottom: Dimensions.marginSmall, // Espacio en la parte inferior
+                left: Dimensions.marginMedium,    // Espacio a la izquierda
+                right: Dimensions.marginMedium,   // Espacio a la derecha
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _centrosController.clear();
+                        _fechaRealizacion = null;
+                        _fechaCaducidad = null;
+
+                        _fechaRealizacionNotifier.value = null;
+                        _fechaCaducidadNotifier.value = null;
+                      });
+                    },
+                    child: const Text(
+                      "Restablecer",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  MyButton(
+                    onTap: () {
+                      if(_fechaRealizacion != null){
+                        _cubitEvaluaciones.addFilter(filtroFechaCaducidad, _fechaRealizacion);
+                      }
+                      if(_fechaCaducidad != null){
+                        _cubitEvaluaciones.addFilter(filtroFechaRealizacion, _fechaCaducidad);
+                      }
+                      if(_centrosController.text.trim().isNotEmpty){
+                        _cubitEvaluaciones.addFilter(filtroCentro, _centrosController.text.trim());
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyHomePage(),
+                        ),
+                      );
+                    },
+                    text: "Buscar",
+                    adaptableWidth: true,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  Future<void> _showDatePicker(BuildContext context) async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null && pickedDate != _selectedDate) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _descripcionController.dispose(); // Limpia el controlador del campo de texto
-    super.dispose();
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: FiltrosPage(),
-  ));
 }

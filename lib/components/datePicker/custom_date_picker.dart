@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CustomDatePicker extends StatefulWidget {
-  final Function(DateTime)? onDateChanged;
+  final Function(DateTime?) onDateChanged;
+  final ValueNotifier<DateTime?> selectedDateNotifier;
+  final bool hasLimitDay;
+  final bool isRed;
 
   const CustomDatePicker({
     Key? key,
-    this.onDateChanged,
+    required this.onDateChanged,
+    required this.selectedDateNotifier,
+    this.hasLimitDay = true,
+    this.isRed = false
   }) : super(key: key);
 
   @override
@@ -16,24 +22,44 @@ class CustomDatePicker extends StatefulWidget {
 }
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
-  DateTime? _selectedDate;
+  late DateTime? _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.selectedDateNotifier.value;
+    widget.selectedDateNotifier.addListener(_handleSelectedDateChange);
+  }
+
+  @override
+  void dispose() {
+    widget.selectedDateNotifier.removeListener(_handleSelectedDateChange);
+    super.dispose();
+  }
+
+  void _handleSelectedDateChange() {
+    setState(() {
+      _selectedDate = widget.selectedDateNotifier.value;
+    });
+  }
 
   Future<void> _showDatePicker(BuildContext context) async {
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(1000),
+      lastDate: widget.hasLimitDay ? DateTime.now() : ConstantsHelper.calculateDate(context, 100),
     );
 
     if (pickedDate != null && pickedDate != _selectedDate) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-      if (widget.onDateChanged != null) {
-        widget.onDateChanged!(pickedDate);
-      }
+      widget.selectedDateNotifier.value = pickedDate;
+      widget.onDateChanged(pickedDate);
     }
+  }
+
+  void _clearDate() {
+    widget.selectedDateNotifier.value = null;
+    widget.onDateChanged(null);
   }
 
   @override
@@ -43,32 +69,42 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         _showDatePicker(context);
       },
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: Colors.grey, width: 0.5),
+            bottom: BorderSide(color: widget.isRed ? Colors.red : Colors.grey, width: 0.5),
           ),
         ),
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
+          horizontal: Dimensions.marginSmall,
+          vertical: Dimensions.marginSmall,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              _selectedDate != null
-                  ? DateFormat(DateFormatString).format(_selectedDate!)
-                  : "-- / -- / ---- ",
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: Dimensions.smallTextSize,
+            Row(
+              children: [
+                Text(
+                  _selectedDate != null
+                      ? DateFormat(DateFormatString).format(_selectedDate!)
+                      : "-- / -- / ---- ",
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: Dimensions.smallTextSize,
+                  ),
+                ),
+              ],
+            ),
+            GestureDetector(
+              onTap: () {
+                _clearDate();
+              },
+              child: const Icon(
+                Icons.clear,
               ),
             ),
-            const Icon(Icons.calendar_today_rounded),
           ],
         ),
       ),
     );
   }
 }
-

@@ -19,9 +19,9 @@ class _MyListTileState extends State<MyListTile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: Dimensions.marginMedium),
       child: Container(
-        padding: EdgeInsets.all(Dimensions.marginMedium),
+        padding: const EdgeInsets.all(Dimensions.marginMedium),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
@@ -32,7 +32,7 @@ class _MyListTileState extends State<MyListTile> {
             Text(
               widget.name,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: Dimensions.marginMedium),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

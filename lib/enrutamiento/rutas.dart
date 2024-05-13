@@ -26,7 +26,7 @@ final GoRouter _enrutador = GoRouter(
     ),
 
     /// Página de inicio
-    GoRoute(
+    /*GoRoute(
       path: "/home",
       name: 'home',
       builder: (context, state) => const MyHomePage(),
@@ -45,7 +45,7 @@ final GoRouter _enrutador = GoRouter(
             GoRoute(
               name: 'detalle_evaluaciones',
               path: "detalle_evaluaciones",
-              builder: (context, state) => const DetalleEvaluaccionPage(),
+              builder: (context, state) => DetalleEvaluaccionPage(idEvaluacion: idEvaluacion), //TODO REVISAR
             )
           ]
         ),
@@ -76,7 +76,7 @@ final GoRouter _enrutador = GoRouter(
           builder: (context, state) => const ProfilePage(),
         ),
       ],
-    ),
+    ),*/
 
 
 

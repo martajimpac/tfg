@@ -9,7 +9,6 @@ class CustomDropdownField extends StatefulWidget {
   final String hintText;
   final List<CentroDataModel> items;
   final int numItems;
-  final Function(dynamic) onValueChanged;
   final bool isRed;
 
   const CustomDropdownField({
@@ -18,7 +17,6 @@ class CustomDropdownField extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.numItems,
-    required this.onValueChanged,
     this.isRed = false
   }) : super(key: key);
 
@@ -28,6 +26,7 @@ class CustomDropdownField extends StatefulWidget {
 
 class _CustomDropdownFieldState extends State<CustomDropdownField> {
   bool isFocused = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +56,6 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
           enabled: true,
           itemsVisibleInDropdown: widget.numItems,
           items: widget.items.map((centro) => centro.denominacion).toList(),
-          onValueChanged: (value) {
-            widget.onValueChanged(value); // Llama al callback con el valor seleccionado
-          },
         ),
       ),
     );

@@ -15,8 +15,8 @@ class InsertarEvaluacionLoading extends InsertarEvaluacionState {
 
 class EvaluacionInsertada extends InsertarEvaluacionState {
   final int idEvaluacion;
-
-  EvaluacionInsertada(this.idEvaluacion);
+  final int idMaquina;
+  EvaluacionInsertada(this.idEvaluacion, this.idMaquina);
 }
 
 class InsertarEvaluacionError extends InsertarEvaluacionState {
@@ -58,7 +58,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaPuestaServicio
       );
       repositorio.insertarImagenes(imagenes, idEvaluacion);
-      emit(EvaluacionInsertada(idEvaluacion));
+      emit(EvaluacionInsertada(idEvaluacion, idMaquina));
     } catch (e) {
       emit(InsertarEvaluacionError('Error al insertar la evaluación: $e'));
     }

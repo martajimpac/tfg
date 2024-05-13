@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
@@ -36,38 +37,7 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
     }
   }
 
-
-
-
-  /***************** GET EVALUACIONES *************************/
-
-  @override
-  Future<List<ImagenDataModel>> getImagenes() async {
-    try {
-      var resConsulta = _supabase.client.rpc(
-        'get_imagenes',
-      );
-      return resConsulta.then((value) => List<ImagenDataModel>.from(
-          value.map((e) => ImagenDataModel.fromMap(e)).toList()));
-    } catch (e) {
-      log.e('Se ha producido un error al intentar obtener los datos de la base de datos: $e');
-      rethrow;
-    }
-  }
-
-  @override
-  Future<List<ListEvaluacionDataModel>> getListaEvaluaciones() async { //TODO GET LISTA EVALUACIONES Y GETDETALLES EVALUACION!!
-    try {
-      var resConsulta = _supabase.client.rpc(
-        'get_evaluaciones',
-      );
-      return resConsulta.then((value) => List<ListEvaluacionDataModel>.from(
-          value.map((e) => ListEvaluacionDataModel.fromMap(e)).toList()));
-    } catch (e) {
-      log.e('Se ha producido un error al intentar obtener las evaluaciones de la base de datos: $e');
-      rethrow;
-    }
-  }
+ /*********************** ELIMINAR ****************************/
 
   @override
   Future<void> eliminarEvaluacion(int idEvaluacion) async {
@@ -83,6 +53,79 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
     }
   }
 
+  @override
+  Future<void> eliminarMaquina(int idMaquina) async {
+    try {
+      var resConsulta = _supabase.client.rpc(
+        'eliminar_maquina',
+        params: {'id_maquina': idMaquina},
+      );
+      await resConsulta;
+    } catch (e) {
+      log.e('Se ha producido un error al intentar eliminar la máquina: $e');
+      rethrow;
+    }
+  }
+  /***************** GET EVALUACIONES *************************/
+
+/*
+  @override
+  Future<List<EvaluacionDataModel>> getListaEvaluacionesConImagenes() async {
+    try {
+      var resConsulta = _supabase.client.rpc(
+        'get_evaluaciones',
+      );
+      return resConsulta.then((value) => List<EvaluacionDataModel>.from(
+          value.map((e) => EvaluacionDataModel.fromMap(e)).toList()));
+    } catch (e) {
+      log.e('Se ha producido un error al intentar obtener las evaluaciones de la base de datos: $e');
+      rethrow;
+    }
+  }
+*/
+
+  @override
+  Future<List<EvaluacionDataModel>> getListaEvaluaciones() async {
+    try {
+      var resConsulta = _supabase.client.rpc(
+        'get_evaluaciones_sin_imagen',
+      );
+      return resConsulta.then((value) => List<EvaluacionDataModel>.from(
+          value.map((e) => EvaluacionDataModel.fromMap(e)).toList()));
+    } catch (e) {
+      log.e('Se ha producido un error al intentar obtener las evaluaciones de la base de datos: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<EvaluacionDetailsDataModel> getDetallesEvaluacion(int idEvaluacion) async {
+    try {
+      var resConsulta = await _supabase.client.rpc(
+        'get_detalles_evaluacion',
+        params: {'ideval': idEvaluacion}, // Corregido el nombre del parámetro
+      );
+      return EvaluacionDetailsDataModel.fromMap(resConsulta[0]); // Suponiendo que solo se espera un resultado
+    } catch (e) {
+      log.e('Se ha producido un error al obtener los datos de la evaluación: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ImagenDataModel>> getImagenesEvaluacion(int idEvaluacion) async {
+    try {
+      var resConsulta = _supabase.client.rpc(
+        'get_imagenes_evaluacion',
+        params: {'ideval': idEvaluacion},
+      );
+      return resConsulta.then((value) => List<ImagenDataModel>.from(
+          value.map((e) => ImagenDataModel.fromMap(e)).toList()));
+    } catch (e) {
+      log.e('Se ha producido un error al obtener las imagenes de la evaluacion: $e');
+      rethrow;
+    }
+  }
 
   /************** GET PREGUNTAS *******************/
   @override
@@ -184,8 +227,8 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
         'fecha_caducidad': fechaCaducidad.toIso8601String(),
         'idmaquina': idMaquina,
         'idtipoeval': idTipoEval,
-        'fecha_fabricacion': fechaFabricacion,
-        'fecha_puesta_servicio': fechaPuestaServicio
+        'fecha_fabricacion': fechaFabricacion?.toIso8601String(),
+        'fecha_puesta_servicio': fechaPuestaServicio?.toIso8601String(),
       });
 
       return idEvaluacion as int;

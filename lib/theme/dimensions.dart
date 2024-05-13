@@ -16,6 +16,7 @@ class Dimensions {
   // Radios de esquina
   static const double cornerRadius = 25.0;
 
+  static const double iconSize = 20.0;
 
   static const double titleTextSize = 18.0;
   static const double subTitleTextSize = 17.0;

@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:evaluacionmaquinas/cubit/detalles_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
+import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
+import 'package:evaluacionmaquinas/views/nueva_evaluacion_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
@@ -12,113 +17,218 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:convert/convert.dart';
+import 'package:intl/intl.dart';
+
+import '../helpers/ConstantsHelper.dart';
 
 class DetalleEvaluaccionPage extends StatefulWidget {
-  const DetalleEvaluaccionPage({Key? key}) : super(key: key);
+  final int idEvaluacion;
+
+  const DetalleEvaluaccionPage({Key? key, required this.idEvaluacion}) : super(key: key);
 
   @override
   _DetalleEvaluaccionPageState createState() => _DetalleEvaluaccionPageState();
 }
 
 class _DetalleEvaluaccionPageState extends State<DetalleEvaluaccionPage> {
-  final controller = TextEditingController();
+  late EvaluacionDetailsDataModel _evaluacion;
+  late List<ImagenDataModel> _imagenes;
 
-  /*final _imageStream = supabase
-      .from('maq_imagenes')
-      .stream(primaryKey: ['idimg']); //TODO FILTRAR POR INSPECCION
 
-  Future<void> _deleteImages() async {
-    // Guardar los bytes de la imagen en la base de datos Supabase
-    await supabase.from("maq_imagenes").delete().eq("ideval", 2);
-
-    setState(() {
-    });
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<DetallesEvaluacionCubit>(context).getDetallesEvaluacion(widget.idEvaluacion);
   }
 
-  Future<void> _deleteImage(String imageid, int index) async {
-    await supabase.from("maq_imagenes").delete().eq("idimg", imageid);
-    // Actualiza la lista de imágenes para reflejar el cambio en la interfaz de usuario
-    *//*setState(() {
-      _imageStream.removeAt(index); // Elimina la imagen de la lista local
-    });*//*
-  }*/
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            Expanded(child:
-                Container()
-              /*StreamBuilder<List<Map<String, dynamic>>>(
-                stream: _imageStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
+        appBar: AppBar(
+          title: Text("Detalles de la evaluación", style: Theme.of(context).textTheme.titleMedium),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(Dimensions.marginMedium),
+          child: Column(
+            children: [
+              Expanded(
+                child: BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
+                  builder: (context, state) {
+                    if(state is DetallesEvaluacionLoading){
+                      return const Center(child: CircularProgressIndicator());
+                    } else if(state is DetallesEvaluacionLoaded){
+                      _evaluacion = state.evaluacion;
+                      _imagenes = state.imagenes;
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(Dimensions.marginMedium),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("Datos evaluacion", style: Theme.of(context).textTheme.headlineMedium),
+                                  ],
+                                ),
+                                const SizedBox(height: Dimensions.marginSmall),
+                                Row(
+                                  children: [
+                                    Icon(Icons.business, color: Theme.of(context).colorScheme.onSecondary),
+                                    const SizedBox(width: 8),
+                                    Text("Centro:", style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 32),
+                                  child: Text(_evaluacion.nombreCentro),
+                                ),
 
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  //
-                  final images = snapshot.data!;
-                  //
-                  // if (images.isEmpty) {
-                  //   return const Center(child: Text('No hay imágenes disponibles'));
-                  // }
+                                //TODO SHOW FECHA MODIFICACION Y poner cuantos dias quedan para que caduque aqui tambien, convertir en widget!!!
 
-                  return ListView.builder(
-                    itemCount: images.length,
-                    itemBuilder: (context, index) {
+                                const SizedBox(height: Dimensions.marginSmall),
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSecondary),
+                                    const SizedBox(width: 8),
+                                    Text("Fecha de realización:", style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 32),
+                                  child: Text(DateFormat(DateFormatString).format(_evaluacion.fechaRealizacion)),
+                                ),
 
-                      final cadenaRecortada = images[index]['imagen'].substring(4, images[index]['imagen'].length - 2); //quitar "[" y "]" caracteres ascii
+                                const SizedBox(height: Dimensions.marginSmall),
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSecondary),
+                                    const SizedBox(width: 8),
+                                    Text("Fecha de caducidad:", style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 32),
+                                  child: Text(DateFormat(DateFormatString).format(_evaluacion.fechaCaducidad)),
+                                ),
 
-                      debugPrint("marta cadena $cadenaRecortada");
+                                /********************** DATOS MAQUINA***********************/
+                                const SizedBox(height: Dimensions.marginMedium),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("Datos de la máquina", style: Theme.of(context).textTheme.headlineMedium),
+                                  ],
+                                ),
 
-                      List<String> listaString = cadenaRecortada.split('2c'); //quitar caracteres "," ascii
+                                const SizedBox(height: Dimensions.marginSmall),
+                                const Text("Denominación:"),
+                                Text(_evaluacion.nombreMaquina),
 
-                      debugPrint("marta hex ${listaString.join(',')}");
+                                const SizedBox(height: Dimensions.marginSmall),
+                                const Text("Fabricante:"),
+                                Text(
+                                    _evaluacion.fabricante != null && _evaluacion.fabricante!.isNotEmpty ?
+                                    _evaluacion.fabricante! :
+                                    "Fabricante desconocido"
+                                ),
 
-                      List<int> listaDecimal = [];
-                      for (var it in listaString) {
+                                const SizedBox(height: Dimensions.marginSmall),
+                                const Text("Nº de fabricante / Nº de serie:"),
+                                Text(_evaluacion.numeroSerie),
 
-                        String numeroSinImpares = '';
+                                const SizedBox(height: Dimensions.marginSmall),
+                                const Row(
+                                  children: [
+                                    Icon(Icons.event),
+                                    SizedBox(width: 8),
+                                    Text("Fecha de fabricación:"),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 32),
+                                  child: Text(
+                                    _evaluacion.fechaFabricacion != null ?
+                                    DateFormat(DateFormatString).format(_evaluacion.fechaFabricacion!) :
+                                    "Fecha desconocida",
+                                  ),
+                                ),
 
-                        for (int i = 0; i < it.length; i++) {
-                          // Si la posición es par, agregar el dígito a la cadena resultante
-                          if (i % 2 != 0) {
-                            numeroSinImpares += it[i];
-                          }
-                        }
-                        listaDecimal.add(int.parse(numeroSinImpares));
-                      }
-                      final listaBytes = Uint8List.fromList(listaDecimal);
+                                const SizedBox(height: Dimensions.marginSmall),
+                                const Row(
+                                  children: [
+                                    Icon(Icons.event_available), // Icono de fecha de puesta en servicio
+                                    SizedBox(width: 8), // Espacio entre el icono y el texto
+                                    Text("Fecha de puesta en servicio:"),
+                                  ],
+                                ),
+                                Text(
+                                  _evaluacion.fechaPuestaServicio!= null ?
+                                  DateFormat(DateFormatString).format(_evaluacion.fechaPuestaServicio!) :
+                                  "Fecha desconocida",
+                                ),
 
-                      return ListTile(
-                          onTap: () => _deleteImage(images[index]['idimg'], index),
-                          leading: Image.memory(
-                            listaBytes,
-                            width: 200,
-                            height: 200,
-                          )
+                                const SizedBox(height: Dimensions.marginSmall),
+
+                                SizedBox(
+                                  height: 200.0,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const ClampingScrollPhysics(),
+                                    itemCount: _imagenes.length, // +1 para el botón "más"
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return Container(
+                                        margin: const EdgeInsets.all(8.0),
+                                        width: 200,
+                                        height: 200,
+                                        child: Image.memory(
+                                          _imagenes[index].imagen,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: Dimensions.marginSmall),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
-                    },
+                    } else if (state is DetallesEvaluacionError) {
+                      return Text("Error: ${state.errorMessage}"); // Mensaje de error
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: Dimensions.marginMedium),
+              MyButton(
+                adaptableWidth: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NuevaEvaluacionPage(evaluacion: _evaluacion, imagenes: _imagenes),
+                    ),
                   );
                 },
-              )*/
-            ),
-            MyButton(
-              adaptableWidth: true,
-              onTap: () {
-                //_deleteImages
-              },
-              text: "Eliminar todas las imágenes",
-            ),
-          ],
-        )
+                text: "Modificar",
+              ),
 
+            ],
+          )
+        )
       );
   }
 }
