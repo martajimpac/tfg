@@ -23,7 +23,7 @@ class _MyListTileState extends State<MyListTile> {
       child: Container(
         padding: const EdgeInsets.all(Dimensions.marginMedium),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onBackground,
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
         ),
         child: Column(
@@ -53,7 +53,7 @@ class _MyListTileState extends State<MyListTile> {
       children: [
         Checkbox(
           activeColor: Theme.of(context).appBarTheme.iconTheme?.color,
-          checkColor: Theme.of(context).colorScheme.primaryContainer,
+          checkColor: Theme.of(context).colorScheme.background,
           value: answer == selectedAnswer,
           onChanged: (value) {
             setState(() {

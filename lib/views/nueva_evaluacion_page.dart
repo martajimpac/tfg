@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
@@ -20,6 +19,7 @@ import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/datePicker/custom_date_picker.dart';
 import '../components/datePicker/custom_date_picker_scroll.dart';
@@ -93,11 +93,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
   void _showDialogCheck(BuildContext context) {
     _nombreCentro = _centrosController.text.trim();
+
     if (_nombreCentro.isNotEmpty) {
-      _idCentro = _centros.firstWhere((it) => it.denominacion == _nombreCentro).idCentro;
+      try{
+        _idCentro = _centros.firstWhere((it) => it.denominacion == _nombreCentro).idCentro;
+      }catch(e){
+        _idCentro = -1;
+      }
+
     } else {
       _idCentro = null;
     }
+    debugPrint("$_idCentro");
+
     if (_idCentro == null  || _nombreCentro == "" || _denominacionController.text.trim() == "" || _numeroSerieController.text.trim() == "") {
       // Lista para almacenar los nombres de los campos que son null
       List<String> camposNull = [];
@@ -124,7 +132,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
       // Mostrar el diálogo con el mensaje de error
       ConstantsHelper.showMyOkDialog(context, "Error", errorMessage, () =>  Navigator.of(context).pop());
-    }else if(_fechaFabricacion != null && _fechaPuestaServicio != null){
+    }else if(_idCentro == -1){
+      setState(() {
+        _isFechasRed = false;
+        _isCentroRed = true;
+        _isNumeroSerieRed = false;
+        _isNumeroSerieRed = false;
+      });
+
+      String errorMessage = 'El centro introducido debe coincidir con uno de los de la lista de centros disponibles';
+
+      // Mostrar el diálogo con el mensaje de error
+      ConstantsHelper.showMyOkDialog(context, "Error", errorMessage, () =>  Navigator.of(context).pop());
+    } else if(_fechaFabricacion != null && _fechaPuestaServicio != null){
 
       if(_fechaFabricacion!.isBefore(_fechaPuestaServicio!)){
         _showResume(context);
@@ -225,8 +245,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   Future<void> _insertarEvaluacion() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final id =  prefs.getString('id') ?? '';
     _cubitInsertarEvaluacion.insertarEvaluacion(
-        1, //idinspector (de supabase)
+        id, //idinspector (de supabase)
         _idCentro!,
         1, //idtipoeval
         DateTime.now(),
@@ -271,11 +293,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       if(widget.evaluacion!.numeroSerie.isNotEmpty){
         _numeroSerieController.text = widget.evaluacion!.numeroSerie;
       }
-
-
-      //TODO FECHA DE CADUCIDAD???
-
-
     }
 
     if (widget.imagenes != null && widget.imagenes!.isNotEmpty) {
@@ -292,6 +309,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     _fechaFabricacionNotifier.dispose();
     _fechaPuestaServicioNotifier.dispose();
     _centrosController.dispose();
+
     super.dispose();
   }
 
@@ -341,26 +359,31 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       backgroundColor: Theme.of(context).colorScheme.background,
 
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           automaticallyImplyLeading: false,
-          title: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
+          title: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
             child: Row(
               children: [
-                Image.asset(
+                /*Image.asset(
                   'lib/images/ic_maq.png',
                   height: 60, // Ajusta el tamaño de la imagen según sea necesario
                   width: 60,
-                ),
+                ),*/
                 Text(
                   'Crea una nueva evaluación',
-                  style: Theme.of(context).textTheme.titleMedium,
+                   style: TextStyle(
+                        color: Colors.white,
+                        fontSize: Dimensions.titleTextSize,
+                        fontWeight: FontWeight.bold
+                    ),
                 ),
               ],
             ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.close), // Icono de cruz
+              icon: const Icon(Icons.close, color: Colors.white), // Icono de cruz
               onPressed: () {
                 _showExitDialog(context);
                 //GoRouter.of(context).go('/home');
@@ -388,10 +411,13 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("*Centro"),
-                  BlocBuilder<CentrosCubit, CentrosState>(
+                  BlocBuilder<CentrosCubit, CentrosState>( //TODO VER ERROR
                     builder: (context, state) {
                       if (state is CentrosLoading) {
-                        return const SizedBox();
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
                       } else if (state is CentrosLoaded) {
                         _centros = state.centros;
 
@@ -403,8 +429,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           isRed: _isCentroRed,
                         );
                       } else if (state is CentrosError) {
-                          ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () => null);
-                          return const SizedBox();
+                        return SizedBox(
+                          height: 100,
+                          child: Center(child: Text("Error: ${state.errorMessage}")),
+                        );
                       } else {  return const SizedBox(); }
                     },
                   ),
@@ -474,7 +502,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                     child: Container(
                       height: 200,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onBackground,
                         borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
                       ),
                       child: Column(
@@ -544,8 +572,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                                 ),
                               ),
                               Positioned( //cruz para eliminar las imagenes
-                                top: 8.0,
-                                right: 8.0,
+                                top: 16.0,
+                                right: 16.0,
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -554,8 +582,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                                   },
                                   child: Image.asset(
                                     'lib/images/ic_close.png',
-                                    height: 20, // Ajusta el tamaño de la imagen según sea necesario
-                                    width: 20,
+                                    height: 25, // Ajusta el tamaño de la imagen según sea necesario
+                                    width: 25,
                                   ),
                                 ),
                               ),
@@ -571,6 +599,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   MyButton(
                     adaptableWidth: false,
                     onTap: () {
+                      _isNumeroSerieRed = false;
+                      _isCentroRed = false;
+                      _isFechasRed = false;
+                      _isNombreMaquinaRed = false;
                       _showDialogCheck(context);
                     },
                     text: "Continuar",

@@ -23,15 +23,16 @@ class MySelectPhotoDialog extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            color: Theme.of(context).colorScheme.onBackground,
           ),
           padding: const EdgeInsets.all(Dimensions.marginMedium),
           child: Column(
             mainAxisSize: MainAxisSize.min, // Hacer que la columna sea del tamaño mínimo
             children: [
-              const Text(
+              Text(
                 "¿Cómo desea completar la acción?",
                 textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: Dimensions.marginMedium), // Espacio entre el título y el texto siguiente
               Row(

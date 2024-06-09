@@ -7,12 +7,14 @@ class CentroDataModel {
   final String denominacion;
   final int idLocalidad;
   final int idProvincia;
+  final String idPais;
 
   CentroDataModel({
     required this.idCentro,
     required this.denominacion,
     required this.idLocalidad,
     required this.idProvincia,
+    required this.idPais
   });
 
   factory CentroDataModel.fromMap(Map<String, dynamic> data) {
@@ -21,6 +23,7 @@ class CentroDataModel {
       denominacion: data['denominacion'] as String,
       idLocalidad: data['idlocalidad'] as int,
       idProvincia: data['idprovincia'] as int,
+      idPais: data['idpais'] as String
     );
   }
 
@@ -30,6 +33,7 @@ class CentroDataModel {
       'denominacion': denominacion,
       'idlocalidad': idLocalidad,
       'idprovincia': idProvincia,
+      'idpais': idPais
     };
   }
 

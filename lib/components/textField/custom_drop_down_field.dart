@@ -41,7 +41,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
       decoration: BoxDecoration(
         border: Border.all(color: widget.isRed? Colors.red : isFocused ? Theme.of(context).colorScheme.primary : Colors.transparent), // Cambia el color del borde cuando se enfoca
         borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onBackground,
       ),
       child: Focus(
         onFocusChange: (hasFocus) {
@@ -53,6 +53,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
           controller: widget.controller,
           hintText: widget.hintText,
           hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
+          //textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           enabled: true,
           itemsVisibleInDropdown: widget.numItems,
           items: widget.items.map((centro) => centro.denominacion).toList(),

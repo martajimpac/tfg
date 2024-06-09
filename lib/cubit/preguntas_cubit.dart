@@ -43,9 +43,8 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
   Future<void> getPreguntas() async {
     try {
-      final preguntas = await repositorio.getPreguntas();
-      final categorias = await repositorio.getCategorias(); //TODO OBTENER SOLO CATEGORIAS....
-      debugPrint("preguntas $preguntas");
+      final preguntas = await repositorio.getPreguntas(null);
+      final categorias = await repositorio.getCategorias();
 
       // Convertir el mapa de preguntas únicas de nuevo en una lista
       emit(PreguntasLoaded(preguntas, categorias));

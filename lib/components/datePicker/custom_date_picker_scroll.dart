@@ -21,13 +21,19 @@ class CustomDatePickerScroll extends StatefulWidget {
 
 class _CustomDatePickerState extends State<CustomDatePickerScroll> {
   late DateTime _selectedDate;
+  late final DateTime _minumunDate =  DateTime.now().add(const Duration(days: 1)); //fecha minima, la fecha de hoy mas 1 día
   bool _showDatePicker = false;
 
   @override
   void initState() {
     super.initState();
-    // Utiliza la fecha inicial proporcionada en lugar de calcularla
-    _selectedDate = widget.initialDate;
+    // Si la fecha seleccionada no es menor que la calculada la ponemos
+    if(widget.initialDate.isAfter(DateTime.now())){
+      _selectedDate = widget.initialDate;
+    }else{
+      _selectedDate = _minumunDate;
+    }
+
   }
 
   @override
@@ -80,7 +86,7 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
             use24hFormat: true,
             //minimumYear: widget.initialDate.year - 2,
             maximumYear: ConstantsHelper.calculateDate(context, 10).year, //máximo 10 años
-            minimumDate: DateTime.now().add(const Duration(days: 1)), //fecha minima, la fecha de hoy mas 1 día
+            minimumDate: _minumunDate,
             mode: CupertinoDatePickerMode.date,
           )
               : null,

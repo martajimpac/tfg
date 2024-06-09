@@ -6,9 +6,10 @@ class MyLoadingAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AlertDialog(
-      title: Text(""),
-      content: Column(
+    return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.onBackground,
+      title: const Text(""),
+      content: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(),

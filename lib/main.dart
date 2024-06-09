@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:evaluacionmaquinas/cubit/detalles_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

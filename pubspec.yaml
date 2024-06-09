@@ -38,6 +38,8 @@ dependencies:
 
   expandable: ^5.0.1
   expandable_menu: 0.0.5
+  syncfusion_flutter_datepicker: ^25.2.7
+  pdf: ^3.10.8
 
   #http: ^1.2.1
 
@@ -56,4 +58,4 @@ flutter:
   fonts:
      - family: Manrope
        fonts:
-         - asset: lib/theme/fonts/Manrope-Medium.ttf
+         - asset: lib/theme/fonts/Gill-Sans.otf

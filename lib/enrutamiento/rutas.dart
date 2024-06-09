@@ -22,7 +22,7 @@ final GoRouter _enrutador = GoRouter(
     GoRoute(
         path: "/login",
         name: 'login',
-        builder: (context, state) => const MyHomePage(),
+        builder: (context, state) => const LoginPage(),
     ),
 
     /// Página de inicio

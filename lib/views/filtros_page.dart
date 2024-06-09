@@ -85,7 +85,10 @@ class _FiltrosPageState extends State<FiltrosPage> {
                   BlocBuilder<CentrosCubit, CentrosState>(
                     builder: (context, state) {
                       if (state is CentrosLoading) {
-                        return const SizedBox();
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
                       } else if (state is CentrosLoaded) {
                         _centros = state.centros;
 
@@ -177,12 +180,18 @@ class _FiltrosPageState extends State<FiltrosPage> {
                     onTap: () {
                       if(_fechaRealizacion != null){
                         _cubitEvaluaciones.addFilter(filtroFechaCaducidad, _fechaRealizacion);
+                      }else{
+                        _cubitEvaluaciones.removeFilter(filtroFechaCaducidad);
                       }
                       if(_fechaCaducidad != null){
                         _cubitEvaluaciones.addFilter(filtroFechaRealizacion, _fechaCaducidad);
+                      }else{
+                        _cubitEvaluaciones.removeFilter(filtroFechaRealizacion);
                       }
                       if(_centrosController.text.trim().isNotEmpty){
                         _cubitEvaluaciones.addFilter(filtroCentro, _centrosController.text.trim());
+                      }else{
+                        _cubitEvaluaciones.removeFilter(filtroCentro);
                       }
 
                       Navigator.push(

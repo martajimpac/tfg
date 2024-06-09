@@ -14,8 +14,8 @@ class CaducidadIndicator extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-          border: Border.all(color: Colors.red),
-          color: ConstantsHelper.haCaducado(context, fechaCaducidad) ? Colors.red : Theme.of(context).colorScheme.onBackground,
+          border: Border.all(color:  Theme.of(context).colorScheme.secondaryContainer),
+          color: ConstantsHelper.haCaducado(context, fechaCaducidad) ?  Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.onBackground,
         ),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -26,7 +26,7 @@ class CaducidadIndicator extends StatelessWidget {
                 'lib/images/ic_danger.png',
                 height: Dimensions.iconSize, // Ajusta el tamaño de la imagen según sea necesario
                 width: Dimensions.iconSize,
-                color: ConstantsHelper.haCaducado(context, fechaCaducidad) ? Theme.of(context).colorScheme.onBackground : Colors.red,
+                color: ConstantsHelper.haCaducado(context, fechaCaducidad) ? Colors.black :  Theme.of(context).colorScheme.secondaryContainer,
               ),
               const SizedBox(width: 8),
               Text(
@@ -34,8 +34,8 @@ class CaducidadIndicator extends StatelessWidget {
                     ? "La evaluación ha caducado"
                     : ConstantsHelper.getDays(context,  fechaCaducidad),
                 style: ConstantsHelper.haCaducado(context, fechaCaducidad)
-                    ? TextStyle(color: Theme.of(context).colorScheme.onBackground)
-                    : TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    ? const TextStyle(color: Colors.black)
+                    : TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               ),
               const SizedBox(width: 4),
             ],

@@ -4,8 +4,8 @@ import 'imagen_dm.dart';
 
 class EvaluacionDetailsDataModel extends Equatable {
   final int ideval;
-  final int idinspector;
-  final int idcentro; //TODO NO OBLIGATORIO??? COMO TE LO DEVVUELVE?? VER COMO ESTA GUARDADO
+  final String idinspector;
+  final int idcentro;
   final String nombreCentro;
   final DateTime fechaRealizacion;
   final DateTime fechaCaducidad;
@@ -55,7 +55,7 @@ class EvaluacionDetailsDataModel extends Equatable {
   factory EvaluacionDetailsDataModel.fromMap(Map<String, dynamic> json) {
     return EvaluacionDetailsDataModel(
       ideval: json['ideval'] as int,
-      idinspector: json['idinspector'] as int,
+      idinspector: json['idinspector'] as String,
       idcentro: json['idcentro'] as int,
       nombreCentro: json['nombre_centro'] as String,
       fechaRealizacion: DateTime.parse(json['fecha_realizacion'] as String),

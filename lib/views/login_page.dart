@@ -1,11 +1,14 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/textField/my_login_textfield.dart';
 
@@ -20,12 +23,16 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   final supabase = Supabase.instance.client;
+  bool _isEmailRed = false;
+  bool _isPasswordRed = false;
+  late BuildContext _context;
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _context = context;
   }
 
   @override
@@ -37,7 +44,11 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop){
+
+      }, child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Center(
@@ -54,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               padding: const EdgeInsets.all(Dimensions.marginMedium),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: Theme.of(context).colorScheme.onBackground,
                 borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
               ),
               child: Column(
@@ -64,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   MyLoginTextField(
                     controller: _emailController,
                     hintText: "usuario@gmail.com",
+                    isRed: _isEmailRed,
                   ),
                   const SizedBox(height: Dimensions.marginMedium),
                   const Text("Contraseña"),
@@ -71,29 +83,17 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _passwordController,
                     hintText: "*************",
                     obscureText: true,
+                    isRed: _isPasswordRed,
                   ),
                   TextButton(
                     onPressed: () async {
-                      try {
-                        final authResponse = await supabase.auth.resetPasswordForEmail(_emailController.text);
-                      } on AuthException catch (error) {
-                        // Manejar errores de autenticación
-                        if (error.statusCode == "400") {
-                          ConstantsHelper.showMyOkDialog(context, "Error", error.message, () {
-                            Navigator.of(context).pop();
-                          });
-                        } else {
-                          ConstantsHelper.showMyOkDialog(context, "Error", error.message, () {
-                            Navigator.of(context).pop();
-                          });
-                        }
-                      } catch (error) {
-                        // Manejar otros tipos de errores
-                        ConstantsHelper.showMyOkDialog(context, "Error", error.toString(), () {
-                          Navigator.of(context).pop();
-                        });
-                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                      );
                     },
+
 
                     child: const Text(
                       "¿Olvidaste la contraseña?",
@@ -107,51 +107,76 @@ class _LoginPageState extends State<LoginPage> {
                   MyButton(
                     adaptableWidth: false,
                     onTap: () async {
-                      final email = _emailController.text;
-                      final password = _passwordController.text;
-                      Navigator.push(
+                      final email = _emailController.text.trim();
+                      final password = _passwordController.text.trim();
+
+                      /*Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const MyHomePage()),
-                      );
-
-                      /*try {
-                        final authResponse = await supabase.auth.signInWithPassword(password: password, email: email);
-
-                        final user = authResponse.user;
-                        if (user != null && user.userMetadata != null) {
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
-                              prefs.setString('email', user.email.toString());
-                              prefs.setString('id', user.id.toString());
-                              prefs.setString('name',  user.userMetadata!['username'].toString());
-                          // Autenticación exitosa, navega a la siguiente página
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MyHomePage()),
-                          );
-                        } else {
-                          ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en la autenticación", () {
-                            Navigator.of(context).pop();
-                          });
-                        }
-                      } on AuthException catch (error) {
-                        // Manejar errores de autenticación
-                        if (error.statusCode == "400") {
-                          ConstantsHelper.showMyOkDialog(context, "Error", "Usuario no verificado. Comprueba el correo", () {
-                            Navigator.of(context).pop();
-                          });
-                        } else {
-                          // Otros errores de autenticación
-                          if (kDebugMode) {
-                            print('Error al iniciar sesión: $error');
+                      );*/
+                      if(email.isEmpty || password.isEmpty){
+                        setState(() {
+                          if(email.isEmpty){
+                            _isEmailRed = true;
                           }
-                        }
-                      } catch (error) {
-                        // Manejar otros tipos de errores
-                        if (kDebugMode) {
-                          print('Error al iniciar sesión: $error');
-                        }
-                      }*/
+                          if(password.isEmpty){
+                            _isPasswordRed = true;
+                          }
+                        });
+                      }else{
+                        _isEmailRed = false;
+                        _isPasswordRed = false;
+                        try {
+                          final authResponse = await supabase.auth.signInWithPassword(password: password, email: email);
 
+                          final user = authResponse.user;
+                          if (user != null && user.userMetadata != null) {
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setString('email', user.email.toString());
+                            prefs.setString('id', user.id.toString());
+                            prefs.setString('name',  user.userMetadata!['username'].toString());
+                            // Autenticación exitosa, navega a la siguiente página
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MyHomePage()),
+                            );
+                          } else {
+                            ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en la autenticación", () {
+                              Navigator.of(context).pop();
+                            });
+                          }
+                        } on AuthException catch (error) {
+                          // Manejar errores de autenticación
+                          if (error.statusCode == "400") {
+                            if (error.message == "Invalid login credentials") {
+                              // Credenciales de inicio de sesión inválidas
+                              ConstantsHelper.showMyOkDialog(context, "Error", "Credenciales de inicio de sesión inválidas", () {
+                                Navigator.of(context).pop();
+                              });
+                            } else if (error.message == "Email not confirmed") {
+                              // Correo electrónico no confirmado
+                              ConstantsHelper.showMyOkDialog(context, "Error", "Correo electrónico no confirmado", () {
+                                Navigator.of(context).pop();
+                              });
+                            } else {
+                              // Otro error de autenticación
+                              ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                                Navigator.of(context).pop();
+                              });
+                            }
+                          } else {
+                            // Otro error de autenticación
+                            ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                              Navigator.of(context).pop();
+                            });
+                          }
+                        } catch (error) {
+                          // Otro error de autenticación
+                          ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                            Navigator.of(context).pop();
+                          });
+                        }
+                      }
                     },
                     text: 'Iniciar sesión',
                   ),
@@ -172,6 +197,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    )
     );
   }
 }

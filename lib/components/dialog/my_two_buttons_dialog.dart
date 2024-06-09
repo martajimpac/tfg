@@ -30,7 +30,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: Theme.of(context).colorScheme.onBackground,
         ),
         padding: const EdgeInsets.all(Dimensions.marginMedium),
         child: Column(
@@ -45,6 +45,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
             Text(
               desc,
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: Dimensions.marginMedium),
             Row(
@@ -56,16 +57,17 @@ class MyTwoButtonsDialog extends StatelessWidget {
                       adaptableWidth: false,
                       onTap: onSecondaryButtonTap,
                       text: secondaryButtonText,
+                      color: Colors.grey.shade700
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Padding(
+                  child: Padding( //TODO:
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: MyButton(
                       adaptableWidth: false,
                       onTap: onPrimaryButtonTap,
-                      text: primaryButtonText,
+                      text: primaryButtonText
                     ),
                   ),
                 ),

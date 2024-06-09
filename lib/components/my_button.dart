@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 
@@ -5,16 +6,20 @@ class MyButton extends StatelessWidget {
   final Function()? onTap;
   final String text;
   final bool adaptableWidth;
+  final Color? color;
 
-  const MyButton({
+  MyButton({
     Key? key,
     required this.adaptableWidth,
     required this.onTap,
     required this.text,
+    this.color,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final buttonColor = color ?? Theme.of(context).colorScheme.primaryContainer;
+
     return GestureDetector(
       onTap: onTap,
       child: Wrap(
@@ -27,7 +32,7 @@ class MyButton extends StatelessWidget {
             //margin: const EdgeInsets.symmetric(vertical: Dimensions.marginSmall),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: buttonColor,
             ),
             constraints: BoxConstraints(
               minWidth: adaptableWidth ? 0 : double.infinity,

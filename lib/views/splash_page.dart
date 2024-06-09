@@ -15,30 +15,21 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     // Iniciamos un temporizador para navegar a la página de inicio después de tres segundos
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()),);
-      //GoRouter.of(context).go('/login');
+      GoRouter.of(context).go('/login');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Splash Page'),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Aquí puedes agregar cualquier contenido que desees para tu página de splash
-            Text(
-              '¡Bienvenido!',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(), // Un indicador de carga opcional
-          ],
-        ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            'lib/images/splash.png',
+            fit: BoxFit.cover,
+          ),
+        ],
       ),
     );
   }

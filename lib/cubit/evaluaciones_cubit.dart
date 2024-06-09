@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Define el estado del cubit
 abstract class EvaluacionesState extends Equatable {
@@ -44,7 +45,10 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   Future<void> getEvaluaciones() async {
     try {
       emit(EvaluacionesLoading());
-      var evaluaciones = await repositorio.getListaEvaluaciones();
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final id = prefs.getString('id') ?? ''; // Obtener el nombre del usuario guardado, o un valor predeterminado si no existe
+      var evaluaciones = await repositorio.getListaEvaluaciones(id);
 
       // Filtrar las evaluaciones con los filtros
       if (filtros[filtroCentro] != null) {

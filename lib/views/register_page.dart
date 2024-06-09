@@ -4,6 +4,7 @@ import 'package:evaluacionmaquinas/views/my_home_page.dart';
 //import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/textField/my_login_textfield.dart';
@@ -17,16 +18,20 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  late TextEditingController _nameController;
   late TextEditingController _emailController;
-  late TextEditingController _nameCotroller;
   late TextEditingController _passwordController;
   late TextEditingController _repeatPasswordController;
-  bool _passwordsMatch = true;
+
   final supabase = Supabase.instance.client;
+  bool _isEmailRed = false;
+  bool _isPasswordRed = false;
+  bool _isRepeatPasswordRed = false;
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _repeatPasswordController = TextEditingController();
@@ -35,16 +40,10 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     _emailController.dispose();
-    _nameCotroller.dispose();
+    _nameController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     super.dispose();
-  }
-
-  void _checkPasswordsMatch() {
-    setState(() {
-      _passwordsMatch = _passwordController.text == _repeatPasswordController.text;
-    });
   }
 
   @override
@@ -52,11 +51,10 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       //backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Registro',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+        centerTitle: true, // Centra el título
+        title: Text(
+          'Registro',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       body:  SingleChildScrollView(
@@ -67,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Container(
                   padding: const EdgeInsets.all(Dimensions.marginMedium),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    color: Theme.of(context).colorScheme.onBackground,
                     borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
                   ),
                   child: Column(
@@ -75,13 +73,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: <Widget>[
                       const Text("Nombre"),
                       MyLoginTextField(
-                        controller: _nameCotroller,
+                        controller: _nameController,
                         hintText: "nombre",
                       ),
                       const Text("Correo electrónico"),
                       MyLoginTextField(
                         controller: _emailController,
                         hintText: "usuario@gmail.com",
+                        isRed: _isEmailRed,
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
                       const Text("Contraseña"),
@@ -89,40 +88,85 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: _passwordController,
                         hintText: "*************",
                         obscureText: true,
+                        isRed: _isPasswordRed,
                       ),
                       const Text("Repite la contraseña"),
                       MyLoginTextField(
                         controller: _repeatPasswordController,
                         hintText: "*************",
                         obscureText: true,
+                        isRed: _isRepeatPasswordRed,
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
                       MyButton(
                         adaptableWidth: false,
                         onTap: () async {
                           // Aquí puedes manejar la lógica de inicio de sesión
-                          final email = _emailController.text;
-                          final password = _passwordController.text;
-                          try {
-                            final authResponse = await supabase.auth.signUp(password: password, email: email, data: {'username': _nameCotroller.text});
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+                          final repeatPassword = _repeatPasswordController.text.trim();
+                          if(email.isEmpty || password.isEmpty || repeatPassword.isEmpty){
+                            setState(() {
+                              if(email.isEmpty){
+                                _isEmailRed = true;
+                              }
+                              if(password.isEmpty){
+                                _isPasswordRed = true;
+                              }
+                              if(repeatPassword.isEmpty){
+                                _isRepeatPasswordRed = true;
+                              }
+                            });
+                          }else if(password != repeatPassword){
+                            setState(() {
+                              _isRepeatPasswordRed = true;
+                              _isPasswordRed = true;
+                              _isEmailRed = false;
+                            });
 
-                            final user = authResponse.user;
-                            if (user != null && user.userMetadata != null) {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              prefs.setString('email', user.email.toString());
-                              prefs.setString('id', user.id.toString());
-                              prefs.setString('name',  user.userMetadata!['username'].toString());
-                              // Autenticación exitosa, navega a la siguiente página
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const MyHomePage()),
-                              );
-                            } else {
-                              ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en la autenticación", () {Navigator.of(context).pop();});
-                            }
-                          } catch (error) {
-                            // Manejar otros errores
-                            print('Error al iniciar sesión: $error');
+                            Fluttertoast.showToast(
+                              msg: "Las contraseñas no coinciden",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                            );
+                          }else{
+                            _isEmailRed = false;
+                            _isPasswordRed = false;
+                            _isRepeatPasswordRed = false;
+                              try {
+                                final authResponse = await supabase.auth.signUp(password: password, email: email, data: {'username': _nameController.text});
+
+                                final user = authResponse.user;
+                                if (user != null && user.userMetadata != null) {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  prefs.setString('email', user.email.toString());
+                                  prefs.setString('id', user.id.toString());
+                                  prefs.setString('name',  user.userMetadata!['username'].toString());
+
+                                  // Autenticación exitosa, navega a la siguiente página
+                                  ConstantsHelper.showMyOkDialog(context, "¡Registrado!", "Usuario registrado con éxito", () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const MyHomePage()),
+                                    );
+                                  });
+
+                                } else {
+                                  ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro", () {Navigator.of(context).pop();});
+                                }
+                              } on AuthException catch (error) {
+                                if (error.statusCode == "429") {
+                                  ConstantsHelper.showMyOkDialog(context, "Error", "Se ha excedido el límite de intentos de registro con este correo electrónico", () {
+                                    Navigator.of(context).pop();
+                                  });
+                                } else {
+                                  ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro ${error.statusCode}", () {Navigator.of(context).pop();});
+                                }
+                              }catch (error){
+                                ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro", () {Navigator.of(context).pop();});
+                              }
                           }
                         },
                         text:'Registrarse e iniciar sesión',

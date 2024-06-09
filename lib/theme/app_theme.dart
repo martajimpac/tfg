@@ -9,54 +9,57 @@ class MyAppTheme {
     brightness: Brightness.light,
 
     colorScheme: ColorScheme.light(
-      background: Colors.grey.shade200, //Fondo
-      onPrimary: const Color(0xFF000405), //texto
+      background: const Color(0xFFEFEFEF), //Fondo
+      onPrimary: const Color(0xFFD0D3D9), //texto
 
-      primaryContainer: const Color(0xFF00A7B3), //color que cojen los botones por defecto, tambien lo he usado para el fondo de text view
-      secondaryContainer: const Color(0xFF005D71),
+      primaryContainer: const Color(0xFF1C438E), //color que cojen los botones por defecto, tambien lo he usado para el fondo de text view
+      secondaryContainer: const Color(0xFFFCC707),
+      tertiaryContainer: const Color(0xFF5371AA),
 
       onPrimaryContainer: Colors.white,
-      inversePrimary: Colors.grey.shade600,
+
       //Text view
       primary: Colors.grey.shade400, // Color primario, text indicator...
       onBackground: Colors.white, //color para el fondo de text view
 
-      onSecondary: Colors.grey.shade700 //color de texto claro
+      onSecondary: Colors.grey.shade700, //color de texto claro
+
+      onSurface: Colors.black //texto text field
     ),
 
     appBarTheme: const AppBarTheme(
       elevation: 0,
       color: Colors.transparent,
       iconTheme: IconThemeData(
-        color: Color(0xFF000405), //color para texto de los botones y texto sobre azul
+        color: Color(0xFF071632),  //color para texto de los botones y texto sobre azul
       ),
     ),
 
     textTheme: const TextTheme(
       titleMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'Gill-Sans',
         fontSize: Dimensions.titleTextSize,
         fontWeight: FontWeight.bold,
-        color:  Colors.black,
+        color: Color(0xFF071632),
       ),
       bodyMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'Gill-Sans',
         fontSize: Dimensions.defaultTextSize,
         fontWeight: FontWeight.normal,
-        color: Colors.black,
+        color: Color(0xFF071632),
       ),
 
       labelMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'Gill-Sans',
         fontSize: Dimensions.defaultTextSize,
         fontWeight: FontWeight.bold,
         color:  Colors.white,
       ),
       headlineMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'Gill-Sans',
         fontSize: Dimensions.subTitleTextSize,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF00A7B3),
+        color: Color(0xFF1C438E),
       )
     ),
   );
@@ -69,18 +72,20 @@ class MyAppTheme {
 
     brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
-      background: Colors.black,
+      background: const Color(0xFF131313),
       onPrimary: Colors.white, //texto
-      primaryContainer: const Color(0xE2DA105E),
-      inversePrimary: Colors.grey.shade800,
 
-      secondaryContainer: const Color(0xE2EC6498),
+      primaryContainer: const Color(0xFF5371AA),
+      secondaryContainer: const Color(0xFFFCC707),
+      tertiaryContainer: const Color(0xFF657FB0),
+
       onPrimaryContainer: Colors.white,
 
       primary: Colors.grey.shade400,
-      onBackground: Colors.grey.shade800,
+      onBackground: Colors.grey.shade900,
 
-      onSecondary: Colors.grey.shade200 //color de texto claro
+      onSecondary: Colors.grey.shade200, //color de texto claro
+      onSurface: Colors.white//texto text field
     ),
 
     appBarTheme: const AppBarTheme(
@@ -92,24 +97,31 @@ class MyAppTheme {
     ),
 
     textTheme: const TextTheme(
-      titleMedium: TextStyle(
-        fontFamily: 'Manrope',
-        fontSize: Dimensions.titleTextSize,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-      bodyMedium: TextStyle(
-        fontFamily: 'Manrope',
-        fontSize: Dimensions.defaultTextSize,
-        fontWeight: FontWeight.normal,
-        color: Colors.white,
-      ),
-      labelMedium: TextStyle(
-        fontFamily: 'Manrope',
-        fontSize: Dimensions.defaultTextSize,
-        fontWeight: FontWeight.bold,
-        color:  Colors.white,
-      ),
+        titleMedium: TextStyle(
+          fontFamily: 'Gill-Sans',
+          fontSize: Dimensions.titleTextSize,
+          fontWeight: FontWeight.bold,
+          color:  Colors.white,
+        ),
+        bodyMedium: TextStyle(
+          fontFamily: 'Gill-Sans',
+          fontSize: Dimensions.defaultTextSize,
+          fontWeight: FontWeight.normal,
+          color: Colors.white,
+        ),
+
+        labelMedium: TextStyle(
+          fontFamily: 'Gill-Sans',
+          fontSize: Dimensions.defaultTextSize,
+          fontWeight: FontWeight.bold,
+          color:  Colors.white,
+        ),
+        headlineMedium: TextStyle(
+          fontFamily: 'Gill-Sans',
+          fontSize: Dimensions.subTitleTextSize,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF5371AA),
+        )
     ),
   );
 

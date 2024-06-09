@@ -79,15 +79,20 @@ class _CheckListPageState extends State<CheckListPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
+        title: const Text(
           "Checklist",
-          style: Theme.of(context).textTheme.titleMedium,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: Dimensions.titleTextSize,
+            fontWeight: FontWeight.bold
+          ),
         ),
       ),
       body: Center(
@@ -116,12 +121,13 @@ class _CheckListPageState extends State<CheckListPage> {
                                 setState(() {
                                   _selectedCircle = index;
                                   _idCategorySelected = categorias[index].idcat; //revisar
+                                  print("hola $_idCategorySelected");
                                   _preguntasFiltradas = preguntas.where((pregunta) => pregunta.idCategoria == _idCategorySelected).toList();
                                 });
                                 pageViewController.animateToPage(
                                   index,
                                   duration: const Duration(seconds: 1),
-                                  curve: Curves.linear, //TODO CAMBIAR ESTA ANIMACION
+                                  curve: Curves.ease,
                                 );
                               },
                               child: Container(
@@ -129,12 +135,16 @@ class _CheckListPageState extends State<CheckListPage> {
                                 width: 50,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
-                                  color: index == _selectedCircle ? Colors.black : Theme.of(context).colorScheme.secondaryContainer,
+                                  color: index == _selectedCircle ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.tertiaryContainer,
                                 ),
                                 child: Center(
                                   child: Text(
                                     categorias[index].idcat.toString(),
-                                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                                    style:  TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: index == _selectedCircle ? Colors.black : Colors.white
+                                    ),
                                   ),
                                 ),
                               ),
@@ -145,11 +155,12 @@ class _CheckListPageState extends State<CheckListPage> {
                       ),
 
                     ),
+                    const SizedBox(height: Dimensions.marginMedium),
                     Text(categorias[_selectedCircle].categoria, style: Theme.of(context).textTheme.headlineMedium),
                     Expanded(
                         child : Column(
                           children: [
-                            const SizedBox(height: Dimensions.cornerRadius),
+                            const SizedBox(height: Dimensions.marginSmall),
                             Expanded(
                               child: PageView( //hay algun error aqui
                                 controller: pageViewController,
@@ -186,7 +197,7 @@ class _CheckListPageState extends State<CheckListPage> {
             } else if (state is PreguntasError) {
               return Text('Error: ${state.errorMessage}');
             } else {
-              return Text('Estado desconocido del cubit');
+              return const Text('Estado desconocido del cubit');
             }
           },
         ),

@@ -31,7 +31,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
   InsertarEvaluacionCubit(this.repositorio) : super(InsertarEvaluacionInicial());
 
   Future<void> insertarEvaluacion(
-      int idInspector,
+      String idInspector,
       int idCentro,
       int idTipoEval,
       DateTime fechaRealizacion,

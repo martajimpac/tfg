@@ -21,15 +21,15 @@ abstract class RepositorioDBInspecciones {
   /***************** GET EVALUACIONES *************************/
 
  /* Future<List<EvaluacionDataModel>> getListaEvaluacionesConImagenes();*/
-  Future<List<EvaluacionDataModel>> getListaEvaluaciones();
+  Future<List<EvaluacionDataModel>> getListaEvaluaciones(String idInspector);
 
-  Future<EvaluacionDetailsDataModel> getDetallesEvaluacion(int idEvaluacion);
+  Future<EvaluacionDetailsDataModel> getDetallesEvaluacion(int? idEvaluacion);
   Future<List<ImagenDataModel>> getImagenesEvaluacion(int idEvaluacion);
 
 
   /************** GET PREGUNTAS *******************/
   Future<List<PreguntaDataModel>> getPreguntasPorCategoria(int idCategoria);
-  Future<List<PreguntaDataModel>> getPreguntas();
+  Future<List<PreguntaDataModel>> getPreguntas(int idEvaluacion);
   Future<List<CategoriaPreguntaDataModel>> getCategorias();
 
   Future<List<OpcionPreguntaDataModel>> getOpcionesPregunta();
@@ -39,7 +39,7 @@ abstract class RepositorioDBInspecciones {
   /************** INSERTAR ******************/
   Future<int> insertarMaquina(String nombreMaquina, String fabricante, String numeroSerie);
   Future<int> insertarEvaluacion(int idMaquina,
-      int idInspector,
+      String idInspector,
       int idCentro,
       int idTipoEval,
       DateTime fechaRealizacion,

@@ -85,10 +85,11 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
 */
 
   @override
-  Future<List<EvaluacionDataModel>> getListaEvaluaciones() async {
+  Future<List<EvaluacionDataModel>> getListaEvaluaciones(String idInspector) async {
     try {
       var resConsulta = _supabase.client.rpc(
         'get_evaluaciones_sin_imagen',
+        params: {'idinspector': idInspector},
       );
       return resConsulta.then((value) => List<EvaluacionDataModel>.from(
           value.map((e) => EvaluacionDataModel.fromMap(e)).toList()));
@@ -129,7 +130,7 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
 
   /************** GET PREGUNTAS *******************/
   @override
-  Future<List<PreguntaDataModel>> getPreguntasPorCategoria(int idCategoria) async { //TODO QUITAR
+  Future<List<PreguntaDataModel>> getPreguntasPorCategoria(int idCategoria) async {
     try {
       var resConsulta = _supabase.client.rpc(
         'get_preguntas',
@@ -143,9 +144,10 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
     }
   }
   @override
-  Future<List<PreguntaDataModel>> getPreguntas() async {
+  Future<List<PreguntaDataModel>> getPreguntas(int? idEvaluacion) async {
     try {
-      var resConsulta = await _supabase.client.rpc('get_preguntas');
+      var resConsulta = await _supabase.client.rpc('get_preguntas',
+      params: {'ideval': idEvaluacion});
 
       debugPrint("respuesta $resConsulta");
 
@@ -210,7 +212,7 @@ class RepositorioDBSupabase extends RepositorioDBInspecciones {
   @override
   Future<int> insertarEvaluacion(
       int idMaquina,
-      int idInspector,
+      String idInspector,
       int idCentro,
       int idTipoEval,
       DateTime fechaRealizacion,

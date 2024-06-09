@@ -37,8 +37,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
   late int _indexToDelete;
   late List<EvaluacionDataModel> _evaluaciones;
 
-  Map<String, dynamic> _filtros = {};
-
   bool _showDeleteIcons = false;
 
   bool _sortedByDate = true;
@@ -51,7 +49,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
     _cubitEvaluaciones.getEvaluaciones();
-    _filtros = _cubitEvaluaciones.filtros;
   }
 
   @override
@@ -122,7 +119,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     icon: (_sortNameDescendent)
                         ? Image.asset('lib/images/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize)
                         : Image.asset('lib/images/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize),
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer, //TODO CAMBIAR COLOR??
                     onPressed: () {
                         setState(() {
 
@@ -186,14 +183,14 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
 
             /****************** FILTROS **************************************************************************/
-            SizedBox( //TODO TAL VEZ ESTO SE PODRIA METER DENTRO DEL BLOC
-              height: _filtros.entries.isEmpty ? 0 : 50,
+            SizedBox(
+              height: _cubitEvaluaciones.filtros.entries.isEmpty ? 0 : 50,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
                 children: [
-                  for (final filtro in _filtros.entries)
+                  for (final filtro in _cubitEvaluaciones.filtros.entries)
                     Stack(
                       children: [
                         Container(
@@ -216,9 +213,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                               GestureDetector(
                                 onTap: () {
                                   _cubitEvaluaciones.removeFilter(filtro.key);
-                                  _filtros.remove(filtro.key);
-                                  setState(() {
-                                  });
+                                  _cubitEvaluaciones.filtros.remove(filtro.key);
+                                  setState(() {});
                                 },
                                 child: Icon(
                                   Icons.close,
@@ -236,6 +232,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             ),
 
             /****************** FIN FILTROS **************************************************************************/
+            /****************** EVALUACIONES **************************************************************************/
             Expanded(
               child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
                 builder: (context, state) {
@@ -314,7 +311,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: const TextStyle(color: Colors.green)),
+                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
                                               const Text(" - "),
                                               Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: const TextStyle(color: Colors.red)),
                                             ],
@@ -339,7 +336,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                             'lib/images/ic_close.png',
                                             height: 40, // Ajusta el tamaño de la imagen según sea necesario
                                             width: 40,
-                                            color: Colors.red,
+                                            color: Theme.of(context).colorScheme.secondaryContainer,
                                           ),
                                           onPressed: () {
                                             _indexToDelete = index;
@@ -363,6 +360,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 },
               ),
             ),
+            /****************** FIN EVALUACIONES **************************************************************************/
             BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                 listener: (context, state) {
                   if(state is EliminarEvaluacionCompletada){

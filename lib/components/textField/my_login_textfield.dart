@@ -5,11 +5,13 @@ class MyLoginTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
+  final bool isRed;
 
   const MyLoginTextField({super.key,
     required this.controller,
     required this.hintText,
-    this.obscureText = false, //TODO METER VARIBLE DARK BORDE PARA LOGIN
+    this.obscureText = false,
+    this.isRed = false,
   });
 
   @override
@@ -45,7 +47,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
         },
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: BorderSide(color: widget.isRed ? Colors.red : Colors.transparent),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           focusedBorder: OutlineInputBorder(
