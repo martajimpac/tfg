@@ -3,22 +3,24 @@ import 'package:equatable/equatable.dart';
 class PreguntaDataModel extends Equatable {
   final int idpregunta;
   final String pregunta;
-  final int idCategoria;
-  final int idRespuestaSeleccionada;
+  final int? idCategoria;
+  int? idRespuestaSeleccionada;
+  bool isAnswered;
 
   PreguntaDataModel({
     required this.idpregunta,
     required this.pregunta,
     required this.idCategoria,
-    required this.idRespuestaSeleccionada
+    this.idRespuestaSeleccionada,
+    this.isAnswered = false
   });
 
   factory PreguntaDataModel.fromMap(Map<String, dynamic> json) {
     return PreguntaDataModel(
       idpregunta: json['idpregunta'] as int,
       pregunta: json['pregunta'] as String,
-      idCategoria: json['idcategoria'] as int,
-      idRespuestaSeleccionada: json['id_respuesta_selec']
+      idCategoria: json['idcategoria'] as int?,
+      idRespuestaSeleccionada: json['id_respuesta_selec'] as int?
     );
   }
 

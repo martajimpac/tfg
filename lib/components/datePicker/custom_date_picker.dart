@@ -1,4 +1,4 @@
-import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

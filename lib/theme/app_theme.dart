@@ -31,7 +31,7 @@ class MyAppTheme {
       elevation: 0,
       color: Colors.transparent,
       iconTheme: IconThemeData(
-        color: Color(0xFF071632),  //color para texto de los botones y texto sobre azul
+        color: Colors.black,  //color para texto de los botones y texto sobre azul
       ),
     ),
 
@@ -40,13 +40,13 @@ class MyAppTheme {
         fontFamily: 'Gill-Sans',
         fontSize: Dimensions.titleTextSize,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF071632),
+        color: Colors.black
       ),
       bodyMedium: TextStyle(
         fontFamily: 'Gill-Sans',
         fontSize: Dimensions.defaultTextSize,
         fontWeight: FontWeight.normal,
-        color: Color(0xFF071632),
+        color: Colors.black,
       ),
 
       labelMedium: TextStyle(

@@ -19,7 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:convert/convert.dart';
 import 'package:intl/intl.dart';
 
-import '../helpers/ConstantsHelper.dart';
+import '../utils/ConstantsHelper.dart';
 
 class DetalleEvaluaccionPage extends StatefulWidget {
   final int idEvaluacion;

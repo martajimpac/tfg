@@ -1,5 +1,5 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
-import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
@@ -189,6 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => const RegisterPage()),
                       );
                     },
+                    color: Theme.of(context).colorScheme.onSecondary,
                     text: 'Registrarse',
                   ),
                 ],

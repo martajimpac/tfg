@@ -7,6 +7,7 @@ class MyButton extends StatelessWidget {
   final String text;
   final bool adaptableWidth;
   final Color? color;
+  final bool roundBorders;
 
   MyButton({
     Key? key,
@@ -14,6 +15,7 @@ class MyButton extends StatelessWidget {
     required this.onTap,
     required this.text,
     this.color,
+    this.roundBorders = true
   }) : super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class MyButton extends StatelessWidget {
             ),
             //margin: const EdgeInsets.symmetric(vertical: Dimensions.marginSmall),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
+              borderRadius: roundBorders ? BorderRadius.circular(Dimensions.cornerRadiusButton) : BorderRadius.zero ,
               color: buttonColor,
             ),
             constraints: BoxConstraints(

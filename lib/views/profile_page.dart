@@ -1,4 +1,5 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/my_button_card.dart';
+import '../cubit/evaluaciones_cubit.dart';
 import '../cubit/settings_cubit.dart';
+import '../repository/repositorio_db_supabase.dart';
 import '../theme/app_theme.dart'; // Asumiendo que tienes un archivo settings_cubit.dart
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
+  
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -41,14 +45,14 @@ class ProfilePage extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         Container(
-                          height: h / 3,
+                          height: h / 4,
                           color: Theme.of(context).colorScheme.primaryContainer,
                         ),
                         Positioned(
                           bottom: -40,
                           child: CircleAvatar(
                             radius: 50,
-                            backgroundColor: Theme.of(context).colorScheme.background,
+                            backgroundColor: Theme.of(context).colorScheme.onBackground,
                             backgroundImage: const AssetImage('lib/images/default_user.png'),
                           ),
                         )
@@ -57,25 +61,32 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 50),
                     Column(
                       children: [
-                        Text(userName), // Mostrar el nombre del usuario aquí
+                        Text(userName, style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primaryContainer
+                          )
+                        ), // Mostrar el nombre del usuario aquí
                       ],
                     ),
-                    BlocBuilder<SettingsCubit, SettingsState>(
+                    BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
                       builder: (context, state) {
-                        return ListTile(
-                          title: Text('Modo oscuro', style: Theme.of(context).textTheme.bodyMedium),
-                          trailing: CupertinoSwitch(
-                            activeColor: Colors.grey.shade400,
-                            value: state.theme == MyAppTheme.darkTheme, // Corrección aquí
-                            onChanged: (value) {
-                              context.read<SettingsCubit>().toggleTheme();
-                              // switchChanged(value); // No está definido switchChanged, ¿es necesario aquí?
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                    MyButton(adaptableWidth: true, onTap:() async {
+                        if (state is EvaluacionesLoaded) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("${state.evaluaciones.length}",
+                                  style: const TextStyle(fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              const Text("  evaluaciones"),
+                            ],
+                          );
+                        } else {
+                          return const SizedBox(
+                              height: Dimensions.marginMedium);
+                        }
+                      }),
+                    MyButtonCard(onTap:() async {
                       try {
                         await Supabase.instance.client.auth.signOut();
                         Fluttertoast.showToast(
@@ -95,13 +106,34 @@ class ProfilePage extends StatelessWidget {
                           textColor: Colors.white,
                         );
                       }
-                    }, text: "Cerrar sesión"),
+                    }, text: "Cerrar sesión",
+                    icon: const Icon(Icons.logout, color: Colors.white)),
                     MyButtonCard(
                         onTap:() async {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),);
                         },
                         text: "Cambiar constraseña",
-                        icon: Icon(Icons.lock, color: Colors.white)
+                        icon: const Icon(Icons.lock, color: Colors.white)
+                    ),
+                    BlocBuilder<SettingsCubit, SettingsState>(
+                      builder: (context, state) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Modo oscuro', style: Theme.of(context).textTheme.bodyMedium),
+                            const SizedBox(width: Dimensions.marginSmall),
+                            CupertinoSwitch(
+                              activeColor: Colors.grey.shade400,
+                              value: state.theme == MyAppTheme.darkTheme, // Corrección aquí
+                              onChanged: (value) {
+                                context.read<SettingsCubit>().toggleTheme();
+                                // switchChanged(value); // No está definido switchChanged, ¿es necesario aquí?
+                              },
+                            ),
+                          ],
+
+                        );
+                      },
                     ),
                   ]
                 );
@@ -117,4 +149,6 @@ class ProfilePage extends StatelessWidget {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('name') ?? ''; // Obtener el nombre del usuario guardado, o un valor predeterminado si no existe
   }
+
+
 }

@@ -1,28 +1,46 @@
+import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
-
 import '../views/checklist_page.dart';
 
 class MyListTile extends StatefulWidget {
   final String name;
-  final Answer answerSelected;
+  final List<OpcionRespuestaDataModel> listAnswers;
+  final OpcionRespuestaDataModel? answerSelected;
+  final Function(OpcionRespuestaDataModel) onAnswerSelected;
+  final bool isRed;
 
-  const MyListTile({Key? key, required this.name, required this.answerSelected}) : super(key: key);
+  const MyListTile({
+    Key? key,
+    required this.name,
+    required this.listAnswers,
+    required this.answerSelected,
+    required this.onAnswerSelected,
+    this.isRed = false,
+  }) : super(key: key);
 
   @override
   State<MyListTile> createState() => _MyListTileState();
 }
 
 class _MyListTileState extends State<MyListTile> {
-  Answer? selectedAnswer = Answer.notselected;
+  OpcionRespuestaDataModel? selectedAnswer;
+  bool _isRed = false;
+
+  @override
+  void initState() {
+    selectedAnswer = widget.answerSelected;
+    _isRed = widget.isRed;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: Dimensions.marginMedium),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: Dimensions.marginSmall),
       child: Container(
         padding: const EdgeInsets.all(Dimensions.marginMedium),
         decoration: BoxDecoration(
+          border: Border.all(color: _isRed ? Colors.red : Colors.white),
           color: Theme.of(context).colorScheme.onBackground,
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
         ),
@@ -36,9 +54,9 @@ class _MyListTileState extends State<MyListTile> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                buildCheckbox(Answer.si),
-                buildCheckbox(Answer.no),
-                buildCheckbox(Answer.na),
+                buildCheckbox(widget.listAnswers[0]),
+                buildCheckbox(widget.listAnswers[1]),
+                buildCheckbox(widget.listAnswers[2]),
               ],
             ),
           ],
@@ -47,8 +65,7 @@ class _MyListTileState extends State<MyListTile> {
     );
   }
 
-
-  Widget buildCheckbox(Answer answer) {
+  Widget buildCheckbox(OpcionRespuestaDataModel answer) {
     return Row(
       children: [
         Checkbox(
@@ -57,11 +74,13 @@ class _MyListTileState extends State<MyListTile> {
           value: answer == selectedAnswer,
           onChanged: (value) {
             setState(() {
+              _isRed = false;
               selectedAnswer = answer;
             });
+            widget.onAnswerSelected(answer);
           },
         ),
-        Text(answer.text),
+        Text(answer.opcion),
       ],
     );
   }

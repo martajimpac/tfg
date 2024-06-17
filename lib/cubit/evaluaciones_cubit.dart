@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';

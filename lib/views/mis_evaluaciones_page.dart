@@ -17,7 +17,7 @@ import 'package:intl/intl.dart';
 import '../components/dialog/my_loading_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/evaluaciones_cubit.dart';
-import '../helpers/ConstantsHelper.dart';
+import '../utils/ConstantsHelper.dart';
 import 'detalle_evaluacion_page.dart';
 
 import 'package:flutter/material.dart';
@@ -274,7 +274,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                           itemCount: state.evaluaciones.length,
                           itemBuilder: (BuildContext context, int index) {
                             final evaluacion = _evaluaciones[index];
-                            debugPrint("evalmarta:: ${_evaluaciones[0].nombreMaquina}");
                             return GestureDetector(
                               onTap: () {
                                 if(!_showDeleteIcons){
@@ -303,8 +302,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Icon(Icons.business,size: 15, color: Theme.of(context).colorScheme.onSecondary), // Aquí debes agregar el icono que desees, por ejemplo, Icons.centro
-                                              const SizedBox(width: 8), // Espacio entre el icono y el texto
                                               Text(evaluacion.centro, style: TextStyle( color: Theme.of(context).colorScheme.onSecondary)),
                                             ],
                                           ),
@@ -336,7 +333,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                             'lib/images/ic_close.png',
                                             height: 40, // Ajusta el tamaño de la imagen según sea necesario
                                             width: 40,
-                                            color: Theme.of(context).colorScheme.secondaryContainer,
+                                            color: Colors.red,
                                           ),
                                           onPressed: () {
                                             _indexToDelete = index;
@@ -364,14 +361,11 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                 listener: (context, state) {
                   if(state is EliminarEvaluacionCompletada){
-                    Navigator.of(context).pop();
                     setState(() {
                       _evaluaciones.removeAt(_indexToDelete);
                     });
                   }else if (state is EliminarEvaluacionLoading) {
-                    ConstantsHelper.showLoadingDialog(context);
                   } else if (state is EliminarEvaluacionError) {
-                    Navigator.of(context).pop();
                     ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
                       Navigator.of(context).pop();
                     });

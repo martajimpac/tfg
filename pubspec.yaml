@@ -39,8 +39,12 @@ dependencies:
   expandable: ^5.0.1
   expandable_menu: 0.0.5
   syncfusion_flutter_datepicker: ^25.2.7
-  pdf: ^3.10.8
 
+  pdf: ^3.10.8
+  permission_handler: ^11.0.0
+  file_picker: ^6.0.0
+  flutter_file_dialog: ^3.0.0
+  share_plus: ^7.0.2
   #http: ^1.2.1
 
 dev_dependencies:

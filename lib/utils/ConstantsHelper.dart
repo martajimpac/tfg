@@ -24,6 +24,7 @@ class ConstantsHelper {
   static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return MyOkDialog(
           title: title,
@@ -37,6 +38,7 @@ class ConstantsHelper {
   static void showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return const MyLoadingAlertDialog();
       },

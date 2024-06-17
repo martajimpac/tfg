@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
 import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
-import 'package:evaluacionmaquinas/helpers/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
+import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
 import 'package:flutter/foundation.dart';
@@ -47,7 +48,9 @@ class NuevaEvaluacionPage extends StatefulWidget {
 class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   late InsertarEvaluacionCubit _cubitInsertarEvaluacion;
   late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
+  late PreguntasCubit _cubitPreguntas;
   bool _isModifiying = false;
+  bool _exit = false;
 
   final _centrosController = TextEditingController();
   final _denominacionController = TextEditingController();
@@ -62,7 +65,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
   int? _idCentro;
   String _nombreCentro = "";
-  final List<Uint8List> _imageList = [];
+  final List<ImagenDataModel> _imageList = [];
   late DateTime _fechaCaducidad;
   DateTime? _fechaFabricacion;
   DateTime? _fechaPuestaServicio;
@@ -190,8 +193,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           primaryButtonText: "Continuar",
           secondaryButtonText: "Modificar",
           onPrimaryButtonTap: () {
-            if(_isModifiying){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),); //_modificarEvaluacion();
+            //Navigator.of(context).pop(); //TODO DA ERROR RARO
+
+            //Pulsamos en el botón "Continuar"
+            if(_idEvaluacion != null){
+              _modificarEvaluacion();
             }else{
               _insertarEvaluacion();
             }
@@ -205,44 +211,71 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   void _showExitDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MyTwoButtonsDialog(
-          title: 'Confirmación',
-          desc: '¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.',
-          primaryButtonText: "Salir",
-          onPrimaryButtonTap: () {
-            if(_idEvaluacion != null && _idMaquina != null){
-              //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
-              Navigator.of(context).pop();
-              _cubitEliminarEvaluacion.eliminarEvaluacion(_idEvaluacion!, _idMaquina!);
-            }else{
+    if(_isModifiying){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyTwoButtonsDialog(
+            title: 'Confirmación',
+            desc: '¿Desea guardar los cambios?',
+            primaryButtonText: "Guardar",
+            onPrimaryButtonTap: () {
+              _cubitPreguntas.deletePreguntas();
+              _exit = true;
+
+              int? idCentroAux;
+              if (_nombreCentro.isNotEmpty) {
+                try{
+                  idCentroAux = _centros.firstWhere((it) => it.denominacion == _nombreCentro).idCentro;
+                }catch(e){
+                  debugPrint("MARTA excepcion $e");
+                  idCentroAux = null;
+                }
+              }
+              if(idCentroAux != null){
+                _idCentro = idCentroAux;
+              }
+              debugPrint("MARTA: ID CENTRO $_idCentro");
+
+
+              _modificarEvaluacion(); //TODO
+            },
+            secondaryButtonText: "Descartar",
+            onSecondaryButtonTap: (){
+              _cubitPreguntas.deletePreguntas();
               Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-            }
-          },
-          secondaryButtonText: "Cancelar",
-          onSecondaryButtonTap: (){Navigator.of(context).pop(); },
-        );
-      },
-    );
+            },
+          );
+        },
+      );
+    }else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyTwoButtonsDialog(
+            title: 'Confirmación',
+            desc: '¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.',
+            primaryButtonText: "Salir",
+            onPrimaryButtonTap: () {
+              _cubitPreguntas.deletePreguntas();
+              if(_idEvaluacion != null && _idMaquina != null){
+                //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
+                Navigator.of(context).pop();
+                _cubitEliminarEvaluacion.eliminarEvaluacion(_idEvaluacion!, _idMaquina!);
+              }else{
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+              }
+            },
+            secondaryButtonText: "Cancelar",
+            onSecondaryButtonTap: (){Navigator.of(context).pop(); },
+          );
+        },
+      );
+    }
+
   }
 
-  Future<void> _modificarEvaluacion() async {
-    /*_cubitInsertarEvaluacion.insertarEvaluacion(
-        1, //idinspector (de supabase)
-        _idCentro!,
-        1, //idtipoeval
-        DateTime.now(),
-        _fechaCaducidad,
-        _fechaFabricacion,
-        _fechaPuestaServicio,
-        _denominacionController.text.trim(),
-        _fabricanteController.text.trim(),
-        _numeroSerieController.text.trim(),
-        _imageList
-    );*/
-  }
+
 
   Future<void> _insertarEvaluacion() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -258,6 +291,23 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _denominacionController.text.trim(),
         _fabricanteController.text.trim(),
         _numeroSerieController.text.trim(),
+        _imageList.map((imageModel) => imageModel.imagen).toList()
+    );
+  }
+
+  Future<void> _modificarEvaluacion() async {
+    _cubitInsertarEvaluacion.modificarEvaluacion(
+        _idEvaluacion!,
+        _idCentro!,
+        1, //idtipoeval
+        DateTime.now(),
+        _fechaCaducidad,
+        _fechaFabricacion,
+        _fechaPuestaServicio,
+        _idMaquina!,
+        _denominacionController.text.trim(),
+        _fabricanteController.text.trim(),
+        _numeroSerieController.text.trim(),
         _imageList
     );
   }
@@ -268,11 +318,15 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     BlocProvider.of<CentrosCubit>(context).getCentros();
     _cubitInsertarEvaluacion = BlocProvider.of<InsertarEvaluacionCubit>(context, listen: false);
     _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
+    _cubitPreguntas = BlocProvider.of<PreguntasCubit>(context);
     _fechaCaducidad = ConstantsHelper.calculateDate(context, 2);
 
     if(widget.evaluacion != null){
       _isModifiying = true;
 
+      _idEvaluacion = widget.evaluacion!.ideval;
+      _idMaquina = widget.evaluacion!.idmaquina;
+      _idCentro = widget.evaluacion!.idcentro;
       if(widget.evaluacion!.nombreCentro.isNotEmpty){
         _centrosController.text = widget.evaluacion!.nombreCentro;
       }
@@ -296,7 +350,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     }
 
     if (widget.imagenes != null && widget.imagenes!.isNotEmpty) {
-      _imageList.addAll(widget.imagenes!.map((imagen) => imagen.imagen));
+      _imageList.addAll(widget.imagenes!);
     }
   }
 
@@ -327,7 +381,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             if (pickedFile != null) {
               final bytes = await pickedFile.readAsBytes();
               setState(() {
-                _imageList.add(bytes);
+                _imageList.add(ImagenDataModel(
+                  idimg: null,
+                  imagen: bytes,
+                ));
               });
             }
           },
@@ -338,7 +395,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             if (pickedFile != null) {
               final bytes = await pickedFile.readAsBytes();
               setState(() {
-                _imageList.add(bytes);
+                _imageList.add(ImagenDataModel(
+                  idimg: null,
+                  imagen: bytes,
+                ));
               });
             }
           }
@@ -361,8 +421,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           automaticallyImplyLeading: false,
-          title: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
+          title: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
             child: Row(
               children: [
                 /*Image.asset(
@@ -371,8 +431,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   width: 60,
                 ),*/
                 Text(
-                  'Crea una nueva evaluación',
-                   style: TextStyle(
+                  _isModifiying == true ? 'Modificar evaluación': 'Crea una nueva evaluación',
+                   style: const TextStyle(
                         color: Colors.white,
                         fontSize: Dimensions.titleTextSize,
                         fontWeight: FontWeight.bold
@@ -411,7 +471,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   const Text("*Centro"),
-                  BlocBuilder<CentrosCubit, CentrosState>( //TODO VER ERROR
+                  BlocBuilder<CentrosCubit, CentrosState>(
                     builder: (context, state) {
                       if (state is CentrosLoading) {
                         return const SizedBox(
@@ -566,7 +626,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                                   width: 200,
                                   height: 200,
                                   child: Image.memory(
-                                    _imageList[index],
+                                    _imageList[index].imagen,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -614,12 +674,18 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           Navigator.of(context).pop(); //cerrar resumen
                           ConstantsHelper.showLoadingDialog(context);
                         }else if(state is EvaluacionInsertada) {
-                          _isModifiying = true;
-                          _idEvaluacion = state.idEvaluacion;
-                          _idMaquina = state.idMaquina;
-                          // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
-                          Navigator.of(context).pop(); //cerrar cargando
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckListPage()),);
+                          //Navigator.of(context).pop(); //cerrar cargando TODO
+
+                          if(_exit){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+                          }else{
+                            _idEvaluacion = state.idEvaluacion;
+                            _idMaquina = state.idMaquina;
+                            _imageList.clear();
+                            _imageList.addAll(state.imagenes);
+                            // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(idEvaluacion: _idEvaluacion!, isModifying: _isModifiying)),);
+                          }
                         }else if(state is InsertarEvaluacionError){
                           Navigator.of(context).pop(); //cerrar cargando
                           ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {

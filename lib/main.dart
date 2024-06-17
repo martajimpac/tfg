@@ -18,7 +18,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cubit/evaluaciones_cubit.dart';
 import 'cubit/simple_bloc_observer.dart';
-import 'helpers/ConstantsHelper.dart';
+import 'utils/ConstantsHelper.dart';
 import 'package:go_router/go_router.dart';
 import '../views/error_page.dart';
 import '../views/splash_page.dart';

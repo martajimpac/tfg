@@ -49,6 +49,7 @@ class MyContentDialog extends StatelessWidget {
                       adaptableWidth: false,
                       onTap: onSecondaryButtonTap,
                       text: secondaryButtonText,
+                      color: Colors.grey.shade700
                     ),
                   ),
                 ),

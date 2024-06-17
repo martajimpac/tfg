@@ -2,14 +2,14 @@ import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 
-import '../helpers/ConstantsHelper.dart';
+import '../utils/ConstantsHelper.dart';
 
 class ImagenDataModel extends Equatable {
-  final int idimg;
+  final int? idimg;
   final Uint8List imagen;
 
-  ImagenDataModel({
-    required this.idimg,
+  const ImagenDataModel({
+    this.idimg,
     required this.imagen,
   });
 

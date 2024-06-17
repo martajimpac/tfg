@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../helpers/ConstantsHelper.dart';
+import '../utils/ConstantsHelper.dart';
 import '../theme/dimensions.dart';
 
 class CaducidadIndicator extends StatelessWidget {

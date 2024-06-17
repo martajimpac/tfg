@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/repositorio_db_supabase.dart';
 
@@ -16,7 +17,8 @@ class InsertarEvaluacionLoading extends InsertarEvaluacionState {
 class EvaluacionInsertada extends InsertarEvaluacionState {
   final int idEvaluacion;
   final int idMaquina;
-  EvaluacionInsertada(this.idEvaluacion, this.idMaquina);
+  final List<ImagenDataModel> imagenes;
+  EvaluacionInsertada(this.idEvaluacion, this.idMaquina, this.imagenes);
 }
 
 class InsertarEvaluacionError extends InsertarEvaluacionState {
@@ -57,10 +59,59 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaFabricacion,
           fechaPuestaServicio
       );
-      repositorio.insertarImagenes(imagenes, idEvaluacion);
-      emit(EvaluacionInsertada(idEvaluacion, idMaquina));
+      final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
+      emit(EvaluacionInsertada(idEvaluacion, idMaquina, listImagenesIds));
     } catch (e) {
       emit(InsertarEvaluacionError('Error al insertar la evaluación: $e'));
+    }
+
+  }
+
+  Future<void> modificarEvaluacion(
+      int idEvaluacion,
+      int idCentro,
+      int idTipoEval,
+      DateTime fechaRealizacion,
+      DateTime fechaCaducidad,
+      DateTime? fechaFabricacion,
+      DateTime? fechaPuestaServicio,
+      int idMaquina,
+      String nombreMaquina,
+      String fabricante,
+      String numeroSerie,
+      List<ImagenDataModel> imagenes) async {
+    emit(InsertarEvaluacionLoading());
+
+    try {
+      await repositorio.modificarMaquina(idMaquina, nombreMaquina, fabricante, numeroSerie);
+
+      await repositorio.modificarEvaluacion(
+          idEvaluacion,
+          idCentro,
+          idTipoEval,
+          fechaRealizacion,
+          fechaCaducidad,
+          fechaFabricacion,
+          fechaPuestaServicio
+      );
+
+      //si algun id de las imagenes anteriores no está en los ids de imagenes nuevas hay que eliminar esa imagen
+      List<int?> idsNuevasImagenes = imagenes.map((imageModel) => imageModel.idimg).toList();
+      List<int> idsImagenesAnteriores = await repositorio.getIdsImagenesEvaluacion(idEvaluacion);
+      List<int> idsImagesToDelete = idsImagenesAnteriores.where((id) => !idsNuevasImagenes.contains(id)).toList();
+      await repositorio.eliminarImagenes(idsImagesToDelete);
+
+
+      //si las imagenes no tienen id las insertamos porque significa que no estan insertadas aún
+      List<ImagenDataModel> imagenesInsertar = imagenes.where((imagen) => imagen.idimg == null).toList();
+      final listImagenesIds = await repositorio.insertarImagenes(imagenesInsertar.map((imageModel) => imageModel.imagen).toList(), idEvaluacion);
+      // Actualizar los ids de las imagenes que acabamos de eliminar
+      imagenes.removeWhere((imagen) => imagen.idimg == null);
+      imagenes.addAll(listImagenesIds);
+
+      emit(EvaluacionInsertada(idEvaluacion, idMaquina, imagenes));
+    } catch (e) {
+      emit(InsertarEvaluacionError('Error al modificar la evaluación: $e'));
     }
 
   }
