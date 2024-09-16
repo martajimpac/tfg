@@ -3,20 +3,24 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
-//Listado de tipos de ficheros que podemos crear
-enum TiposFicheros { word, excel, pdf }
+import 'Constants.dart';
 
-//Listado de clases de ficheros que podemos crear
-enum ClasesFicheros { pvd, inspeccion }
+
 
 ///Funcionaes relacionadas con la escriture/lectura en almacenamiento local
 
-///TODO: Implementar la funcionalidad de almacenamiento local
+Future<String> getNameFicheroAlmacenamientoLocal(int ideval) async {
+  final directory = await getApplicationDocumentsDirectory();
+  String pathFicheroAlmacenado = '${directory.path}/$ideval.pdf';
+  return pathFicheroAlmacenado;
+}
 
 ///Método encargado de obtener path y permisoso para almacenar el fichero de forma extrerna a la aplicación
 
@@ -38,19 +42,7 @@ Future<Directory?> damePathAlmacenamientoExterno() async {
   return path;
 }
 
-//Métod encargado de geerar el nombre para na foto de una evaluación de riesgo
-//Recibe como parámteros la EvaluacionRiesgoDataModel y el
-/*Future<String> dameNombreFotoEvaluacionRiesgo(
-    EvaluacionRiesgoDataModel evaluacionRiesgo) async {
-  String nombreFoto;
 
-  final fechaActual = DateFormat('ddMMyykkmmss').format(DateTime.now());
-
-  nombreFoto =
-      'foto-${evaluacionRiesgo.idinspeccion}-${evaluacionRiesgo.ideval}-$fechaActual.jpg';
-
-  return nombreFoto;
-}*/
 
 ///Controla permisos de almaacenamiento
 
@@ -65,8 +57,7 @@ Future<void> permisosAlmacenamiento() async {
 }
 
 ///Devuelve le nombre pro defcyo que se asigna al fichero
-String dameNombrePorDefectoFichero(int idInspeccion, TiposFicheros tipo,
-    {ClasesFicheros clase = ClasesFicheros.inspeccion}) {
+String dameNombrePorDefectoFichero(int idInspeccion, TiposFicheros tipo) {
   late final String nombreFichero;
   late final String extension;
 
@@ -83,18 +74,22 @@ String dameNombrePorDefectoFichero(int idInspeccion, TiposFicheros tipo,
 
   int identificador = idInspeccion + Random().nextInt(1000);
 
-  switch (clase) {
-    case ClasesFicheros.inspeccion:
-      nombreFichero = 'prl$identificador$fechaActual.$extension';
-      break;
-    case ClasesFicheros.pvd:
-      nombreFichero = 'pvd$identificador$fechaActual.$extension';
-      break;
-  }
+  nombreFichero = '$identificador$fechaActual.$extension';
   return nombreFichero;
 }
 
 ///Elimina un fichero si existe
+Future<void> deleteFileFromIdEval(int idEval) async {
+  String filePath = await getNameFicheroAlmacenamientoLocal(idEval);
+  File file = File(filePath);
+  try {
+    if (await file.exists()) {
+      await file.delete();
+    }
+  } catch (e) {
+
+  }
+}
 
 Future<void> deleteFile(File file) async {
   Logger log = Logger();
@@ -104,111 +99,109 @@ Future<void> deleteFile(File file) async {
     }
   } catch (e) {
     log.e('Se prodicido un ero al eliminar el fichero: $e');
-    rethrow;
+    //rethrow;
   }
 }
 
-///Nos devuelve el path del directorio propio de la app App docuemtns directory
-Future<String> get dameLocalAppPath async {
-  final directory = await getApplicationDocumentsDirectory();
-  return directory.path;
-}
+
+
 
 ///Almacena el fichero en un destino elegido por el usuario:
-///TODO: tratar de que esto funcione. No he conseguido que funcione este mñetdo general para todos los tipos de fichero/S.O/Plataformas
-Future<String?> almacenaEnDestinoElegido(
-    File fichero, List<int> datos, TiposFicheros tipoFichero) async {
+Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileName) async {
   String? pathFicheroAlmacenado;
 
-  Logger log = Logger();
   try {
     ///Una vez generado el fichero en temporal preguntamos al usuario dónde quiere guardaro
     if (Platform.isAndroid) {
-      final params = SaveFileDialogParams(sourceFilePath: fichero.path);
+      final params = SaveFileDialogParams(sourceFilePath: internalFilePath);
       final finalPath = await FlutterFileDialog.saveFile(params: params);
 
-      log.i('El fichero se ha guardado en $finalPath');
+      if (kDebugMode) {
+        print('MARTA El fichero se ha guardado en $finalPath');
+      }
       pathFicheroAlmacenado = finalPath;
     } else if (Platform.isWindows) {
       String? outputFile = await FilePicker.platform.saveFile(
           dialogTitle: 'Elija la carpeta destino del fichero',
-          fileName: ((fichero.path).replaceAll('/', '\\')));
+          fileName: ((internalFilePath).replaceAll('/', '\\')));
 
       File returnedFile = File(outputFile!);
 
-      await returnedFile.writeAsBytes(datos);
+      //await returnedFile.writeAsBytes(datos);
 
       pathFicheroAlmacenado = outputFile;
     }
 
     return pathFicheroAlmacenado;
   } catch (e) {
-    log.e('Error al generar el informe word: $e');
+    print('MARTA Error al generar el informe word: $e');
     rethrow;
   }
 }
 
-//Método que recibe un path de un direcctory y devuelev la lista de archivos que forman parte de ese directorio
-Future<List<FileSystemEntity>> dameListaArchivosDirectorio(String path) async {
-  Logger log = Logger();
+
+
+///Método que comprueba si un fichero existe en el almacenamiento interno
+Future<File?> checkIfFileExistAndReturnFile(int idEval) async {
   try {
-    final directory = Directory(path);
-    List<FileSystemEntity> listaArchivos = directory.listSync();
-    return listaArchivos;
-  } catch (e) {
-    log.e('Error al obtener la lista de archivos del directorio: $e');
-    rethrow;
-  }
-}
+    String filePath = await getNameFicheroAlmacenamientoLocal(idEval);
+    File file = File(filePath);
 
-//Método que recibe un path de un direcctory y devuelve la lista de imágenes (jpg) que forman parte de ese directorio
-//correspondientes a una evaluación de riesgo
-/*
-Future<List<FileSystemEntity>> dameListaImagenesEvaluacionDirectorio(
-    String path, EvaluacionRiesgoDataModel evaluacionRiesgo) async {
-  Logger log = Logger();
-  try {
-    final directory = Directory(path);
-    List<FileSystemEntity> listaArchivos = directory.listSync();
-    List<FileSystemEntity> listaImagenes = [];
-
-    for (FileSystemEntity archivo in listaArchivos) {
-      if (archivo.path.contains(
-              'foto-${evaluacionRiesgo.idinspeccion}-${evaluacionRiesgo.ideval}') &&
-          archivo.path.contains('.jpg')) {
-        listaImagenes.add(archivo);
-      }
-    }
-    return listaImagenes;
-  } catch (e) {
-    log.e('Error al obtener la lista de archivos del directorio: $e');
-    rethrow;
-  }
-}
-*/
-
-//Método que recibe un path de un direcctory y uan evaluación de riesgo y elimina
-//las imágenes (jpg) que forman parte de ese directorio correspondientes a esa evaluación de riesgo
-/*Future<int> eliminaImagenesEvaluacionDirectorio(
-    String path, EvaluacionRiesgoDataModel evaluacionRiesgo) async {
-  Logger log = Logger();
-  int count = 0;
-  try {
-    final directory = Directory(path);
-    List<FileSystemEntity> listaArchivos = directory.listSync();
-
-    for (FileSystemEntity archivo in listaArchivos) {
-      if (archivo.path.contains(
-              'foto-${evaluacionRiesgo.idinspeccion}-${evaluacionRiesgo.ideval}') &&
-          archivo.path.contains('.jpg')) {
-        await archivo.delete();
-        log.d('Se ha eliminado el archivo: ${archivo.path}');
-        count++;
-      }
+    // Verifica si el archivo existe
+    if (await file.exists()) {
+      return file;
+    } else {
+      return null;
     }
   } catch (e) {
-    log.e('Error al obtener la lista de archivos del directorio: $e');
-    rethrow;
+    return null;
   }
-  return count;
+}
+
+
+
+
+
+//Método que recibe un path de un direcctory y devuelev la lista de archivos que forman parte de ese directorio todo usar para ver si pdf está o no
+/*Future<bool> checkIfFileExist(int idEval) async {
+
+  try {
+    String filePath = await getNameFicheroAlmacenamientoLocal(idEval);
+    File file = File(filePath);
+
+    // Verifica si el archivo existe
+    if (await file.exists()) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> checkIfFileExist2(int idEval) async {
+  Logger log = Logger();
+  try {
+    // Obtiene el directorio de almacenamiento de documentos de la aplicación
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Lista todos los archivos del directorio
+    List<FileSystemEntity> listaArchivos = directory.listSync();
+
+    // Comprueba si existe un archivo cuyo nombre contenga el idEval
+    for (var archivo in listaArchivos) {
+      if (archivo is File && archivo.path.endsWith('$idEval.pdf')) {
+        return true; // El archivo con idEval fue encontrado
+      }
+    }
+
+    return false; // No se encontró el archivo
+  } catch (e) {
+    log.e('Error al obtener la lista de archivos del directorio: $e');
+    return false; // Si ocurre un error, regresa false
+  }
 }*/
+
+
+

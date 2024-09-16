@@ -1,7 +1,3 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
-import 'package:evaluacionmaquinas/theme/dimensions.dart';
-import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
-import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'; // Necesitas importar Cupertino para usar CupertinoSwitch
 import 'package:flutter_bloc/flutter_bloc.dart'; // Necesitas importar flutter_bloc para usar BlocBuilder
@@ -11,22 +7,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/my_button_card.dart';
 import '../cubit/evaluaciones_cubit.dart';
 import '../cubit/settings_cubit.dart';
+import '../generated/l10n.dart';
 import '../repository/repositorio_db_supabase.dart';
-import '../theme/app_theme.dart'; // Asumiendo que tienes un archivo settings_cubit.dart
+import '../theme/app_theme.dart';
+import '../components/my_button.dart';
+import '../theme/dimensions.dart';
+import '../views/change_password_page.dart';
+import '../views/forgot_password_page.dart';
+import '../views/login_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
-  
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop){
-
-      }, child:
-      Scaffold(
+      canPop: false,
+      onPopInvoked: (bool didPop) {},
+      child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: FutureBuilder<String>(
           future: _getUserName(), // Obtener el nombre del usuario de SharedPreferences
@@ -37,7 +36,7 @@ class ProfilePage extends StatelessWidget {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}'); // Manejar errores si los hay
               } else {
-                final userName = snapshot.data ?? 'Nombre desconocido'; // Obtener el nombre del usuario del snapshot
+                final userName = snapshot.data ?? S.of(context).unknownName; // Obtener el nombre del usuario del snapshot
                 return Column(
                   children: [
                     Stack(
@@ -55,17 +54,19 @@ class ProfilePage extends StatelessWidget {
                             backgroundColor: Theme.of(context).colorScheme.onBackground,
                             backgroundImage: const AssetImage('lib/images/default_user.png'),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 50),
                     Column(
                       children: [
-                        Text(userName, style: TextStyle(
+                        Text(
+                          userName,
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primaryContainer
-                          )
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                          ),
                         ), // Mostrar el nombre del usuario aquí
                       ],
                     ),
@@ -75,67 +76,76 @@ class ProfilePage extends StatelessWidget {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text("${state.evaluaciones.length}",
-                                  style: const TextStyle(fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
-                              const Text("  evaluaciones"),
+                              Text(S.of(context).numEvaluations),
+                              const SizedBox(width: Dimensions.marginSmall),
+                              Text(
+                                "${state.evaluaciones.length}",
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
                             ],
                           );
                         } else {
-                          return const SizedBox(
-                              height: Dimensions.marginMedium);
+                          return const SizedBox(height: Dimensions.marginMedium);
                         }
-                      }),
-                    MyButtonCard(onTap:() async {
-                      try {
-                        await Supabase.instance.client.auth.signOut();
-                        Fluttertoast.showToast(
-                          msg: 'Sesión cerrada exitosamente.',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                        );
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()),);
-                      } catch (error) {
-                        Fluttertoast.showToast(
-                          msg:  "Ocurrió un error al cerrar la sesión.",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                        );
-                      }
-                    }, text: "Cerrar sesión",
-                    icon: const Icon(Icons.logout, color: Colors.white)),
+                      },
+                    ),
                     MyButtonCard(
-                        onTap:() async {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),);
-                        },
-                        text: "Cambiar constraseña",
-                        icon: const Icon(Icons.lock, color: Colors.white)
+                      onTap: () async {
+                        try {
+                          await Supabase.instance.client.auth.signOut();
+                          Fluttertoast.showToast(
+                            msg: S.of(context).sessionClosedSuccess,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.grey,
+                            textColor: Colors.white,
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
+                        } catch (error) {
+                          Fluttertoast.showToast(
+                            msg: S.of(context).sessionCloseError,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.grey,
+                            textColor: Colors.white,
+                          );
+                        }
+                      },
+                      text: S.of(context).logout,
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                    ),
+                    MyButtonCard(
+                      onTap: () async {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                        );
+                      },
+                      text: S.of(context).changePasswordButton,
+                      icon: const Icon(Icons.lock, color: Colors.white),
                     ),
                     BlocBuilder<SettingsCubit, SettingsState>(
                       builder: (context, state) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Modo oscuro', style: Theme.of(context).textTheme.bodyMedium),
+                            Text(S.of(context).darkMode, style: Theme.of(context).textTheme.bodyMedium),
                             const SizedBox(width: Dimensions.marginSmall),
                             CupertinoSwitch(
                               activeColor: Colors.grey.shade400,
-                              value: state.theme == MyAppTheme.darkTheme, // Corrección aquí
+                              value: state.theme == MyAppTheme.darkTheme,
                               onChanged: (value) {
                                 context.read<SettingsCubit>().toggleTheme();
-                                // switchChanged(value); // No está definido switchChanged, ¿es necesario aquí?
                               },
                             ),
                           ],
-
                         );
                       },
                     ),
-                  ]
+                  ],
                 );
               }
             }
@@ -149,6 +159,4 @@ class ProfilePage extends StatelessWidget {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('name') ?? ''; // Obtener el nombre del usuario guardado, o un valor predeterminado si no existe
   }
-
-
 }

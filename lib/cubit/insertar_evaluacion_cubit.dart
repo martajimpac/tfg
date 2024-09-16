@@ -1,7 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../generated/l10n.dart';
 import '../repository/repositorio_db_supabase.dart';
 
 
@@ -15,10 +19,9 @@ class InsertarEvaluacionLoading extends InsertarEvaluacionState {
 }
 
 class EvaluacionInsertada extends InsertarEvaluacionState {
-  final int idEvaluacion;
-  final int idMaquina;
+  final EvaluacionDetailsDataModel evaluacion;
   final List<ImagenDataModel> imagenes;
-  EvaluacionInsertada(this.idEvaluacion, this.idMaquina, this.imagenes);
+  EvaluacionInsertada(this.evaluacion, this.imagenes);
 }
 
 class InsertarEvaluacionError extends InsertarEvaluacionState {
@@ -33,8 +36,10 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
   InsertarEvaluacionCubit(this.repositorio) : super(InsertarEvaluacionInicial());
 
   Future<void> insertarEvaluacion(
+      BuildContext context,
       String idInspector,
       int idCentro,
+      String nombreCentro,
       int idTipoEval,
       DateTime fechaRealizacion,
       DateTime fechaCaducidad,
@@ -59,19 +64,40 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaFabricacion,
           fechaPuestaServicio
       );
+      EvaluacionDetailsDataModel evaluacion =
+        EvaluacionDetailsDataModel(
+          ideval: idEvaluacion,
+          idinspector: idInspector,
+          idcentro: idCentro,
+          nombreCentro: nombreCentro,
+          fechaRealizacion: fechaRealizacion,
+          fechaCaducidad: fechaCaducidad,
+          fechaModificacion: null,
+          idmaquina: idMaquina,
+          nombreMaquina: nombreMaquina,
+          idtipoeval: idTipoEval,
+          fechaFabricacion: fechaFabricacion,
+          fechaPuestaServicio: fechaPuestaServicio,
+          fabricante: fabricante,
+          numeroSerie: numeroSerie
+        );
       final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
-      emit(EvaluacionInsertada(idEvaluacion, idMaquina, listImagenesIds));
+      emit(EvaluacionInsertada(evaluacion, listImagenesIds));
     } catch (e) {
-      emit(InsertarEvaluacionError('Error al insertar la evaluación: $e'));
+      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
     }
 
   }
 
   Future<void> modificarEvaluacion(
+      BuildContext context,
+      String idInspector,
       int idEvaluacion,
       int idCentro,
+      String nombreCentro,
       int idTipoEval,
       DateTime fechaRealizacion,
+      DateTime fechaModificacion,
       DateTime fechaCaducidad,
       DateTime? fechaFabricacion,
       DateTime? fechaPuestaServicio,
@@ -89,7 +115,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           idEvaluacion,
           idCentro,
           idTipoEval,
-          fechaRealizacion,
+          fechaModificacion,
           fechaCaducidad,
           fechaFabricacion,
           fechaPuestaServicio
@@ -109,9 +135,27 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       imagenes.removeWhere((imagen) => imagen.idimg == null);
       imagenes.addAll(listImagenesIds);
 
-      emit(EvaluacionInsertada(idEvaluacion, idMaquina, imagenes));
+      //creamos el objeto evaluación
+      EvaluacionDetailsDataModel evaluacion =
+      EvaluacionDetailsDataModel(
+          ideval: idEvaluacion,
+          idinspector: idInspector,
+          idcentro: idCentro,
+          nombreCentro: nombreCentro,
+          fechaRealizacion: fechaRealizacion,
+          fechaCaducidad: fechaCaducidad,
+          fechaModificacion: null,
+          idmaquina: idMaquina,
+          nombreMaquina: nombreMaquina,
+          idtipoeval: idTipoEval,
+          fechaFabricacion: fechaFabricacion,
+          fechaPuestaServicio: fechaPuestaServicio,
+          fabricante: fabricante,
+          numeroSerie: numeroSerie
+      );
+      emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {
-      emit(InsertarEvaluacionError('Error al modificar la evaluación: $e'));
+      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsError));
     }
 
   }

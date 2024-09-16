@@ -1,8 +1,10 @@
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import '../../generated/l10n.dart';
 
 class CustomDatePickerRange extends StatefulWidget {
   final Function(DateTime?) onDateChanged;
@@ -96,7 +98,7 @@ class _CustomDatePickerRangeState extends State<CustomDatePickerRange> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: Text(S.of(context).accept),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -131,7 +133,7 @@ class _CustomDatePickerRangeState extends State<CustomDatePickerRange> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            const Row(
               children: [
                 /*Text(
                   _selectedDate != null

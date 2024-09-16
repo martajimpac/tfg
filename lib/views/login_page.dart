@@ -1,5 +1,5 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/textField/my_login_textfield.dart';
+import '../generated/l10n.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -53,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         title: Center(
           child: Text(
-            'Inicio de sesión',
+            S.of(context).loginTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -71,17 +72,17 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Correo electrónico"),
+                  Text(S.of(context).email),
                   MyLoginTextField(
                     controller: _emailController,
-                    hintText: "usuario@gmail.com",
+                    hintText: S.of(context).hintEmail,
                     isRed: _isEmailRed,
                   ),
                   const SizedBox(height: Dimensions.marginMedium),
-                  const Text("Contraseña"),
+                  Text(S.of(context).password),
                   MyLoginTextField(
                     controller: _passwordController,
-                    hintText: "*************",
+                    hintText: S.of(context).hintPassword,
                     obscureText: true,
                     isRed: _isPasswordRed,
                   ),
@@ -95,9 +96,9 @@ class _LoginPageState extends State<LoginPage> {
                     },
 
 
-                    child: const Text(
-                      "¿Olvidaste la contraseña?",
-                      style: TextStyle(
+                    child: Text(
+                      S.of(context).forgetPassword,
+                      style: const TextStyle(
                         fontSize: Dimensions.smallTextSize,
                         decoration: TextDecoration.underline,
                       ),
@@ -141,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                               MaterialPageRoute(builder: (context) => const MyHomePage()),
                             );
                           } else {
-                            ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en la autenticación", () {
+                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
                               Navigator.of(context).pop();
                             });
                           }
@@ -150,35 +151,35 @@ class _LoginPageState extends State<LoginPage> {
                           if (error.statusCode == "400") {
                             if (error.message == "Invalid login credentials") {
                               // Credenciales de inicio de sesión inválidas
-                              ConstantsHelper.showMyOkDialog(context, "Error", "Credenciales de inicio de sesión inválidas", () {
+                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthenticationCredentials, () {
                                 Navigator.of(context).pop();
                               });
                             } else if (error.message == "Email not confirmed") {
                               // Correo electrónico no confirmado
-                              ConstantsHelper.showMyOkDialog(context, "Error", "Correo electrónico no confirmado", () {
+                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthenticationNotConfirmed, () {
                                 Navigator.of(context).pop();
                               });
                             } else {
                               // Otro error de autenticación
-                              ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
                                 Navigator.of(context).pop();
                               });
                             }
                           } else {
                             // Otro error de autenticación
-                            ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
                               Navigator.of(context).pop();
                             });
                           }
                         } catch (error) {
                           // Otro error de autenticación
-                          ConstantsHelper.showMyOkDialog(context, "Error", "Error de autenticación", () {
+                          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
                             Navigator.of(context).pop();
                           });
                         }
                       }
                     },
-                    text: 'Iniciar sesión',
+                    text: S.of(context).loginButton,
                   ),
                   const SizedBox(height: Dimensions.marginMedium),
                   MyButton(
@@ -190,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     color: Theme.of(context).colorScheme.onSecondary,
-                    text: 'Registrarse',
+                    text: S.of(context).registerButton,
                   ),
                 ],
               ),

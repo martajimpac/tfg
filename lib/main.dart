@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:evaluacionmaquinas/cubit/detalles_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/utils/Constants.dart';
 import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cubit/evaluaciones_cubit.dart';
 import 'cubit/simple_bloc_observer.dart';
-import 'utils/ConstantsHelper.dart';
+import 'generated/l10n.dart';
+import 'utils/Utils.dart';
 import 'package:go_router/go_router.dart';
 import '../views/error_page.dart';
 import '../views/splash_page.dart';
@@ -148,28 +150,13 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: entornoVersion ==
                   EntornoVersion.desarrollo,
               theme: settingsCubit.state.theme,
-              /*localizationsDelegates: const [
-                  AppLocalizations.delegate,
+              localizationsDelegates: const [
+                  S.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
-                ],*/
-              supportedLocales: const [
-                Locale('en', 'EN'), // English
-                Locale('es', 'ES'), // Spanish
-                Locale('eu', 'EU'), // Euskera
-                Locale('ga', 'GA'), // Gallego
-                Locale('ca', 'CA'), // Catalán
-              ],
-              localizationsDelegates: const [
-                // Añade aquí los delegados de localización necesarios
-                DefaultMaterialLocalizations.delegate,
-                DefaultWidgetsLocalizations.delegate,
-                //AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
+                ],
+              supportedLocales: S.delegate.supportedLocales,
               title: 'Evaluaciones',
               // theme: state.theme
               routerConfig: _enrutador,

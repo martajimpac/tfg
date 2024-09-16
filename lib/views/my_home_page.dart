@@ -2,10 +2,11 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_two_buttons_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:evaluacionmaquinas/views/mis_evaluaciones_page.dart';
 import 'package:evaluacionmaquinas/views/profile_page.dart';
+import '../utils/Constants.dart';
 import 'nueva_evaluacion_page.dart';
 
 class MyHomePage extends StatefulWidget {

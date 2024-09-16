@@ -1,10 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 
+import '../generated/l10n.dart';
 import '../modelos/imagen_dm.dart';
 
 // Define el estado del cubit
@@ -42,14 +44,14 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
 
   DetallesEvaluacionCubit(this.repositorio) : super(DetallesEvaluacionLoading());
 
-  Future<void> getDetallesEvaluacion(int idEvaluacion) async {
+  Future<void> getDetallesEvaluacion(BuildContext context, idEvaluacion) async {
     emit(DetallesEvaluacionLoading());
     try {
       final evaluacion = await repositorio.getDetallesEvaluacion(idEvaluacion);
       final imagenes = await repositorio.getImagenesEvaluacion(idEvaluacion);
       emit(DetallesEvaluacionLoaded(evaluacion, imagenes));
     } catch (e) {
-      emit(DetallesEvaluacionError('Error al obtener la evaluación: $e'));
+      emit(DetallesEvaluacionError(S.of(context).cubitEvaluationDetailsError));
     }
   }
 }

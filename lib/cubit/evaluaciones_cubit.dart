@@ -1,11 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../generated/l10n.dart';
+import '../utils/Constants.dart';
 
 // Define el estado del cubit
 abstract class EvaluacionesState extends Equatable {
@@ -42,7 +46,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
 
   EvaluacionesCubit(this.repositorio, this.filtros) : super(EvaluacionesLoading());
 
-  Future<void> getEvaluaciones() async {
+  Future<void> getEvaluaciones(BuildContext context) async {
     try {
       emit(EvaluacionesLoading());
 
@@ -65,26 +69,26 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
 
       emit(EvaluacionesLoaded(evaluaciones));
     } catch (e) {
-      emit(EvaluacionesError('Error al obtener las evaluaciones: $e'));
+      emit(EvaluacionesError(S.of(context).cubitEvaluationsError));
     }
   }
 
-  void addFilter(String key, dynamic value) {
+  void addFilter(BuildContext context,String key, dynamic value) {
     emit(EvaluacionesLoading());
     filtros[key] = value;
-    getEvaluaciones();
+    getEvaluaciones(context);
   }
 
-  void removeFilter(String key) {
+  void removeFilter(BuildContext context,String key) {
     emit(EvaluacionesLoading());
     filtros.remove(key);
-    getEvaluaciones();
+    getEvaluaciones(context);
   }
 
-  void clearFilters() {
+  void clearFilters(BuildContext context,) {
     emit(EvaluacionesLoading());
     filtros.clear();
-    getEvaluaciones();
+    getEvaluaciones(context);
   }
 
 }

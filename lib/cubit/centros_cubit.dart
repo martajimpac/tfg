@@ -2,6 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../generated/l10n.dart';
 
 // Define el estado del cubit
 abstract class CentrosState extends Equatable {
@@ -37,12 +40,12 @@ class CentrosCubit extends Cubit<CentrosState> {
 
   CentrosCubit(this.repositorio) : super(CentrosLoading());
 
-  Future<void> getCentros() async {
+  Future<void> getCentros(BuildContext context) async {
     try {
       final centros = await repositorio.getCentros();
       emit(CentrosLoaded(centros));
     } catch (e) {
-      emit(CentrosError('Error al obtener los centros: $e'));
+      emit(CentrosError(S.of(context).cubitCentersError));
     }
   }
 }

@@ -1,5 +1,10 @@
 
+import 'package:equatable/equatable.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
+import 'package:evaluacionmaquinas/utils/pdf.dart';
+import 'package:evaluacionmaquinas/views/pdf_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,13 +16,17 @@ import 'package:evaluacionmaquinas/views/terminar_page.dart';
 
 import '../components/my_button.dart';
 import '../components/textField/my_textfield.dart';
-import '../modelos/pregunta_categoria_dm.dart';
-import '../utils/ConstantsHelper.dart';
+import '../generated/l10n.dart';
+import '../modelos/imagen_dm.dart';
+import '../modelos/pregunta_dm.dart';
+import '../utils/Constants.dart';
+import '../utils/Utils.dart';
 
 class CheckListPage extends StatefulWidget {
-  final int idEvaluacion;
+  final EvaluacionDetailsDataModel evaluacion;
+  final List<ImagenDataModel> imagenes;
   final bool isModifying;
-  const CheckListPage({super.key, required this.idEvaluacion, required this.isModifying});
+  const CheckListPage({super.key, required this.isModifying, required this.evaluacion, required this.imagenes});
 
   @override
   State<CheckListPage> createState() => _CheckListPageState();
@@ -30,13 +39,12 @@ class _CheckListPageState extends State<CheckListPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<PreguntasCubit>(context).getPreguntas(widget.idEvaluacion);
+    BlocProvider.of<PreguntasCubit>(context).getPreguntas(context, widget.evaluacion.ideval);
 
   }
 
   final _pageViewController = PageController(initialPage: 0);
   final _scrollController = ScrollController();
-  bool _isRed = false;
   int _selectedCircle = 0;
 
   @override
@@ -46,40 +54,21 @@ class _CheckListPageState extends State<CheckListPage> {
     super.dispose();
   }
 
-  void checkAllAnswer(List<PreguntaDataModel> preguntas, List<CategoriaPreguntaDataModel> categorias){
+  void checkAllAnswer(List<PreguntaDataModel> preguntas){
     // Filtra las preguntas sin respuesta
     List<PreguntaDataModel> preguntasSinResponder = preguntas.where((pregunta) => pregunta.idRespuestaSeleccionada == null).toList();
 
-    // Calcula el número de preguntas sin respuesta
-    int numeroPreguntasSinResponder = preguntasSinResponder.length;
-    if(numeroPreguntasSinResponder > 0){
-      ConstantsHelper.showMyOkDialog(context, "Error", "Hay $numeroPreguntasSinResponder preguntas sin responder.\nLas preguntas no respondidas se marcarán en rojo.", () {
-        Navigator.of(context).pop();
-      });
-      setState(() {
-        _isRed = true;
 
-        //buscar la categoria de la primera pregunta en rojo y centrarnos en ella
-        var categoriaId = preguntas.firstWhere(
-              (pregunta) => pregunta.idRespuestaSeleccionada == null,
-        ).idCategoria;
-
-        if (categoriaId != null && categoriaId != -1) {
-          int index = categorias.indexWhere((categoria) => categoria.idcat == categoriaId);
-          if (index != -1) {
-            goToPage(index, preguntas, categorias);
-          }
-        }
-
-      });
-    }else{
-      _isRed = false;
-      ConstantsHelper.showLoadingDialog(context);
-      context.read<PreguntasCubit>().insertarRespuestas(widget.idEvaluacion);
+    //asignar por defecto la respuesta si a lal preguntas sin resoonder
+    for (var pregunta in preguntasSinResponder) {
+      pregunta.idRespuestaSeleccionada = 1; //ID DE Sí
     }
+
+    //ConstantsHelper.showLoadingDialog(context);
+    context.read<PreguntasCubit>().insertarRespuestasAndGeneratePdf(widget.evaluacion, AccionesPdfChecklist.guardar);
   }
 
-  void goToPage(int index, List<PreguntaDataModel> preguntas, List<CategoriaPreguntaDataModel> categorias) {
+  void goToPage(int index) {
     // Primero cambia la página
     _pageViewController.animateToPage(
       index,
@@ -87,49 +76,9 @@ class _CheckListPageState extends State<CheckListPage> {
       curve: Curves.ease,
     );
 
-
-    if(_isRed){
-      // Escucha cuando se complete la transición de página
-      _pageViewController.addListener(() {
-
-        // Obtén el índice de la página actual
-        int currentPageIndex = _pageViewController.page!.round();
-
-        // Si el índice de la página actual coincide con el índice al que queremos ir, realiza el scroll
-        if (currentPageIndex == index) {
-
-          //Scroll a la primera preguta sin responder
-          var categoriaId = categorias[index].idcat;
-          // Encuentra el índice de la pregunta sin responder dentro de su categoría
-          var preguntasPagina = preguntas.where((pregunta) => pregunta.idCategoria == categoriaId).toList();
-          int preguntaIndex = preguntasPagina.indexWhere((pregunta) => pregunta.idRespuestaSeleccionada == null);
-
-          // Desplaza el ListView a la pregunta sin responder
-          if (preguntaIndex != -1) {
-            debugPrint("MARTA: preguntaindex: $preguntaIndex");
-            _scrollController.animateTo(
-              preguntaIndex * 100, // Ajusta este valor según el tamaño de tus elementos
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          }
-
-
-
-
-          setState(() {
-            _selectedCircle = index;
-          });
-
-          // Importante: Elimina el listener después de completar el scroll
-          _pageViewController.removeListener(() {});
-        }
-      });
-    }else{
-      setState(() {
-        _selectedCircle = index;
-      });
-    }
+    setState(() {
+      _selectedCircle = index;
+    });
   }
 
 
@@ -148,7 +97,7 @@ class _CheckListPageState extends State<CheckListPage> {
           },
         ),
         title: Text(
-          widget.isModifying ? "Modificar checklist" : "Checklist",
+          widget.isModifying ? S.of(context).modifyChecklistTitle : S.of(context).checklistTitle,
           style: const TextStyle(
             color: Colors.white,
             fontSize: Dimensions.titleTextSize,
@@ -160,7 +109,16 @@ class _CheckListPageState extends State<CheckListPage> {
         child: BlocConsumer<PreguntasCubit, PreguntasState>(
           builder: (context, state) {
             if (state is PreguntasLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,  // Centra verticalmente la columna
+                  children: [
+                    Text(state.loadingMessage),
+                    const SizedBox(height: 16), // Añade un espacio entre el texto y el indicador
+                    const CircularProgressIndicator(),
+                  ],
+                ),
+              );
             } else if (state is PreguntasLoaded) {
               final List<PreguntaDataModel> preguntas = state.preguntas;
               final List<CategoriaPreguntaDataModel> categorias = state.categorias;
@@ -180,8 +138,7 @@ class _CheckListPageState extends State<CheckListPage> {
                             padding: const EdgeInsets.all(Dimensions.marginSmall),
                             child: GestureDetector(
                               onTap: () {
-                                goToPage(index, state.preguntas, state.categorias);
-
+                                goToPage(index);
                               },
                               child: Container(
                                 height: 50,
@@ -227,7 +184,7 @@ class _CheckListPageState extends State<CheckListPage> {
                                     controller: _scrollController,
                                     itemBuilder: (context, index) {
                                       return MyListTile(
-                                        name: preguntasPagina[index].pregunta,
+                                        text: preguntasPagina[index].pregunta,
                                         listAnswers: respuestas,
                                         answerSelected: preguntasPagina[index].idRespuestaSeleccionada != null
                                             ? respuestas.firstWhere(
@@ -235,10 +192,12 @@ class _CheckListPageState extends State<CheckListPage> {
                                               orElse: () => respuestas[0],
                                         ): null,
                                         onAnswerSelected: (answer){
-                                          preguntasPagina[index].idRespuestaSeleccionada = answer.idopcion;
+                                          preguntasPagina[index].idRespuestaSeleccionada = answer.idopcion; //TODO GUARDAR ESTOS CAMBIOS EN EL CUBIT
+                                          preguntasPagina[index].isAnswered = true;
                                           context.read<PreguntasCubit>().updatePreguntas(preguntasPagina[index]);
                                         },
-                                        isRed: _isRed && preguntasPagina[index].idRespuestaSeleccionada == null,
+                                        isAnswered: preguntasPagina[index].isAnswered,
+                                        tieneObservaciones: preguntasPagina[index].tieneObservaciones
                                       );
                                     },
                                   );
@@ -253,23 +212,26 @@ class _CheckListPageState extends State<CheckListPage> {
                           adaptableWidth: false,
                           onTap: (){
                             //comprobar que todas las preguntas han sido respondidas
-                            checkAllAnswer(state.preguntas, state.categorias);
+                            checkAllAnswer(state.preguntas);
                           },
-                          text: "TERMINAR",
+                          text: S.of(context).finish,
                           roundBorders: false,
                       )
                   ]
               );
 
-            } else if (state is PreguntasError) {
-              return Text('Error: ${state.errorMessage}');
-            } else {
-              return const Text('Estado desconocido del cubit');
+            }  else {
+              return Text(S.of(context).defaultError);
             }
           }, listener: (BuildContext context, PreguntasState state) {
-            if(state is PreguntasSaved){
+            if(state is PdfGenerated){
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const TerminarPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
+            }else if(state is PdfError){
+              Navigator.pop(context);
+              Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null); //TODO SI ESTO OCURRE....
+            }else if(state is PreguntasError){
+              Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null);
             }
         },
         ),

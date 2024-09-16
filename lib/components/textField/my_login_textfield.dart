@@ -24,7 +24,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
     _obscureTextIsOn = widget.obscureText;
   }
 
@@ -77,7 +77,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
 
           : _isTyping
               ? IconButton(
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: () {
               setState(() {
                 widget.controller.clear();

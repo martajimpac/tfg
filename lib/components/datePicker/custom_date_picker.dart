@@ -1,7 +1,9 @@
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../utils/Constants.dart';
 
 class CustomDatePicker extends StatefulWidget {
   final Function(DateTime?) onDateChanged;
@@ -48,7 +50,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(1000),
-      lastDate: widget.hasLimitDay ? DateTime.now() : ConstantsHelper.calculateDate(context, 100),
+      lastDate: widget.hasLimitDay ? DateTime.now() : Utils.calculateDate(context, 100),
     );
 
     if (pickedDate != null && pickedDate != _selectedDate) {

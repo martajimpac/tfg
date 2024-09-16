@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/ConstantsHelper.dart';
+import '../generated/l10n.dart';
+import '../utils/Utils.dart';
 import '../theme/dimensions.dart';
 
 class CaducidadIndicator extends StatelessWidget {
@@ -10,12 +11,12 @@ class CaducidadIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: ConstantsHelper.menosDe30DiasParaCaducar(context, fechaCaducidad) || ConstantsHelper.haCaducado(context, fechaCaducidad),
+      visible: Utils.menosDe30DiasParaCaducar(context, fechaCaducidad) || Utils.haCaducado(context, fechaCaducidad),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           border: Border.all(color:  Theme.of(context).colorScheme.secondaryContainer),
-          color: ConstantsHelper.haCaducado(context, fechaCaducidad) ?  Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.onBackground,
+          color: Utils.haCaducado(context, fechaCaducidad) ?  Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.onBackground,
         ),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -26,14 +27,14 @@ class CaducidadIndicator extends StatelessWidget {
                 'lib/images/ic_danger.png',
                 height: Dimensions.iconSize, // Ajusta el tamaño de la imagen según sea necesario
                 width: Dimensions.iconSize,
-                color: ConstantsHelper.haCaducado(context, fechaCaducidad) ? Colors.black :  Theme.of(context).colorScheme.secondaryContainer,
+                color: Utils.haCaducado(context, fechaCaducidad) ? Colors.black :  Theme.of(context).colorScheme.secondaryContainer,
               ),
               const SizedBox(width: 8),
               Text(
-                ConstantsHelper.haCaducado(context, fechaCaducidad)
-                    ? "La evaluación ha caducado"
-                    : ConstantsHelper.getDays(context,  fechaCaducidad),
-                style: ConstantsHelper.haCaducado(context, fechaCaducidad)
+                Utils.haCaducado(context, fechaCaducidad)
+                    ? S.of(context).evaluationHasExpired
+                    : Utils.getDays(context,  fechaCaducidad),
+                style: Utils.haCaducado(context, fechaCaducidad)
                     ? const TextStyle(color: Colors.black)
                     : TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               ),

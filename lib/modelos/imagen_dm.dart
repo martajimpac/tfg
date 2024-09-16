@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 
-import '../utils/ConstantsHelper.dart';
+import '../utils/Utils.dart';
 
 class ImagenDataModel extends Equatable {
   final int? idimg;
@@ -17,7 +17,7 @@ class ImagenDataModel extends Equatable {
   factory ImagenDataModel.fromMap(Map<String, dynamic> json) {
 
     var imagenJson = json['imagen'];
-    Uint8List? listaBytes = ConstantsHelper.convertImage(imagenJson);
+    Uint8List? listaBytes = Utils.convertImage(imagenJson);
 
 
     return ImagenDataModel(

@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
-import 'package:flutter/material.dart';
+
+import '../generated/l10n.dart'; // Importa el archivo generado
 
 class EmptyView extends StatelessWidget {
   final VoidCallback? onRetry;
@@ -9,6 +11,7 @@ class EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -19,17 +22,17 @@ class EmptyView extends StatelessWidget {
             height: 100,
           ),
           Text(
-            'No hay evaluaciones',
-            style: Theme.of(context).textTheme.headlineMedium
+            S.of(context).noEvaluations,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: Dimensions.marginMedium),
-          const Text(
-              '¿Desea volver a intentarlo?'
+          Text(
+            S.of(context).retryText,
           ),
           const SizedBox(height: Dimensions.marginMedium),
           MyButton(
             onTap: onRetry,
-            text: "Reintentar",
+            text: S.of(context).retryTitle,
             adaptableWidth: true,
           ),
         ],

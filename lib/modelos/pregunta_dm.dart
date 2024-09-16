@@ -6,13 +6,17 @@ class PreguntaDataModel extends Equatable {
   final int? idCategoria;
   int? idRespuestaSeleccionada;
   bool isAnswered;
+  bool tieneObservaciones;
+  late final String? observaciones;
 
   PreguntaDataModel({
     required this.idpregunta,
     required this.pregunta,
     required this.idCategoria,
     this.idRespuestaSeleccionada,
-    this.isAnswered = false
+    this.isAnswered = false,
+    this.tieneObservaciones = false,
+    this.observaciones,
   });
 
   factory PreguntaDataModel.fromMap(Map<String, dynamic> json) {
@@ -20,7 +24,10 @@ class PreguntaDataModel extends Equatable {
       idpregunta: json['idpregunta'] as int,
       pregunta: json['pregunta'] as String,
       idCategoria: json['idcategoria'] as int?,
-      idRespuestaSeleccionada: json['id_respuesta_selec'] as int?
+      idRespuestaSeleccionada: json['id_respuesta_selec'] as int?,
+      isAnswered: json['respondida'] as bool? ?? false,
+      tieneObservaciones: json['tiene_observaciones'] as bool? ?? false,
+      observaciones: json['observaciones'] as String?,
     );
   }
 
@@ -29,10 +36,13 @@ class PreguntaDataModel extends Equatable {
       'idpregunta': idpregunta,
       'pregunta': pregunta,
       'idcategoria': idCategoria,
-      'id_respuesta_selec': idRespuestaSeleccionada
+      'id_respuesta_selec': idRespuestaSeleccionada,
+      'respondida': isAnswered,
+      'tiene_observaciones': tieneObservaciones,
+      'observaciones': observaciones
     };
   }
 
   @override
-  List<Object?> get props => [idpregunta, pregunta, idCategoria, idRespuestaSeleccionada];
+  List<Object?> get props => [idpregunta, pregunta, idCategoria, idRespuestaSeleccionada, isAnswered, tieneObservaciones, observaciones];
 }

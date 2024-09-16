@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
+
 class ErrorPage extends StatelessWidget {
   final String mensajeError;
 
@@ -9,21 +11,21 @@ class ErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Error Page'),
+        title: Text(S.of(context).error),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 50,
               color: Colors.red,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              'Ha ocurrido un error:',
-              style: TextStyle(fontSize: 20),
+              S.of(context).defaultError,
+              style: const TextStyle(fontSize: 20),
             ),
             SizedBox(height: 10),
             Text(
@@ -35,7 +37,7 @@ class ErrorPage extends StatelessWidget {
               onPressed: () {
                 // Aquí puedes manejar el botón de manera adecuada, como regresar a la página anterior o reiniciar la aplicación.
               },
-              child: Text('Volver'),
+              child: Text(S.of(context).back),
             ),
           ],
         ),

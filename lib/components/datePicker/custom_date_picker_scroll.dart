@@ -1,19 +1,21 @@
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
+import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
+import '../../utils/Constants.dart';
 
 class CustomDatePickerScroll extends StatefulWidget {
   final Function(DateTime) onDateChanged;
   final DateTime initialDate;
 
   const CustomDatePickerScroll({
-    Key? key,
+    super.key,
     required this.onDateChanged,
     required this.initialDate, // Agregar el parámetro de fecha inicial
-  }) : super(key: key);
+  });
 
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
@@ -61,7 +63,7 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
                 ),
               ),
               GestureDetector(
-                child: _showDatePicker ? const Text('Guardar', style: TextStyle(color: Colors.red),) : const Text('Cambiar'),
+                child: _showDatePicker ? Text(S.of(context).save, style: const TextStyle(color: Colors.red),) : Text(S.of(context).modify),
                 onTap: () {
                   setState(() {
                     if(_showDatePicker){
@@ -85,7 +87,7 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
               },
             use24hFormat: true,
             //minimumYear: widget.initialDate.year - 2,
-            maximumYear: ConstantsHelper.calculateDate(context, 10).year, //máximo 10 años
+            maximumYear: Utils.calculateDate(context, 10).year, //máximo 10 años
             minimumDate: _minumunDate,
             mode: CupertinoDatePickerMode.date,
           )

@@ -29,6 +29,12 @@ dependencies:
   envied: ^0.5.4+1
   shared_preferences: ^2.0.8
 
+  #PDF
+  flutter_pdfview: ^1.2.7
+  path_provider: ^2.0.11
+  pdf: ^3.10.8
+
+
   fluttertoast: ^8.0.8
 
   flutter_localizations:
@@ -38,13 +44,15 @@ dependencies:
 
   expandable: ^5.0.1
   expandable_menu: 0.0.5
-  syncfusion_flutter_datepicker: ^25.2.7
 
-  pdf: ^3.10.8
+
   permission_handler: ^11.0.0
   file_picker: ^6.0.0
   flutter_file_dialog: ^3.0.0
   share_plus: ^7.0.2
+  flutter_map: any
+  latlong2: ^0.9.1
+  intl_utils: ^2.4.2
   #http: ^1.2.1
 
 dev_dependencies:

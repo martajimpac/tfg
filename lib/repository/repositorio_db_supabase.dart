@@ -14,7 +14,7 @@ import 'package:evaluacionmaquinas/repository/repositorio_db.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../modelos/imagen_dm.dart';
 import '../modelos/opcion_pregunta_dm.dart';
-import '../modelos/pregunta_categoria_dm.dart';
+import '../modelos/pregunta_dm.dart';
 
 class RepositorioDBSupabase extends RepositorioDB {
   final Supabase _supabase;
@@ -149,16 +149,30 @@ class RepositorioDBSupabase extends RepositorioDB {
   /************** GET PREGUNTAS *******************/
 
   @override
-  Future<List<PreguntaDataModel>> getPreguntasRespuesta(int? idEvaluacion) async {
+  Future<List<PreguntaDataModel>> getPreguntas() async { //TODO NO SE USA ELIMINAR
     try {
       dynamic resConsulta;
 
-      if (idEvaluacion != null) {
-        resConsulta = await _supabase.client.rpc('get_preguntas_respuestas', params: {'ideval': idEvaluacion});
-      } else {
-        resConsulta = await _supabase.client.rpc('get_preguntas');
+      resConsulta = await _supabase.client.rpc('get_preguntas');
+
+
+      if (resConsulta == null) {
+        return [];
       }
 
+      return List<PreguntaDataModel>.from(resConsulta.map((e) => PreguntaDataModel.fromMap(e)).toList());
+    } catch (e) {
+      log.e('Se ha producido un error al intentar obtener las preguntas de la base de datos: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<PreguntaDataModel>> getPreguntasRespuesta(int idEvaluacion) async {
+    try {
+      dynamic resConsulta;
+
+      resConsulta = await _supabase.client.rpc('get_preguntas_respuestas', params: {'ideval': idEvaluacion});
 
       if (resConsulta == null) {
         return [];
@@ -207,7 +221,7 @@ class RepositorioDBSupabase extends RepositorioDB {
 
 
 
-  @override
+/*  @override
   Future<List<OpcionPreguntaDataModel>> getRespuestasPregunta() async { //TODO, PARA CADA PREGUNTA?? METER IDPREGUNTA Y MODIFICAR
     try {
       var resConsulta = _supabase.client.rpc(
@@ -219,7 +233,7 @@ class RepositorioDBSupabase extends RepositorioDB {
       log.e('Se ha producido un error al intentar obtener las opciones de las preguntas de la base de datos: $e');
       rethrow;
     }
-  }
+  }*/
 
 
   /************** INSERTAR ******************/
@@ -300,7 +314,9 @@ class RepositorioDBSupabase extends RepositorioDB {
           await _supabase.client.rpc('insert_respuesta', params: {
             'ideval': idEvaluacion,
             'idpregunta': pregunta.idpregunta,
-            'id_respuesta_selec': pregunta.idRespuestaSeleccionada
+            'id_respuesta_selec': pregunta.idRespuestaSeleccionada,
+            'respondida': pregunta.isAnswered,
+            'observaciones': pregunta.observaciones
           });
         }
 
@@ -335,7 +351,7 @@ class RepositorioDBSupabase extends RepositorioDB {
       int idEvaluacion,
       int idCentro,
       int idTipoEval,
-      DateTime fechaRealizacion,
+      DateTime fechaModificacion,
       DateTime fechaCaducidad,
       DateTime? fechaFabricacion,
       DateTime? fechaPuestaServicio
@@ -345,7 +361,7 @@ class RepositorioDBSupabase extends RepositorioDB {
       await _supabase.client.rpc('update_evaluacion', params: {
         'ideval': idEvaluacion,
         'idcentro': idCentro,
-        'fecha_realizacion': fechaRealizacion.toIso8601String(),
+        'fecha_modificacion': fechaModificacion.toIso8601String(),
         'fecha_caducidad': fechaCaducidad.toIso8601String(),
         'idtipoeval': idTipoEval,
         'fecha_fabricacion': fechaFabricacion?.toIso8601String(),

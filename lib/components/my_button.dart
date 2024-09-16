@@ -9,7 +9,7 @@ class MyButton extends StatelessWidget {
   final Color? color;
   final bool roundBorders;
 
-  MyButton({
+  const MyButton({
     Key? key,
     required this.adaptableWidth,
     required this.onTap,

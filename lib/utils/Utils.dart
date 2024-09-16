@@ -7,19 +7,9 @@ import 'package:intl/intl.dart';
 
 import '../components/dialog/my_ok_dialog.dart';
 
-int selectedIndexHome = 0;
 
-const String filtroCentro = "Centro";
-const String filtroFechaRealizacion = "Fecha realización";
-const String filtroFechaCaducidad = "Fecha caducidad";
 
-//Posibles valores: desarrollo, producción
-enum EntornoVersion { desarrollo, produccion }
-
-const EntornoVersion entornoVersion = EntornoVersion.desarrollo;
-
-const DateFormatString = 'dd/MM/yyyy';
-class ConstantsHelper {
+class Utils {
 
   static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap) {
     showDialog(
@@ -35,12 +25,12 @@ class ConstantsHelper {
     );
   }
 
-  static void showLoadingDialog(BuildContext context) {
+  static void showLoadingDialog(BuildContext context, {String text = ""}) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const MyLoadingAlertDialog();
+        return MyLoadingAlertDialog(message: text);
       },
     );
   }
@@ -150,4 +140,6 @@ class ConstantsHelper {
     }
     return null;
   }
+
+
 }

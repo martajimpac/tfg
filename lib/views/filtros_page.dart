@@ -1,18 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
-import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../components/datePicker/custom_date_picker.dart';
 import '../components/textField/custom_drop_down_field.dart';
 import '../cubit/centros_cubit.dart';
-import '../utils/ConstantsHelper.dart';
-import '../main.dart';
+import '../generated/l10n.dart';
 import '../modelos/centro_dm.dart';
+import '../utils/Constants.dart';
+import '../utils/Utils.dart';
 import '../theme/dimensions.dart';
-
 
 class FiltrosPage extends StatefulWidget {
   const FiltrosPage({Key? key}) : super(key: key);
@@ -36,7 +35,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<CentrosCubit>(context).getCentros();
+    BlocProvider.of<CentrosCubit>(context).getCentros(context);
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _filtros = _cubitEvaluaciones.filtros;
 
@@ -47,7 +46,6 @@ class _FiltrosPageState extends State<FiltrosPage> {
     if(_filtros[filtroFechaCaducidad] != null){
       _fechaCaducidadNotifier.value = (_filtros[filtroFechaCaducidad] as DateTime);
     }
-
   }
 
   @override
@@ -58,14 +56,12 @@ class _FiltrosPageState extends State<FiltrosPage> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Filtros',
+          S.of(context).filters,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -76,65 +72,67 @@ class _FiltrosPageState extends State<FiltrosPage> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-              child: Padding(
+                child: Padding(
                   padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Centro"),
-                  BlocBuilder<CentrosCubit, CentrosState>(
-                    builder: (context, state) {
-                      if (state is CentrosLoading) {
-                        return const SizedBox(
-                          height: 100,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      } else if (state is CentrosLoaded) {
-                        _centros = state.centros;
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(S.of(context).center),
+                      BlocBuilder<CentrosCubit, CentrosState>(
+                        builder: (context, state) {
+                          if (state is CentrosLoading) {
+                            return const SizedBox(
+                              height: 100,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (state is CentrosLoaded) {
+                            _centros = state.centros;
 
-                        if(_filtros[filtroCentro] != null && _filtros[filtroCentro].toString().isNotEmpty){
-                          _centrosController.text = _filtros[filtroCentro] as String;
-                        }
+                            if(_filtros[filtroCentro] != null && _filtros[filtroCentro].toString().isNotEmpty){
+                              _centrosController.text = _filtros[filtroCentro] as String;
+                            }
 
-                        return CustomDropdownField(
-                          controller: _centrosController,
-                          hintText: "Nombre del centro",
-                          items: _centros,
-                          numItems: 5
-                        );
-                      } else if (state is CentrosError) {
-                        ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () => null);
-                        return const SizedBox();
-                      } else {  return const SizedBox(); }
-                    },
+                            return CustomDropdownField(
+                                controller: _centrosController,
+                                hintText: S.of(context).hintCenter,
+                                items: _centros,
+                                numItems: 5
+                            );
+                          } else if (state is CentrosError) {
+                            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => null);
+                            return const SizedBox();
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: Dimensions.marginSmall),
+                      Text(S.of(context).completionDateMustBeAfter),
+                      CustomDatePicker(
+                        onDateChanged: (DateTime? newDate) {
+                          _fechaRealizacion = newDate;
+                        },
+                        selectedDateNotifier: _fechaRealizacionNotifier,
+                        hasLimitDay: false,
+                      ),
+
+                      const SizedBox(height: Dimensions.marginSmall),
+                      Text(S.of(context).expirationDateMustBeBefore),
+
+                      const SizedBox(height: Dimensions.marginSmall),
+                      CustomDatePicker(
+                        onDateChanged: (DateTime? newDate) {
+                          _fechaCaducidad = newDate;
+                        },
+                        selectedDateNotifier: _fechaCaducidadNotifier,
+                        hasLimitDay: false,
+                      ),
+                    ],
                   ),
-
-                  const SizedBox(height: Dimensions.marginSmall),
-                  const Text("La fecha de realización debe ser posterior a..."),
-                  CustomDatePicker(
-                    onDateChanged: (DateTime? newDate) {
-                      _fechaRealizacion = newDate;
-                    },
-                    selectedDateNotifier: _fechaRealizacionNotifier,
-                    hasLimitDay: false,
-                  ),
-
-                  const SizedBox(height: Dimensions.marginSmall),
-                  const Text("La fecha de caducidad debe ser anterior a...."),
-
-                  const SizedBox(height: Dimensions.marginSmall),
-                  CustomDatePicker(
-                    onDateChanged: (DateTime? newDate) {
-                      _fechaCaducidad = newDate;
-                    },
-                    selectedDateNotifier: _fechaCaducidadNotifier,
-                    hasLimitDay: false,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
 
             Container(
               margin: const EdgeInsets.only(top: 20), // Espacio entre el contenido y la línea gris
@@ -149,7 +147,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
             ),
             // Fila para el texto "Restablecer" y el botón de búsqueda
             Padding(
-              padding: const  EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 top: Dimensions.marginSmall,   // Espacio en la parte superior
                 bottom: Dimensions.marginSmall, // Espacio en la parte inferior
                 left: Dimensions.marginMedium,    // Espacio a la izquierda
@@ -169,9 +167,9 @@ class _FiltrosPageState extends State<FiltrosPage> {
                         _fechaCaducidadNotifier.value = null;
                       });
                     },
-                    child: const Text(
-                      "Restablecer",
-                      style: TextStyle(
+                    child: Text(
+                      S.of(context).reset,
+                      style: const TextStyle(
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -179,19 +177,19 @@ class _FiltrosPageState extends State<FiltrosPage> {
                   MyButton(
                     onTap: () {
                       if(_fechaRealizacion != null){
-                        _cubitEvaluaciones.addFilter(filtroFechaCaducidad, _fechaRealizacion);
+                        _cubitEvaluaciones.addFilter(context, filtroFechaCaducidad, _fechaRealizacion);
                       }else{
-                        _cubitEvaluaciones.removeFilter(filtroFechaCaducidad);
+                        _cubitEvaluaciones.removeFilter(context, filtroFechaCaducidad);
                       }
                       if(_fechaCaducidad != null){
-                        _cubitEvaluaciones.addFilter(filtroFechaRealizacion, _fechaCaducidad);
+                        _cubitEvaluaciones.addFilter(context, filtroFechaRealizacion, _fechaCaducidad);
                       }else{
-                        _cubitEvaluaciones.removeFilter(filtroFechaRealizacion);
+                        _cubitEvaluaciones.removeFilter(context, filtroFechaRealizacion);
                       }
                       if(_centrosController.text.trim().isNotEmpty){
-                        _cubitEvaluaciones.addFilter(filtroCentro, _centrosController.text.trim());
+                        _cubitEvaluaciones.addFilter(context, filtroCentro, _centrosController.text.trim());
                       }else{
-                        _cubitEvaluaciones.removeFilter(filtroCentro);
+                        _cubitEvaluaciones.removeFilter(context, filtroCentro);
                       }
 
                       Navigator.push(
@@ -201,7 +199,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
                         ),
                       );
                     },
-                    text: "Buscar",
+                    text: S.of(context).search,
                     adaptableWidth: true,
                   ),
                 ],

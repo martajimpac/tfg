@@ -7,6 +7,7 @@ import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:evaluacionmaquinas/cubit/insertar_evaluacion_cubit.dart';
@@ -14,10 +15,13 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/checklist_page.dart';
 import 'package:evaluacionmaquinas/views/filtros_page.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import '../components/dialog/my_loading_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/evaluaciones_cubit.dart';
-import '../utils/ConstantsHelper.dart';
+import '../generated/l10n.dart';
+import '../utils/Constants.dart';
+import '../utils/Utils.dart';
 import 'detalle_evaluacion_page.dart';
 
 import 'package:flutter/material.dart';
@@ -39,6 +43,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
   bool _showDeleteIcons = false;
 
+  bool _showMap = false;
   bool _sortedByDate = true;
   bool _sortDateDescendent = true;
   bool _sortNameDescendent = true;
@@ -48,7 +53,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     super.initState();
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
-    _cubitEvaluaciones.getEvaluaciones();
+    _cubitEvaluaciones.getEvaluaciones(context);
   }
 
   @override
@@ -69,7 +74,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            _showDeleteIcons ? '' : 'Mis evaluaciones',
+            _showDeleteIcons ? '' : S.of(context).myEvaluationsTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           actions: [
@@ -109,6 +114,21 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     },
                   ),
                 ),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.map),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    onPressed: () {
+                      setState(() {
+                        _showMap =!_showMap;
+                      });
+                    },
+                  ),
+                ),
                 const Spacer(), // Para separar los contenedores de la izquierda y de la derecha
                 Container(
                   decoration: BoxDecoration(
@@ -127,8 +147,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
                         Fluttertoast.showToast(
                           msg: _sortNameDescendent
-                              ? "Evaluaciones ordenadas por el nombre de la máquina en orden descendente."
-                              : "Evaluaciones ordenadas por el nombre de la máquina." ,
+                              ? S.of(context).evaluationsSortedNameDescendant
+                              : S.of(context).evaluationsSortedName ,
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.CENTER,
                           backgroundColor: Colors.grey,
@@ -161,8 +181,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
                       Fluttertoast.showToast(
                         msg: _sortDateDescendent
-                            ? "Evaluaciones ordenadas por la fecha de realización en orden descendente"
-                            : "Evaluaciones ordenadas por la fecha de realización",
+                            ? S.of(context).evaluationsSortedDateDescendant
+                            : S.of(context).evaluationsSortedDate,
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.CENTER,
                         backgroundColor: Colors.grey,
@@ -180,7 +200,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 const SizedBox(width: Dimensions.marginSmall),
               ],
             ),
-
 
             /****************** FILTROS **************************************************************************/
             SizedBox(
@@ -212,7 +231,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                               const SizedBox(width: Dimensions.marginSmall),
                               GestureDetector(
                                 onTap: () {
-                                  _cubitEvaluaciones.removeFilter(filtro.key);
+                                  _cubitEvaluaciones.removeFilter(context, filtro.key);
                                   _cubitEvaluaciones.filtros.remove(filtro.key);
                                   setState(() {});
                                 },
@@ -233,147 +252,31 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
             /****************** FIN FILTROS **************************************************************************/
             /****************** EVALUACIONES **************************************************************************/
-            Expanded(
-              child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
-                builder: (context, state) {
-                  if (state is EvaluacionesLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is EvaluacionesLoaded) {
-                    _evaluaciones = state.evaluaciones;
+            _buildLista(),
+            ///_showMap ? _buildMap() : ,
 
-                    //ordenar
-                    if(_sortedByDate){
-                      _evaluaciones.sort((a, b) => a.fechaRealizacion.compareTo(b.fechaRealizacion));
-                      if(!_sortDateDescendent){
-                        _evaluaciones = _evaluaciones.reversed.toList();
-                      }
-                    }else{
-                      _evaluaciones.sort((a, b) => a.nombreMaquina.compareTo(b.nombreMaquina));
-                      if(!_sortNameDescendent){
-                        _evaluaciones = _evaluaciones.reversed.toList();
-                      }
-                    }
-
-                    if (_evaluaciones.isEmpty) {
-                      return Center(
-                        child: EmptyView(
-                          onRetry: () {
-                            _cubitEvaluaciones.getEvaluaciones();
-                          },
-                        ),
-                      );
-                    } else{
-                      return GestureDetector(
-                        // Detecta un clic largo en la lista
-                        onLongPress: () {
-                          setState(() {
-                            _showDeleteIcons = true;
-                          });
-                        },
-                        child: ListView.builder(
-                          itemCount: state.evaluaciones.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final evaluacion = _evaluaciones[index];
-                            return GestureDetector(
-                              onTap: () {
-                                if(!_showDeleteIcons){
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetalleEvaluaccionPage(idEvaluacion: _evaluaciones[index].ideval),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Stack(
-                                children: [
-                                  Card(
-                                    margin: const EdgeInsets.all(Dimensions.marginSmall),
-                                    elevation: 0,
-                                    color: Theme.of(context).colorScheme.onBackground,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(Dimensions.marginSmall),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            evaluacion.nombreMaquina,
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(evaluacion.centro, style: TextStyle( color: Theme.of(context).colorScheme.onSecondary)),
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
-                                              const Text(" - "),
-                                              Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: const TextStyle(color: Colors.red)),
-                                            ],
-                                          ),
-                                          const SizedBox(height: Dimensions.marginSmall),
-                                          CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
-                                        ],
-                                      ),
-                                    )
-                                  ),
-                                  Positioned.fill(
-                                    child: Container(
-                                      color: _showDeleteIcons? Theme.of(context).colorScheme.background.withOpacity(0.5) : Colors.transparent,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
-                                        ? IconButton(
-                                          icon: Image.asset(
-                                            'lib/images/ic_close.png',
-                                            height: 40, // Ajusta el tamaño de la imagen según sea necesario
-                                            width: 40,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () {
-                                            _indexToDelete = index;
-                                            _eliminarEvaluacion(evaluacion.ideval, evaluacion.idMaquina);
-                                          },
-                                        )
-                                        : const SizedBox(),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                  } else if (state is EvaluacionesError) {
-                    return Center(child: Text(state.errorMessage));
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
-            ),
             /****************** FIN EVALUACIONES **************************************************************************/
             BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                 listener: (context, state) {
                   if(state is EliminarEvaluacionCompletada){
+                    Navigator.of(context).pop();
+                    Utils.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
+                      Navigator.of(context).pop();
+                    });
                     setState(() {
                       _evaluaciones.removeAt(_indexToDelete);
                     });
                   }else if (state is EliminarEvaluacionLoading) {
+                    Utils.showLoadingDialog(context, text: "Generando el pdf...");
                   } else if (state is EliminarEvaluacionError) {
-                    ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                    Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                       Navigator.of(context).pop();
                     });
                   } else {
-                   /* Navigator.of(context).pop();
-                    ConstantsHelper.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
+                    Navigator.of(context).pop();
+                    Utils.showMyOkDialog(context, "DESCONOCIDO", "Ha ocurrido un error inesperado", () {
                       Navigator.of(context).pop();
-                    });*/
+                    });
                   }
                 },child: const SizedBox()
             )
@@ -389,13 +292,13 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
       context: context,
       builder: (BuildContext context) {
         return MyTwoButtonsDialog(
-          title: "¿Está seguro de que desea eliminar la evaluación?",
-          desc: "Una vez eliminada, no podrá recuperar los datos",
-          primaryButtonText: "Confirmar",
-          secondaryButtonText: "Cancelar",
+          title: S.of(context).deleteEvaluationsTitle,
+          desc: S.of(context).deleteEvaluationsDesc,
+          primaryButtonText: S.of(context).delete,
+          secondaryButtonText: S.of(context).cancel,
           onPrimaryButtonTap: () {
             Navigator.of(context).pop();
-            _cubitEliminarEvaluacion.eliminarEvaluacion(idEvaluacion, idMaquina);
+            _cubitEliminarEvaluacion.eliminarEvaluacion(context, idEvaluacion, idMaquina);
           },
           onSecondaryButtonTap: () {
             Navigator.of(context).pop();
@@ -404,6 +307,168 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
       },
     );
   }
+
+
+  Widget _buildMap() {
+    return Expanded(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: FlutterMap(
+              options: const MapOptions(
+                minZoom: 5,
+                maxZoom: 25,
+                initialCenter: LatLng(51.5, -0.09),
+                initialZoom: 18.0,
+              ),
+              mapController: MapController(),
+              children: [],
+            ),
+          ),
+        )
+    );
+  }
+
+  Widget _buildLista() {
+
+    return Expanded(
+      child: BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
+        builder: (context, state) {
+          if (state is EvaluacionesLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is EvaluacionesLoaded) {
+            _evaluaciones = state.evaluaciones;
+
+            //ordenar
+            if(_sortedByDate){
+              _evaluaciones.sort((a, b) => a.fechaRealizacion.compareTo(b.fechaRealizacion));
+              if(!_sortDateDescendent){
+                _evaluaciones = _evaluaciones.reversed.toList();
+              }
+            }else{
+              _evaluaciones.sort((a, b) => a.nombreMaquina.compareTo(b.nombreMaquina));
+              if(!_sortNameDescendent){
+                _evaluaciones = _evaluaciones.reversed.toList();
+              }
+            }
+
+            if (_evaluaciones.isEmpty) {
+              return Center(
+                child: EmptyView(
+                  onRetry: () {
+                    _cubitEvaluaciones.getEvaluaciones(context);
+                  },
+                ),
+              );
+            } else{
+              return GestureDetector(
+                // Detecta un clic largo en la lista
+                onLongPress: () {
+                  setState(() {
+                    _showDeleteIcons = true;
+                  });
+                },
+                child: ListView.builder(
+                  itemCount: state.evaluaciones.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final evaluacion = _evaluaciones[index];
+                    return GestureDetector(
+                      onTap: () {
+                        if(!_showDeleteIcons){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetalleEvaluacionPage(idEvaluacion: _evaluaciones[index].ideval),
+                            ),
+                          );
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          Card(
+                              margin: const EdgeInsets.all(Dimensions.marginSmall),
+                              elevation: 0,
+                              color: Theme.of(context).colorScheme.onBackground,
+                              child: Padding(
+                                padding: const EdgeInsets.all(Dimensions.marginSmall),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      evaluacion.nombreMaquina,
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(evaluacion.centro, style: TextStyle( color: Theme.of(context).colorScheme.onSecondary)),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
+                                        const Text(" - "),
+                                        Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: const TextStyle(color: Colors.red)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: Dimensions.marginSmall),
+                                    CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
+                                  ],
+                                ),
+                              )
+                          ),
+                          Positioned.fill(
+                            child: Container(
+                              color: _showDeleteIcons? Theme.of(context).colorScheme.background.withOpacity(0.5) : Colors.transparent,
+                            ),
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
+                                ? IconButton(
+                              icon: Image.asset(
+                                'lib/images/ic_close.png',
+                                height: 40, // Ajusta el tamaño de la imagen según sea necesario
+                                width: 40,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                _indexToDelete = index;
+                                _eliminarEvaluacion(evaluacion.ideval, evaluacion.idMaquina);
+                              },
+                            )
+                                : const SizedBox(),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+          } else if (state is EvaluacionesError) {
+            return Center(child: Text(state.errorMessage));
+          } else {
+            return const SizedBox();
+          }
+        },
+      ),
+    );
+  }
+
 }
+
 
 

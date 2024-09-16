@@ -4,10 +4,9 @@ import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
 import 'package:evaluacionmaquinas/cubit/evaluaciones_cubit.dart';
 import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,12 +33,14 @@ import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/centros_cubit.dart';
 import '../cubit/eliminar_evaluacion_cubit.dart';
 import '../cubit/insertar_evaluacion_cubit.dart';
+import '../generated/l10n.dart';
+import '../utils/Constants.dart';
 
 class NuevaEvaluacionPage extends StatefulWidget {
   final EvaluacionDetailsDataModel? evaluacion;
   final List<ImagenDataModel>? imagenes;
 
-  const NuevaEvaluacionPage({Key? key, this.evaluacion, this.imagenes}) : super(key: key);
+  const NuevaEvaluacionPage({super.key, this.evaluacion, this.imagenes});
 
   @override
   _NuevaEvaluacionPageState createState() => _NuevaEvaluacionPageState();
@@ -50,7 +51,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
   late PreguntasCubit _cubitPreguntas;
   bool _isModifiying = false;
-  bool _exit = false;
+  bool _exit = false; //variable que ponemos a true para salir guardando los cambios //TODO QUITAR!!
 
   final _centrosController = TextEditingController();
   final _denominacionController = TextEditingController();
@@ -83,8 +84,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         context: context,
         builder: (BuildContext context) {
           return MyOkDialog(
-            title: 'Límite de imágenes alcanzado.',
-            desc: 'No es posible subir más de tres imágenes.',
+            title: S.of(context).errorLimitImageTitle,
+            desc: S.of(context).errorLimitImageDesc,
             onTap: (){ Navigator.of(context).pop(); },
           );
         },
@@ -116,25 +117,25 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       setState(() {
         // Verificar cada campo y agregar su nombre a la lista si es null
         if (_idCentro == null || _nombreCentro == "") {
-          camposNull.add('Centro');
+          camposNull.add(S.of(context).center);
           _isCentroRed = true;
         }
         if (_denominacionController.text.trim() == "") {
-          camposNull.add('Denominación');
+          camposNull.add(S.of(context).denomination);
           _isNombreMaquinaRed = true;
         }
         if (_numeroSerieController.text.trim() == "") {
-          camposNull.add('Nº de fabricante / Nº de serie');
+          camposNull.add(S.of(context).serialNumber);
           _isNumeroSerieRed = true;
         }
       });
 
       // Construir el mensaje de error
-      String errorMessage = 'Los siguientes campos son obligatorios y no pueden estar vacíos:\n\n';
+      String errorMessage = S.of(context).errorMandatoryFields;
       errorMessage += camposNull.join('\n');
 
       // Mostrar el diálogo con el mensaje de error
-      ConstantsHelper.showMyOkDialog(context, "Error", errorMessage, () =>  Navigator.of(context).pop());
+      Utils.showMyOkDialog(context, S.of(context).error, errorMessage, () =>  Navigator.of(context).pop());
     }else if(_idCentro == -1){
       setState(() {
         _isFechasRed = false;
@@ -143,10 +144,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _isNumeroSerieRed = false;
       });
 
-      String errorMessage = 'El centro introducido debe coincidir con uno de los de la lista de centros disponibles';
+      String errorMessage = S.of(context).errorCenterDoesntMatch;
 
       // Mostrar el diálogo con el mensaje de error
-      ConstantsHelper.showMyOkDialog(context, "Error", errorMessage, () =>  Navigator.of(context).pop());
+      Utils.showMyOkDialog(context, S.of(context).error, errorMessage, () =>  Navigator.of(context).pop());
     } else if(_fechaFabricacion != null && _fechaPuestaServicio != null){
 
       if(_fechaFabricacion!.isBefore(_fechaPuestaServicio!)){
@@ -160,7 +161,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         });
 
         // Mostrar el diálogo con el mensaje de error
-        ConstantsHelper.showMyOkDialog(context, "Error", "La fecha de puesta en servicio no puede ser anterior a la fecha de fabricación", () =>  Navigator.of(context).pop());
+        Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorComissioningDate, () =>  Navigator.of(context).pop());
       }
 
     }else{
@@ -174,24 +175,24 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       context: context,
       builder: (BuildContext context) {
         return MyContentDialog(
-          title:  Text("Resumen", style: Theme.of(context).textTheme.titleMedium),
+          title:  Text(S.of(context).summary, style: Theme.of(context).textTheme.titleMedium),
           content: Container(
               child: Column(
                 children: [
-                  Text("Datos evaluacion", style: Theme.of(context).textTheme.headlineMedium),
-                  Text("Centro: $_nombreCentro"),
-                  Text("Fecha de caducidad: ${ DateFormat(DateFormatString).format(_fechaCaducidad) }"),
-                  Text("Datos evaluacion", style: Theme.of(context).textTheme.headlineMedium),
-                  Text("Denominacion: ${_denominacionController.text}"),
-                  if(_fabricanteController.text.trim().isNotEmpty) Text("Fabricante: ${_fabricanteController.text}"),
-                  Text("Nº de fabricante / Nº de serie: ${_numeroSerieController.text}"),
-                  if (_fechaFabricacion != null) Text("Fecha de fabricación: ${DateFormat(DateFormatString).format(_fechaFabricacion!)}"),
-                  if (_fechaPuestaServicio != null) Text("Fecha de puesta en servicio: ${DateFormat(DateFormatString).format(_fechaPuestaServicio!)}")
+                  Text(S.of(context).evaluationData, style: Theme.of(context).textTheme.headlineMedium),
+                  Text("${S.of(context).center}: $_nombreCentro"),
+                  Text("${S.of(context).expirationDate}: ${ DateFormat(DateFormatString).format(_fechaCaducidad) }"),
+                  Text(S.of(context).machineData, style: Theme.of(context).textTheme.headlineMedium),
+                  Text("${S.of(context).denomination}: ${_denominacionController.text}"),
+                  if(_fabricanteController.text.trim().isNotEmpty) Text("${S.of(context).manufacturer}: ${_fabricanteController.text}"),
+                  Text("${S.of(context).serialNumber}: ${_numeroSerieController.text}"),
+                  if (_fechaFabricacion != null) Text("${S.of(context).manufacturedDate}: ${DateFormat(DateFormatString).format(_fechaFabricacion!)}"),
+                  if (_fechaPuestaServicio != null) Text("${S.of(context).comissioningDate}: ${DateFormat(DateFormatString).format(_fechaPuestaServicio!)}")
                 ],
               )
           ),
-          primaryButtonText: "Continuar",
-          secondaryButtonText: "Modificar",
+          primaryButtonText: S.of(context).continuee,
+          secondaryButtonText: S.of(context).modify,
           onPrimaryButtonTap: () {
             //Navigator.of(context).pop(); //TODO DA ERROR RARO
 
@@ -216,9 +217,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         context: context,
         builder: (BuildContext context) {
           return MyTwoButtonsDialog(
-            title: 'Confirmación',
-            desc: '¿Desea guardar los cambios?',
-            primaryButtonText: "Guardar",
+            title: S.of(context).confirmation,
+            desc: S.of(context).saveChanges,
+            primaryButtonText: S.of(context).save,
             onPrimaryButtonTap: () {
               _cubitPreguntas.deletePreguntas();
               _exit = true;
@@ -240,7 +241,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
               _modificarEvaluacion(); //TODO
             },
-            secondaryButtonText: "Descartar",
+            secondaryButtonText: S.of(context).discard,
             onSecondaryButtonTap: (){
               _cubitPreguntas.deletePreguntas();
               Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
@@ -253,20 +254,20 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         context: context,
         builder: (BuildContext context) {
           return MyTwoButtonsDialog(
-            title: 'Confirmación',
-            desc: '¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.',
-            primaryButtonText: "Salir",
+            title: S.of(context).confirmation,
+            desc: S.of(context).exitEvaluation,
+            primaryButtonText: S.of(context).exit,
             onPrimaryButtonTap: () {
               _cubitPreguntas.deletePreguntas();
               if(_idEvaluacion != null && _idMaquina != null){
                 //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
                 Navigator.of(context).pop();
-                _cubitEliminarEvaluacion.eliminarEvaluacion(_idEvaluacion!, _idMaquina!);
+                _cubitEliminarEvaluacion.eliminarEvaluacion(context, _idEvaluacion!, _idMaquina!);
               }else{
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
               }
             },
-            secondaryButtonText: "Cancelar",
+            secondaryButtonText: S.of(context).cancel,
             onSecondaryButtonTap: (){Navigator.of(context).pop(); },
           );
         },
@@ -281,10 +282,12 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final id =  prefs.getString('id') ?? '';
     _cubitInsertarEvaluacion.insertarEvaluacion(
+        context,
         id, //idinspector (de supabase)
         _idCentro!,
+        _nombreCentro,
         1, //idtipoeval
-        DateTime.now(),
+        DateTime.now(), //fecha realizacion
         _fechaCaducidad,
         _fechaFabricacion,
         _fechaPuestaServicio,
@@ -296,11 +299,17 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   Future<void> _modificarEvaluacion() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final id =  prefs.getString('id') ?? '';
     _cubitInsertarEvaluacion.modificarEvaluacion(
+        context,
+        id,  //idinspector (de supabase)
         _idEvaluacion!,
         _idCentro!,
-        1, //idtipoeval
-        DateTime.now(),
+        _nombreCentro,
+        1, //idtipoeval TODO
+        widget.evaluacion!.fechaRealizacion,
+        DateTime.now(), //fecha modificacion
         _fechaCaducidad,
         _fechaFabricacion,
         _fechaPuestaServicio,
@@ -315,11 +324,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<CentrosCubit>(context).getCentros();
+    BlocProvider.of<CentrosCubit>(context).getCentros(context);
     _cubitInsertarEvaluacion = BlocProvider.of<InsertarEvaluacionCubit>(context, listen: false);
     _cubitEliminarEvaluacion = BlocProvider.of<EliminarEvaluacionCubit>(context);
     _cubitPreguntas = BlocProvider.of<PreguntasCubit>(context);
-    _fechaCaducidad = ConstantsHelper.calculateDate(context, 2);
+    _fechaCaducidad = Utils.calculateDate(context, 2);
 
     if(widget.evaluacion != null){
       _isModifiying = true;
@@ -431,7 +440,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   width: 60,
                 ),*/
                 Text(
-                  _isModifiying == true ? 'Modificar evaluación': 'Crea una nueva evaluación',
+                  _isModifiying == true ? S.of(context).modifyEvaluationTitle: S.of(context).newEvaluationTitle,
                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: Dimensions.titleTextSize,
@@ -465,12 +474,12 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Datos de la evaluación", style: Theme.of(context).textTheme.headlineMedium),
+                      Text(S.of(context).evaluationData, style: Theme.of(context).textTheme.headlineMedium),
                     ],
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("*Centro"),
+                  Text(S.of(context).centerAsterisk),
                   BlocBuilder<CentrosCubit, CentrosState>(
                     builder: (context, state) {
                       if (state is CentrosLoading) {
@@ -483,7 +492,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                         return CustomDropdownField(
                           controller: _centrosController,
-                          hintText: "Nombre del centro",
+                          hintText: S.of(context).hintCenter,
                           items: _centros,
                           numItems: 5,
                           isRed: _isCentroRed,
@@ -491,19 +500,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                       } else if (state is CentrosError) {
                         return SizedBox(
                           height: 100,
-                          child: Center(child: Text("Error: ${state.errorMessage}")),
+                          child: Center(child: Text(state.errorMessage)),
                         );
                       } else {  return const SizedBox(); }
                     },
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("*Fecha de caducidad"),
+                  Text(S.of(context).expirationDateAsterisk),
                   CustomDatePickerScroll(
                     onDateChanged: (DateTime newDate) {
                       _fechaCaducidad = newDate;
                       Fluttertoast.showToast(
-                        msg:  ConstantsHelper.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
+                        msg:  Utils.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         backgroundColor: Colors.grey,
@@ -518,24 +527,24 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Datos de la máquina", style: Theme.of(context).textTheme.headlineMedium),
+                      Text(S.of(context).machineData, style: Theme.of(context).textTheme.headlineMedium),
                     ],
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("*Denominación"),
-                  MyTextField(controller: _denominacionController, hintText: "Nombre de la máquina", isRed: _isNombreMaquinaRed),
+                  Text(S.of(context).denominationAsterisk),
+                  MyTextField(controller: _denominacionController, hintText: S.of(context).hintDenomination, isRed: _isNombreMaquinaRed),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("Fabricante"),
-                  MyTextField(controller: _fabricanteController, hintText: "Nombre del fabricante"),
+                  Text(S.of(context).manufacturer),
+                  MyTextField(controller: _fabricanteController, hintText: S.of(context).hintManufacturer),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("*Nº de fabricante / Nº de serie"),
-                  MyTextField(controller: _numeroSerieController, hintText: "Número", isRed: _isNumeroSerieRed,),
+                  Text(S.of(context).serialNumberAsterisk),
+                  MyTextField(controller: _numeroSerieController, hintText: S.of(context).hintSerialNumber, isRed: _isNumeroSerieRed,),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("Fecha de fabricación"),
+                  Text(S.of(context).manufacturedDateAsterisk),
                   CustomDatePicker(
                     onDateChanged: (DateTime? newDate) {
                       _fechaFabricacion = newDate;
@@ -545,7 +554,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   ),
 
                   const SizedBox(height: Dimensions.marginSmall),
-                  const Text("Fecha de puesta en servicio"),
+                  Text(S.of(context).comissioningDateAsterisk),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   CustomDatePicker(
@@ -569,13 +578,13 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.add_a_photo),
+                            icon: const Icon(Icons.add_a_photo),
                             onPressed: _checkImageLimit,
                             color: Colors.grey,
                           ),
-                          const Text(
-                            'Añadir imagen',
-                            style: TextStyle(
+                          Text(
+                            S.of(context).addImage,
+                            style: const TextStyle(
                               fontSize: Dimensions.smallTextSize,
                               color: Colors.grey
                             ),
@@ -665,30 +674,30 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                       _isNombreMaquinaRed = false;
                       _showDialogCheck(context);
                     },
-                    text: "Continuar",
+                    text: S.of(context).continuee,
                   ),
                   BlocListener<InsertarEvaluacionCubit, InsertarEvaluacionState>(
                       listener: (context, state) {
                         // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
                         if(state is InsertarEvaluacionLoading){
                           Navigator.of(context).pop(); //cerrar resumen
-                          ConstantsHelper.showLoadingDialog(context);
+                          Utils.showLoadingDialog(context);
                         }else if(state is EvaluacionInsertada) {
                           //Navigator.of(context).pop(); //cerrar cargando TODO
 
                           if(_exit){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
                           }else{
-                            _idEvaluacion = state.idEvaluacion;
-                            _idMaquina = state.idMaquina;
+                            _idEvaluacion = state.evaluacion.ideval;
+                            _idMaquina = state.evaluacion.idmaquina;
                             _imageList.clear();
                             _imageList.addAll(state.imagenes);
                             // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(idEvaluacion: _idEvaluacion!, isModifying: _isModifiying)),);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
                           }
                         }else if(state is InsertarEvaluacionError){
                           Navigator.of(context).pop(); //cerrar cargando
-                          ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                          Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                             Navigator.of(context).pop();
                           });
                         }
@@ -700,10 +709,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           Navigator.of(context).pop();
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
                         }else if (state is EliminarEvaluacionLoading) {
-                          ConstantsHelper.showLoadingDialog(context);
+                          Utils.showLoadingDialog(context);
                         } else if (state is EliminarEvaluacionError) {
                           Navigator.of(context).pop();
-                          ConstantsHelper.showMyOkDialog(context, "Error", state.errorMessage, () {
+                          Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                             Navigator.of(context).pop();
                           });
                         } else {}

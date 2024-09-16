@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
-import 'package:evaluacionmaquinas/utils/ConstantsHelper.dart';
+import 'package:evaluacionmaquinas/utils/Utils.dart';
 
+/***
+ * DATOS BASICOS DE LA EVALUACIÓN, SIRVE PARA MOSTRAR LA LISTA DE LAS EVALUACIONES
+ ***/
 class EvaluacionDataModel extends Equatable {
   final int ideval;
   final DateTime fechaRealizacion;

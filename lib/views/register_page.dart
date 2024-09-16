@@ -8,7 +8,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/textField/my_login_textfield.dart';
-import '../utils/ConstantsHelper.dart';
+import '../generated/l10n.dart';
+import '../utils/Utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -53,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(
         centerTitle: true, // Centra el título
         title: Text(
-          'Registro',
+          S.of(context).registerTitle,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -71,29 +72,29 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text("Nombre"),
+                      Text(S.of(context).name),
                       MyLoginTextField(
                         controller: _nameController,
-                        hintText: "nombre",
+                        hintText: S.of(context).hintName,
                       ),
-                      const Text("Correo electrónico"),
+                      Text(S.of(context).email),
                       MyLoginTextField(
                         controller: _emailController,
-                        hintText: "usuario@gmail.com",
+                        hintText: S.of(context).hintEmail,
                         isRed: _isEmailRed,
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
-                      const Text("Contraseña"),
+                      Text(S.of(context).password),
                       MyLoginTextField(
                         controller: _passwordController,
-                        hintText: "*************",
+                        hintText: S.of(context).hintPassword,
                         obscureText: true,
                         isRed: _isPasswordRed,
                       ),
-                      const Text("Repite la contraseña"),
+                      Text(S.of(context).repeatPassword),
                       MyLoginTextField(
                         controller: _repeatPasswordController,
-                        hintText: "*************",
+                        hintText: S.of(context).hintPassword,
                         obscureText: true,
                         isRed: _isRepeatPasswordRed,
                       ),
@@ -125,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             });
 
                             Fluttertoast.showToast(
-                              msg: "Las contraseñas no coinciden",
+                              msg: S.of(context).errorPasswordsDontMatch,
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               backgroundColor: Colors.grey,
@@ -146,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   prefs.setString('name',  user.userMetadata!['username'].toString());
 
                                   // Autenticación exitosa, navega a la siguiente página
-                                  ConstantsHelper.showMyOkDialog(context, "¡Registrado!", "Usuario registrado con éxito", () {
+                                  Utils.showMyOkDialog(context, S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) => const MyHomePage()),
@@ -154,22 +155,22 @@ class _RegisterPageState extends State<RegisterPage> {
                                   });
 
                                 } else {
-                                  ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro", () {Navigator.of(context).pop();});
+                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
                                 }
                               } on AuthException catch (error) {
                                 if (error.statusCode == "429") {
-                                  ConstantsHelper.showMyOkDialog(context, "Error", "Se ha excedido el límite de intentos de registro con este correo electrónico", () {
+                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegisterLimit, () {
                                     Navigator.of(context).pop();
                                   });
                                 } else {
-                                  ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro ${error.statusCode}", () {Navigator.of(context).pop();});
+                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
                                 }
                               }catch (error){
-                                ConstantsHelper.showMyOkDialog(context, "Error", "Ha habido un error en el registro", () {Navigator.of(context).pop();});
+                                Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
                               }
                           }
                         },
-                        text:'Registrarse e iniciar sesión',
+                        text:S.of(context).registerAndLoginButton,
                       ),
                     ],
                   ),

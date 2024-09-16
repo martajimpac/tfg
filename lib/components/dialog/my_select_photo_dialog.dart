@@ -1,6 +1,7 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:flutter/material.dart';
 
+import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 
 class MySelectPhotoDialog extends StatelessWidget {
@@ -30,7 +31,7 @@ class MySelectPhotoDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min, // Hacer que la columna sea del tamaño mínimo
             children: [
               Text(
-                "¿Cómo desea completar la acción?",
+                S.of(context).photoDesc,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -41,22 +42,22 @@ class MySelectPhotoDialog extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onGalleryButtonTap,
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(20),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(20),
                       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    child: Icon(Icons.photo_library_rounded, color: Colors.white),
+                    child: const Icon(Icons.photo_library_rounded, color: Colors.white),
                   ),
                   ElevatedButton(
                     onPressed: onCameraButtonTap,
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(20),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(20),
                       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    child: Icon(Icons.camera_alt, color: Colors.white),
+                    child: const Icon(Icons.camera_alt, color: Colors.white),
                   )
                 ],
               ),

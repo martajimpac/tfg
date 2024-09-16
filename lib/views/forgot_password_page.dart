@@ -3,7 +3,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../components/my_button.dart';
-import '../utils/ConstantsHelper.dart';
+import '../generated/l10n.dart';
+import '../utils/Utils.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -35,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Recuperar contraseña',
+          S.of(context).recoverPasswordTitle,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -52,10 +53,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Correo electrónico"),
+                  Text(S.of(context).email),
                   MyLoginTextField(
                     controller: _emailController,
-                    hintText: "usuario@gmail.com",
+                    hintText: S.of(context).hintEmail,
                     isRed: _isEmailRed,
                   ),
                   const SizedBox(height: 16.0),
@@ -74,22 +75,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         } on AuthException catch (error) {
                           // Manejar errores de autenticación
                           if (error.statusCode == "429") {
-                            ConstantsHelper.showMyOkDialog(context, "Error", "Se ha excedido el límite de intentos con este correo electrónico.", () {
+                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordLimit, () {
                               Navigator.of(context).pop();
                             });
                           } else { //"Email rate limit exceeded"
-                            ConstantsHelper.showMyOkDialog(context, "Error", "Ha ocurrido un error.\nComprueba que el correo sea correcto.", () {
+                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
                               Navigator.of(context).pop();
                             });
                           }
                         } catch (error) {
-                          ConstantsHelper.showMyOkDialog(context, "Error", "Ha ocurrido un error.\nComprueba que el correo sea correcto.", () {
+                          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
                             Navigator.of(context).pop();
                           });
                         }
                       }
                     },
-                    text: 'Enviar correo electrónico',
+                    text: S.of(context).sendEmail,
                   ),
                 ],
               ),

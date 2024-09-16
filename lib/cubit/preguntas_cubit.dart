@@ -1,12 +1,20 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
+import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 import 'package:pdf/widgets.dart';
 
-import '../modelos/pregunta_categoria_dm.dart';
+import '../generated/l10n.dart';
+import '../modelos/pregunta_dm.dart';
+import '../utils/Constants.dart';
+import '../utils/pdf.dart';
 
 // Define el estado del cubit
 abstract class PreguntasState extends Equatable {
@@ -16,7 +24,14 @@ abstract class PreguntasState extends Equatable {
   List<Object> get props => [];
 }
 
-class PreguntasLoading extends PreguntasState {}
+class PreguntasLoading extends PreguntasState {
+  final String loadingMessage;
+
+  const PreguntasLoading(this.loadingMessage);
+
+  @override
+  List<Object> get props => [loadingMessage];
+}
 
 class PreguntasLoaded extends PreguntasState {
   final List<PreguntaDataModel> preguntas;
@@ -26,10 +41,9 @@ class PreguntasLoaded extends PreguntasState {
   const PreguntasLoaded(this.preguntas, this.categorias, this.respuestas);
 
   @override
-  List<Object> get props => [preguntas];
+  List<Object> get props => [preguntas, categorias, respuestas];
 }
 
-class PreguntasSaved extends PreguntasState {}
 
 class PreguntasError extends PreguntasState {
   final String errorMessage;
@@ -40,28 +54,48 @@ class PreguntasError extends PreguntasState {
   List<Object> get props => [errorMessage];
 }
 
+class PdfGenerated extends PreguntasState {
+  final String pathFichero;
+
+  const PdfGenerated(this.pathFichero);
+  @override
+  List<Object> get props => [pathFichero];
+}
+
+class PdfError extends PreguntasState {
+  final String errorMessage;
+
+  const PdfError(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
+}
+
 // Define el cubit
 class PreguntasCubit extends Cubit<PreguntasState> {
   final RepositorioDBSupabase repositorio;
 
-  PreguntasCubit(this.repositorio) : super(PreguntasLoading());
+  PreguntasCubit(this.repositorio) : super(const PreguntasLoading("Cargando las preguntas..."));
 
-  Future<void> getPreguntas(int? idEvaluacion) async { //TODO AQUI NO HACE FALTA EL ?
+  Future<void> getPreguntas(BuildContext context, int idEvaluacion) async {
     if (state is PreguntasLoaded) {
       // Si el estado actual ya tiene preguntas, no hacemos nada
       return;
     }
 
     try {
-      emit(PreguntasLoading()); // Emitir estado de carga
+      emit(const PreguntasLoading("Cargando las preguntas...")); // Emitir estado de carga
 
-      final preguntas = await repositorio.getPreguntasRespuesta(idEvaluacion);
+      List<PreguntaDataModel> preguntas;
+
+      preguntas = await repositorio.getPreguntasRespuesta(idEvaluacion);
+
       final categorias = await repositorio.getCategorias();
       final respuestas = await repositorio.getRespuestas();
 
       emit(PreguntasLoaded(preguntas, categorias, respuestas));
     } catch (e) {
-      emit(PreguntasError('Error al obtener las preguntas: $e'));
+      emit(PreguntasError(S.of(context).cubitQuestionsError));
     }
   }
   void updatePreguntas(PreguntaDataModel updatedPregunta) {
@@ -75,17 +109,40 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<void> insertarRespuestas(int idEvaluacion)async {
-    if (state is PreguntasLoaded) {
-      final loadedState = state as PreguntasLoaded;
-      await repositorio.insertarRespuestas(loadedState.preguntas, idEvaluacion);
-      emit(PreguntasSaved());
+  Future<void> insertarRespuestasAndGeneratePdf(EvaluacionDetailsDataModel evaluacion, AccionesPdfChecklist accion)async {
 
-      emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas));
+    if (state is PreguntasLoaded) {
+
+      final loadedState = state as PreguntasLoaded;
+
+      emit(const PreguntasLoading("Generando el pdf..."));
+
+      await repositorio.insertarRespuestas(loadedState.preguntas, evaluacion.ideval);
+      try {
+
+        String? pathFichero = await PdfHelper.generarInformePDF(
+            evaluacion, loadedState.preguntas, loadedState.respuestas, loadedState.categorias
+        );
+
+        if (pathFichero == null) {
+          emit(const PdfError("ERROR PDF")); //TODO STRINGS
+        } else {
+          emit(PdfGenerated(pathFichero));
+
+          //RESTAURAR EL ESTADO DEL CUBIT
+          //emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas));
+        }
+      } catch (e) {
+        debugPrint('MARTA Error en inspecciones: $e');
+        emit(const PdfError("ERROR PDF  EXCEPCION"));
+      }
+
+
+
     }
   }
 
   void deletePreguntas() {
-    emit(PreguntasLoading()); // Restablece el estado a PreguntasLoading
+    emit(PreguntasLoading("")); // Restablece el estado a PreguntasLoading
   }
 }

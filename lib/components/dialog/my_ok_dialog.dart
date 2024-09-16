@@ -1,6 +1,7 @@
 import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:flutter/material.dart';
 
+import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 
 
@@ -46,7 +47,7 @@ class MyOkDialog extends StatelessWidget {
             MyButton(
               adaptableWidth: false,
               onTap: onTap,
-              text: "Ok",
+              text: S.of(context).accept,
             ),
           ],
         ),
