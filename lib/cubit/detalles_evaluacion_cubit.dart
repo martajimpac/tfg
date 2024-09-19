@@ -8,6 +8,7 @@ import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 
 import '../generated/l10n.dart';
 import '../modelos/imagen_dm.dart';
+import '../utils/pdf.dart';
 
 // Define el estado del cubit
 abstract class DetallesEvaluacionState extends Equatable {
@@ -38,6 +39,23 @@ class DetallesEvaluacionError extends DetallesEvaluacionState {
   List<Object> get props => [errorMessage];
 }
 
+class DetallesEvaluacionPdfGenerated extends DetallesEvaluacionState {
+  final String pathFichero;
+
+  const DetallesEvaluacionPdfGenerated(this.pathFichero);
+  @override
+  List<Object> get props => [pathFichero];
+}
+
+class DetallesEvaluacionPdfError extends DetallesEvaluacionState {
+  final String errorMessage;
+
+  const DetallesEvaluacionPdfError(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
+}
+
 // Define el cubit
 class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
   final RepositorioDBSupabase repositorio;
@@ -50,6 +68,30 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
       final evaluacion = await repositorio.getDetallesEvaluacion(idEvaluacion);
       final imagenes = await repositorio.getImagenesEvaluacion(idEvaluacion);
       emit(DetallesEvaluacionLoaded(evaluacion, imagenes));
+    } catch (e) {
+      emit(DetallesEvaluacionError(S.of(context).cubitEvaluationDetailsError));
+    }
+  }
+
+    Future<void> generatePdf(BuildContext context, EvaluacionDetailsDataModel evaluacion) async {
+    emit(DetallesEvaluacionLoading());
+    try {
+      final preguntas = await repositorio.getPreguntasRespuesta(evaluacion.ideval);
+      final categorias = await repositorio.getCategorias();
+      final respuestas = await repositorio.getRespuestas();
+
+      String? pathFichero = await PdfHelper.generarInformePDF(
+          evaluacion, preguntas, respuestas, categorias
+      );
+
+      if (pathFichero == null) {
+        emit(const DetallesEvaluacionPdfError("ERROR PDF")); //TODO STRINGS
+      } else {
+        emit(DetallesEvaluacionPdfGenerated(pathFichero));
+
+        //RESTAURAR EL ESTADO DEL CUBIT
+        //emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas));
+      }
     } catch (e) {
       emit(DetallesEvaluacionError(S.of(context).cubitEvaluationDetailsError));
     }

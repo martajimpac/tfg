@@ -85,7 +85,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
     try {
       emit(const PreguntasLoading("Cargando las preguntas...")); // Emitir estado de carga
-
       List<PreguntaDataModel> preguntas;
 
       preguntas = await repositorio.getPreguntasRespuesta(idEvaluacion);

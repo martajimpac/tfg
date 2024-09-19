@@ -28,9 +28,6 @@ class TerminarPage extends StatefulWidget {
 }
 
 class _TerminarPageState extends State<TerminarPage> {
-  final PageController _pageController = PageController(initialPage: 0);
-
-  //TODO ESTA PAGINA NECESITA DETALLES EVALUACION Y PREGUNTAS
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +58,10 @@ class _TerminarPageState extends State<TerminarPage> {
             Center(
               child: TabBar(
                 indicator: CircleTabIndicator(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   radius: 4,
                 ),
-                labelColor: Theme.of(context).colorScheme.onPrimary,
+                labelColor: Theme.of(context).colorScheme.primaryContainer,
                 dividerColor: Colors.transparent,
                 isScrollable: false, // Hace que los tabs estén centrados
                 labelPadding: const EdgeInsets.only(left: 20, right: 20),
@@ -117,6 +114,8 @@ class _TerminarPageState extends State<TerminarPage> {
                 }
               },
               shape: const CircleBorder(),
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
               child: const Icon(Icons.share),
             ),
             const SizedBox(height: 10), // Espacio entre botones
@@ -126,8 +125,11 @@ class _TerminarPageState extends State<TerminarPage> {
                 PdfHelper.savePdf(widget.evaluacion.ideval);
               },
               shape: const CircleBorder(),
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
               child: const Icon(Icons.download),
             ),
+            const SizedBox(height:70),
           ],
         ),
       ),

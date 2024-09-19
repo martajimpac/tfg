@@ -269,6 +269,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   }else if (state is EliminarEvaluacionLoading) {
                     Utils.showLoadingDialog(context, text: "Generando el pdf...");
                   } else if (state is EliminarEvaluacionError) {
+                    Navigator.of(context).pop();
                     Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                       Navigator.of(context).pop();
                     });
