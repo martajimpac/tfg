@@ -5,11 +5,12 @@ import 'package:evaluacionmaquinas/utils/almacenamiento.dart';
 import 'package:evaluacionmaquinas/utils/pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/components/circle_tab_indicator.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 
+import '../components/buttons/floating_buttons.dart';
+import '../components/buttons/my_button.dart';
 import '../components/tabs/tab_evaluacion.dart';
 import '../components/tabs/tab_pdf.dart';
 import '../generated/l10n.dart';
@@ -28,6 +29,21 @@ class TerminarPage extends StatefulWidget {
 }
 
 class _TerminarPageState extends State<TerminarPage> {
+
+  Future<void> _sharePdf() async {
+    File? file = await checkIfFileExistAndReturnFile(widget.evaluacion.ideval);
+
+    // Verifica si el archivo existe
+    if (file != null) {
+      PdfHelper.sharePdf(widget.evaluacion.ideval, file);
+    } else {
+      Utils.showMyOkDialog(context, "Error", "Se ha producido un error al compartir el pdf", () => null);
+    }
+  }
+
+  Future<void> _savePdf() async {
+    PdfHelper.savePdf(widget.evaluacion.ideval);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +89,7 @@ class _TerminarPageState extends State<TerminarPage> {
             ),
             Expanded(
               child: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   TabEvaluacion(evaluacion: widget.evaluacion, imagenes: widget.imagenes),
                   TabPdf(
@@ -98,39 +115,13 @@ class _TerminarPageState extends State<TerminarPage> {
             ),
           ],
         ),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              heroTag: "btnShare",
-              onPressed: () async {
-                File? file = await checkIfFileExistAndReturnFile(widget.evaluacion.ideval);
-
-                // Verifica si el archivo existe
-                if (file != null) {
-                  PdfHelper.sharePdf(widget.evaluacion.ideval, file);
-                } else {
-                  Utils.showMyOkDialog(context, "Error", "Se ha producido un error al compartir el pdf", () => null);
-                }
-              },
-              shape: const CircleBorder(),
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              child: const Icon(Icons.share),
-            ),
-            const SizedBox(height: 10), // Espacio entre botones
-            FloatingActionButton(
-              heroTag: "btnDownload",
-              onPressed: () {
-                PdfHelper.savePdf(widget.evaluacion.ideval);
-              },
-              shape: const CircleBorder(),
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              child: const Icon(Icons.download),
-            ),
-            const SizedBox(height:70),
-          ],
+        floatingActionButton: FloatingButtons(
+          onSharePressed: () async {
+            _sharePdf();
+          },
+          onDownloadPressed: () {
+            _savePdf();
+          },
         ),
       ),
     );

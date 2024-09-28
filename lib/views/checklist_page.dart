@@ -13,9 +13,7 @@ import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/terminar_page.dart';
-
-import '../components/my_button.dart';
-import '../components/textField/my_textfield.dart';
+import '../components/buttons/my_button.dart';
 import '../generated/l10n.dart';
 import '../modelos/imagen_dm.dart';
 import '../modelos/pregunta_dm.dart';
@@ -225,10 +223,11 @@ class _CheckListPageState extends State<CheckListPage> {
             }
           }, listener: (BuildContext context, PreguntasState state) {
             if(state is PdfGenerated){
-              Navigator.pop(context);
+              //Utils.showMyOkDialog(context, "generado", "GENERADO", () => null);
+              //Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
             }else if(state is PdfError){
-              Navigator.pop(context);
+              //Navigator.pop(context);
               Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null); //TODO SI ESTO OCURRE....
             }else if(state is PreguntasError){
               Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null);

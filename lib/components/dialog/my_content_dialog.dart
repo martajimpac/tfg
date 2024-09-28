@@ -1,7 +1,8 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../theme/dimensions.dart';
+import '../buttons/my_button.dart';
 
 class MyContentDialog extends StatelessWidget {
   final Text title;

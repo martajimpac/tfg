@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart'; // Necesitas importar flutter_b
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../components/my_button_card.dart';
+import '../components/buttons/my_button_card.dart';
 import '../cubit/evaluaciones_cubit.dart';
 import '../cubit/settings_cubit.dart';
 import '../generated/l10n.dart';
 import '../repository/repositorio_db_supabase.dart';
 import '../theme/app_theme.dart';
-import '../components/my_button.dart';
 import '../theme/dimensions.dart';
 import '../views/change_password_page.dart';
 import '../views/forgot_password_page.dart';

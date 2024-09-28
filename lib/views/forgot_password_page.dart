@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
-import '../components/my_button.dart';
 import '../generated/l10n.dart';
 import '../utils/Utils.dart';
 

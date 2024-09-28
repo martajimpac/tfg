@@ -11,7 +11,7 @@ class MyLoadingAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.onBackground,
-      title: Text(message),
+      title: Text(message, style: Theme.of(context).textTheme.bodyMedium),
       content: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [

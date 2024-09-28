@@ -1,5 +1,11 @@
+
+
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.evaluacionmaquinas">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="evaluacionmaquinas"
         android:name="${applicationName}"

@@ -114,7 +114,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     },
                   ),
                 ),
-                Container(
+                /*Container( TODO VER SI PONGO LO DEL MAPA
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Theme.of(context).colorScheme.primaryContainer,
@@ -128,7 +128,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                       });
                     },
                   ),
-                ),
+                ),*/
                 const Spacer(), // Para separar los contenedores de la izquierda y de la derecha
                 Container(
                   decoration: BoxDecoration(
@@ -260,6 +260,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 listener: (context, state) {
                   if(state is EliminarEvaluacionCompletada){
                     Navigator.of(context).pop();
+                    //Navigator.of(context).pop();
                     Utils.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
                       Navigator.of(context).pop();
                     });
@@ -267,7 +268,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                       _evaluaciones.removeAt(_indexToDelete);
                     });
                   }else if (state is EliminarEvaluacionLoading) {
-                    Utils.showLoadingDialog(context, text: "Generando el pdf...");
+                    Utils.showLoadingDialog(context, text: "Eliminando la evaluación...");
                   } else if (state is EliminarEvaluacionError) {
                     Navigator.of(context).pop();
                     Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
@@ -365,11 +366,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             }
 
             if (_evaluaciones.isEmpty) {
-              return Center(
+              return const Center(
                 child: EmptyView(
-                  onRetry: () {
-                    _cubitEvaluaciones.getEvaluaciones(context);
-                  },
+                  showRetryButton: false,
                 ),
               );
             } else{
@@ -460,7 +459,15 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               );
             }
           } else if (state is EvaluacionesError) {
-            return Center(child: Text(state.errorMessage));
+            return Center(
+              child: EmptyView(
+                customText: state.errorMessage,
+                onRetry: () {
+                  _cubitEvaluaciones.getEvaluaciones(context);
+                },
+                showRetryButton: false,
+              ),
+            );
           } else {
             return const SizedBox();
           }

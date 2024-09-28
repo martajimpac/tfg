@@ -1,7 +1,9 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
+
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../buttons/my_button.dart';
 
 class MyTwoButtonsDialog extends StatelessWidget {
   final String title;

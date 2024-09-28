@@ -40,7 +40,7 @@
 
   "recoverPasswordTitle": "Recuperar contraseña",
   "errorRecoverPasswordLimit": "Se ha excedido el límite de intentos con este correo electrónico.",
-  "errorRecoverPasswordEmail": "Ha ocurrido un error.\\nComprueba que el correo sea correcto.",
+  "errorRecoverPasswordEmail": "Ha ocurrido un error.\nComprueba que el correo sea correcto.",
   "sendEmail": "Enviar correo electrónico",
 
   "registerTitle": "Registro",
@@ -52,7 +52,7 @@
   "registerSuccessDesc": "Usuario registrado con éxito",
   "errorRegister": "Ha habido un error al tratar de realizar el registro.",
   "errorRegisterLimit": "Se ha excedido el límite de intentos de registro con este correo electrónico.",
-  "registerAndLoginButton": "Registrarse y iniciar sesión",
+  "registerAndLoginButton": "Registrarse e iniciar sesión",
 
   "changePasswordTitle": "Cambio de contraseña",
   "currentPassword": "Contraseña actual",
@@ -76,8 +76,8 @@
   "evaluationHasExpired": "La evaluación ha caducado",
 
   "newEvaluationTitle": "Crear nueva evaluación",
-  "exitEvaluation": "¿Está seguro de que quiere salir?\\nLos datos de la evaluación no se guardarán.",
-  "saveChanges": "¿Desea guardar los cambios?.",
+  "exitEvaluation": "¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.",
+  "exitEvaluationChanges": "¿Está seguro de que quiere salir?\nLos cambios no se guardarán.",
   "modifyEvaluationTitle": "Modificar evaluación",
   "evaluationData": "Datos de la evaluación",
   "center": "Centro",
@@ -102,7 +102,7 @@
   "addImage": "Añadir imagen",
   "errorLimitImageTitle": "Límite de imágenes alcanzado",
   "errorLimitImageDesc": "No es posible subir más de tres imágenes.",
-  "errorMandatoryFields": "Los siguientes campos son obligatorios y no pueden estar vacíos:\\n\\n",
+  "errorMandatoryFields": "Los siguientes campos son obligatorios y no pueden estar vacíos:\n\n",
   "errorCenterDoesntMatch": "El centro introducido debe coincidir con uno de los de la lista de centros disponibles",
   "errorComissioningDate": "La fecha de puesta en servicio no puede ser anterior a la fecha de fabricación",
 

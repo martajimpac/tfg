@@ -19,47 +19,67 @@ class _PdfPageState extends State<PdfPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( //TODO METER AQUI TAB PDF
-      body: Stack(
-        children: <Widget>[
-          PDFView(
-            filePath: widget.filePath,
-            enableSwipe: true,
-            swipeHorizontal: true,
-            autoSpacing: false,
-            pageFling: false,
-            onRender: (_pages) {
-              setState(() {
-                pages = _pages!;
-                isReady = true;
-              });
-            },
-            onError: (error) {
-              setState(() {
-                errorMessage = error.toString();
-              });
-              print(errorMessage);
-            },
-            onPageError: (page, error) {
-              setState(() {
-                errorMessage = '$page: ${error.toString()}';
-              });
-              print(errorMessage);
-            },
-            onViewCreated: (PDFViewController pdfViewController) {
-              _controller.complete(pdfViewController);
-            },
-            onPageChanged: (int? page, int? total) {
-              print('page change: $page/$total');
-            },
-          ),
-          errorMessage.isEmpty
-              ? !isReady
-              ? const Center(child: CircularProgressIndicator())
-              : Container()
-              : Center(child: Text(errorMessage)),
-        ],
-      ),
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            PDFView(
+              filePath: widget.filePath,
+              enableSwipe: true,
+              swipeHorizontal: false,
+              autoSpacing: true,
+              pageFling: true,
+              onRender: (_pages) {
+                setState(() {
+                  pages = _pages!;
+                  isReady = true;
+                });
+              },
+              onError: (error) {
+                setState(() {
+                  errorMessage = error.toString();
+                });
+                print(errorMessage);
+              },
+              onPageError: (page, error) {
+                setState(() {
+                  errorMessage = '$page: ${error.toString()}';
+                });
+                print(errorMessage);
+              },
+              onViewCreated: (PDFViewController pdfViewController) {
+                _controller.complete(pdfViewController);
+              },
+              onPageChanged: (int? page, int? total) {
+                print('page change: $page/$total');
+              },
+            ),
+            if (errorMessage.isNotEmpty)
+              Container(
+                color: Theme.of(context).colorScheme.onBackground,
+                child: const Center(
+                  child: Text("Ha ocurrido un error al cargar el PDF"),
+                ),
+              ),
+            if (!isReady && errorMessage.isEmpty)
+              const Center(child: CircularProgressIndicator()),
+
+            // Botón flotante para cerrar el PDF
+            Positioned(
+              top: 16.0,
+              right: 16.0,
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Navegar a la página de ampliación del PDF
+                  Navigator.of(context).pop();
+                },
+                tooltip: 'Cerrar PDF',
+                child: const Icon(Icons.close),
+              ),
+            ),
+          ],
+        ),
+      )
     );
   }
 }

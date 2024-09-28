@@ -1,4 +1,4 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
+
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 //import 'package:evaluacionmaquinas/views/register_page.dart';
@@ -7,6 +7,7 @@ import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../generated/l10n.dart';
 import '../utils/Utils.dart';

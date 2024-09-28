@@ -10,8 +10,6 @@ import 'package:evaluacionmaquinas/modelos/imagen_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
-import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/components/textField/my_textfield.dart';
 import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
@@ -20,13 +18,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../components/buttons/my_button.dart';
 import '../components/datePicker/custom_date_picker.dart';
 import '../components/datePicker/custom_date_picker_scroll.dart';
 import '../components/textField/custom_drop_down_field.dart';
-
-import 'package:flutter/material.dart';
-
 import '../components/dialog/my_content_dialog.dart';
 import '../components/dialog/my_ok_dialog.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
@@ -51,7 +46,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   late EliminarEvaluacionCubit _cubitEliminarEvaluacion;
   late PreguntasCubit _cubitPreguntas;
   bool _isModifiying = false;
-  bool _exit = false; //variable que ponemos a true para salir guardando los cambios //TODO QUITAR!!
+  bool _exit = false;
 
   final _centrosController = TextEditingController();
   final _denominacionController = TextEditingController();
@@ -218,33 +213,15 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         builder: (BuildContext context) {
           return MyTwoButtonsDialog(
             title: S.of(context).confirmation,
-            desc: S.of(context).saveChanges,
-            primaryButtonText: S.of(context).save,
+            desc: S.of(context).exitEvaluationChanges,
+            primaryButtonText: S.of(context).exit,
             onPrimaryButtonTap: () {
               _cubitPreguntas.deletePreguntas();
-              _exit = true;
-
-              int? idCentroAux;
-              if (_nombreCentro.isNotEmpty) {
-                try{
-                  idCentroAux = _centros.firstWhere((it) => it.denominacion == _nombreCentro).idCentro;
-                }catch(e){
-                  debugPrint("MARTA excepcion $e");
-                  idCentroAux = null;
-                }
-              }
-              if(idCentroAux != null){
-                _idCentro = idCentroAux;
-              }
-              debugPrint("MARTA: ID CENTRO $_idCentro");
-
-
-              _modificarEvaluacion(); //TODO
-            },
-            secondaryButtonText: S.of(context).discard,
-            onSecondaryButtonTap: (){
-              _cubitPreguntas.deletePreguntas();
               Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+            },
+            secondaryButtonText: S.of(context).cancel,
+            onSecondaryButtonTap: (){
+              Navigator.of(context).pop();
             },
           );
         },
@@ -260,7 +237,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             onPrimaryButtonTap: () {
               _cubitPreguntas.deletePreguntas();
               if(_idEvaluacion != null && _idMaquina != null){
-                //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
+                //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos TODO REVISA ESTO
+                _exit = true;
+
                 Navigator.of(context).pop();
                 _cubitEliminarEvaluacion.eliminarEvaluacion(context, _idEvaluacion!, _idMaquina!);
               }else{
@@ -268,7 +247,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
               }
             },
             secondaryButtonText: S.of(context).cancel,
-            onSecondaryButtonTap: (){Navigator.of(context).pop(); },
+            onSecondaryButtonTap: (){
+              Navigator.of(context).pop();
+              },
           );
         },
       );
@@ -465,7 +446,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         padding: const EdgeInsets.all(Dimensions.marginSmall), // Puedes ajustar los valores según sea necesario
         child:Column(
           children: [
-            const SizedBox(height: Dimensions.marginMedium),
+            //const SizedBox(height: Dimensions.marginMedium),
             Expanded(
               child: ListView(
                 scrollDirection: Axis.vertical,
@@ -683,7 +664,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           Navigator.of(context).pop(); //cerrar resumen
                           Utils.showLoadingDialog(context);
                         }else if(state is EvaluacionInsertada) {
-                          //Navigator.of(context).pop(); //cerrar cargando TODO
+                          Navigator.of(context).pop(); //cerrar cargando TODO
 
                           if(_exit){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
@@ -695,6 +676,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                             // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
                             Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
                           }
+
                         }else if(state is InsertarEvaluacionError){
                           Navigator.of(context).pop(); //cerrar cargando
                           Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {

@@ -1,8 +1,9 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
+import '../buttons/my_button.dart';
 
 
 class MyOkDialog extends StatelessWidget {

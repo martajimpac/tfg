@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 
-import '../generated/l10n.dart'; // Importa el archivo generado
+import '../generated/l10n.dart';
+import 'buttons/my_button.dart'; // Importa el archivo generado
 
 class EmptyView extends StatelessWidget {
   final VoidCallback? onRetry;
+  final bool showRetryButton;
+  final String? customText; // Variable opcional para texto personalizado
 
-  const EmptyView({Key? key, this.onRetry}) : super(key: key);
+  const EmptyView({
+    Key? key,
+    this.onRetry,
+    this.showRetryButton = true, // Valor por defecto true
+    this.customText, // Texto personalizado opcional
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +29,21 @@ class EmptyView extends StatelessWidget {
             height: 100,
           ),
           Text(
-            S.of(context).noEvaluations,
+            customText ?? S.of(context).noEvaluations, // Usa texto personalizado si está disponible
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: Dimensions.marginMedium),
-          Text(
-            S.of(context).retryText,
-          ),
+          if (showRetryButton)
+            Text(
+              S.of(context).retryText,
+            ),
           const SizedBox(height: Dimensions.marginMedium),
-          MyButton(
-            onTap: onRetry,
-            text: S.of(context).retryTitle,
-            adaptableWidth: true,
-          ),
+          if (showRetryButton) // Condición para mostrar el botón
+            MyButton(
+              onTap: onRetry,
+              text: S.of(context).retryTitle,
+              adaptableWidth: true,
+            ),
         ],
       ),
     );

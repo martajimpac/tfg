@@ -93,17 +93,10 @@ class _MyAppState extends State<MyApp> {
   ///Método que se ejecuta al inicio de la aplicación
   void initialization(Supabase supabase) async {
     //Aquí es donde podemos poner los recursos necesarios para nuestra aplicación mientras se muestra la pantalla de inicio.
-    // Elimine el siguiente ejemplo porque retrasar la experiencia del usuario es una mala práctica de diseño.
-    //Como ejemplo añado un delay de un segundo para que se muestre el splash screen
-    //var logger = Logger(filter: FiltroLogs());
-    //logger.d('Inicializando...');
-
-    await Future.delayed(const Duration(seconds: 1));
 
     ///Cargo los datos en la base de datos local
     //await RepositorioLocalHive.cargarDatosLocal(supabase);
 
-    // logger.d('¡Inicialización Completada!');
     FlutterNativeSplash.remove();
   }
 

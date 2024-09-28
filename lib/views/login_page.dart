@@ -1,15 +1,12 @@
-import 'package:evaluacionmaquinas/components/my_button.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/views/register_page.dart';
-import 'package:flutter/foundation.dart';
-//import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../generated/l10n.dart';
 
@@ -111,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                       final email = _emailController.text.trim();
                       final password = _passwordController.text.trim();
 
+                      _login(email, password);
                       /*Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const MyHomePage()),
@@ -127,56 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       }else{
                         _isEmailRed = false;
                         _isPasswordRed = false;
-                        try {
-                          final authResponse = await supabase.auth.signInWithPassword(password: password, email: email);
 
-                          final user = authResponse.user;
-                          if (user != null && user.userMetadata != null) {
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            prefs.setString('email', user.email.toString());
-                            prefs.setString('id', user.id.toString());
-                            prefs.setString('name',  user.userMetadata!['username'].toString());
-                            // Autenticación exitosa, navega a la siguiente página
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const MyHomePage()),
-                            );
-                          } else {
-                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
-                              Navigator.of(context).pop();
-                            });
-                          }
-                        } on AuthException catch (error) {
-                          // Manejar errores de autenticación
-                          if (error.statusCode == "400") {
-                            if (error.message == "Invalid login credentials") {
-                              // Credenciales de inicio de sesión inválidas
-                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthenticationCredentials, () {
-                                Navigator.of(context).pop();
-                              });
-                            } else if (error.message == "Email not confirmed") {
-                              // Correo electrónico no confirmado
-                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthenticationNotConfirmed, () {
-                                Navigator.of(context).pop();
-                              });
-                            } else {
-                              // Otro error de autenticación
-                              Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
-                                Navigator.of(context).pop();
-                              });
-                            }
-                          } else {
-                            // Otro error de autenticación
-                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
-                              Navigator.of(context).pop();
-                            });
-                          }
-                        } catch (error) {
-                          // Otro error de autenticación
-                          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorAuthentication, () {
-                            Navigator.of(context).pop();
-                          });
-                        }
                       }
                     },
                     text: S.of(context).loginButton,
@@ -190,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => const RegisterPage()),
                       );
                     },
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: Theme.of(context).colorScheme.primary,
                     text: S.of(context).registerButton,
                   ),
                 ],
@@ -202,4 +151,62 @@ class _LoginPageState extends State<LoginPage> {
     )
     );
   }
+
+  Future<void> _login(String email, String password) async {
+    try {
+      final authResponse = await supabase.auth.signInWithPassword(password: password, email: email);
+      final user = authResponse.user;
+
+      if (user != null && user.userMetadata != null) {
+        await _saveUserPreferences(user, password);
+        _navigateToHomePage();
+      } else {
+        _showErrorDialog(S.of(context).errorAuthentication);
+      }
+    } on AuthException catch (error) {
+      _handleAuthError(error);
+    } catch (error) {
+      _showErrorDialog("Error desconocido: $error");
+    }
+  }
+
+  Future<void> _saveUserPreferences(User user, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', user.email.toString());
+    await prefs.setString('password', password);
+    await prefs.setString('id', user.id.toString());
+    await prefs.setString('name', user.userMetadata!['username'].toString());
+  }
+
+  void _navigateToHomePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyHomePage()),
+    );
+  }
+
+  void _handleAuthError(AuthException error) {
+    String message;
+
+    switch (error.message) {
+      case "Invalid login credentials":
+        message = S.of(context).errorAuthenticationCredentials;
+        break;
+      case "Email not confirmed":
+        message = S.of(context).errorAuthenticationNotConfirmed;
+        break;
+      default:
+        message = S.of(context).errorAuthentication;
+        break;
+    }
+
+    _showErrorDialog(message);
+  }
+
+  void _showErrorDialog(String message) {
+    Utils.showMyOkDialog(context, S.of(context).error, message, () {
+      Navigator.of(context).pop();
+    });
+  }
+
 }

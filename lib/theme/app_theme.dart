@@ -75,7 +75,7 @@ class MyAppTheme {
       background: const Color(0xFF131313),
       onPrimary: Colors.white, //texto
 
-      primaryContainer: const Color(0xFF5371AA),
+      primaryContainer: const Color(0xFF7898CE),
       secondaryContainer: const Color(0xFFFCC707),
       tertiaryContainer: const Color(0xFF657FB0),
 

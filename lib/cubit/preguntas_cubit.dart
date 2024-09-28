@@ -124,7 +124,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         );
 
         if (pathFichero == null) {
-          emit(const PdfError("ERROR PDF")); //TODO STRINGS
+          emit(const PdfError("Se ha producido un error al generar el pdf.")); //TODO STRINGS
         } else {
           emit(PdfGenerated(pathFichero));
 
@@ -132,8 +132,8 @@ class PreguntasCubit extends Cubit<PreguntasState> {
           //emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas));
         }
       } catch (e) {
-        debugPrint('MARTA Error en inspecciones: $e');
-        emit(const PdfError("ERROR PDF  EXCEPCION"));
+        debugPrint('MARTA Excepcion PDF: $e');
+        emit(const PdfError("Se ha producido un error al generar el pdf."));
       }
 
 
@@ -142,6 +142,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   }
 
   void deletePreguntas() {
-    emit(PreguntasLoading("")); // Restablece el estado a PreguntasLoading
+    emit(const PreguntasLoading("")); // Restablece el estado a PreguntasLoading
   }
 }

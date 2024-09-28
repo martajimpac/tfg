@@ -5,6 +5,7 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/utils/almacenamiento.dart';
 import 'package:evaluacionmaquinas/utils/pdf.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +13,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../components/buttons/floating_buttons.dart';
+import '../components/buttons/my_button.dart';
 import '../components/circle_tab_indicator.dart';
-import '../components/my_button.dart';
 import '../components/tabs/tab_evaluacion.dart';
 import '../components/tabs/tab_pdf.dart';
 import '../cubit/detalles_evaluacion_cubit.dart';
@@ -37,7 +39,7 @@ class DetalleEvaluacionPage extends StatefulWidget {
 class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   late EvaluacionDetailsDataModel _evaluacion;
   late List<ImagenDataModel> _imagenes;
-  AccionesPdfChecklist? _accion;
+  bool _generatingPdf = false;
 
 
   Future<void> _sharePdf() async {
@@ -46,7 +48,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     if (file != null) {
       PdfHelper.sharePdf(_evaluacion.ideval, file);
     } else {
-      _accion = AccionesPdfChecklist.compartir;
       BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
     }
   }
@@ -57,7 +58,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     if (file != null) {
       PdfHelper.savePdf(_evaluacion.ideval);
     } else {
-      _accion = AccionesPdfChecklist.guardar;
       BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
     }
   }
@@ -86,58 +86,78 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       appBar: AppBar(
         title: Text("Detalles de la evaluación", style: Theme.of(context).textTheme.titleMedium),
       ),
-      body: BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
-        builder: (context, state) {
-          if (state is DetallesEvaluacionLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is DetallesEvaluacionLoaded) {
-            _evaluacion = state.evaluacion;
-            _imagenes = state.imagenes;
-            return _buildView();
-          } else if (state is DetallesEvaluacionError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(Dimensions.marginMedium),
-                child: Text(state.errorMessage),
-              ),
-            );
-          } else if (state is DetallesEvaluacionPdfGenerated) {
-            return _buildView();
-          } else if(state is DetallesEvaluacionPdfError){
-            return const SizedBox();
-          }else{
-            return const SizedBox();
-          }
-        },
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      body: Column(
         children: [
-
-          FloatingActionButton(
-            heroTag: "btnShare",
-            onPressed: () async {
-              _sharePdf();
+          Expanded(child:
+            BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
+            builder: (context, state) {
+              if (state is DetallesEvaluacionLoading) {
+                return Center(
+                  child: Padding(
+                      padding: const EdgeInsets.all(Dimensions.marginMedium),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (_generatingPdf) ...[
+                            const Text("Generando PDF..."),
+                            const SizedBox(height: Dimensions.marginMedium),
+                          ],
+                          const CircularProgressIndicator(),
+                        ],
+                      )
+                  ),
+                );
+              } else if (state is DetallesEvaluacionLoaded) {
+                _evaluacion = state.evaluacion;
+                _imagenes = state.imagenes;
+                return _buildView();
+              } else if (state is DetallesEvaluacionError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Dimensions.marginMedium),
+                    child: Text(state.errorMessage),
+                  ),
+                );
+              } else if (state is DetallesEvaluacionPdfGenerated) {
+                return _buildView();
+              } else if(state is DetallesEvaluacionPdfError){
+                return const SizedBox();
+              }else{
+                return const SizedBox();
+              }
             },
-            shape: const CircleBorder(),
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            foregroundColor: Theme.of(context).colorScheme.onSurface,
-            child: const Icon(Icons.share),
           ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            heroTag: "btnDownload",
-            onPressed: () {
-              _savePdf();
-            },
-            shape: const CircleBorder(),
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            foregroundColor: Theme.of(context).colorScheme.onSurface,
-            child: const Icon(Icons.download),
           ),
-          const SizedBox(height:70),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
+            child: MyButton(
+              adaptableWidth: false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NuevaEvaluacionPage(
+                      evaluacion: _evaluacion,
+                      imagenes: _imagenes,
+                    ),
+                  ),
+                );
+              },
+              text: S.of(context).modify,
+            ),
+          ),
         ],
       ),
+      floatingActionButton: FloatingButtons(
+        onSharePressed: () async {
+          _sharePdf();
+        },
+        onDownloadPressed: () {
+          _savePdf();
+        },
+      ),
+
     );
   }
 
@@ -164,10 +184,11 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
           ),
           Expanded(
             child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 TabEvaluacion(evaluacion: _evaluacion, imagenes: _imagenes),
                 FutureBuilder<String?>(
-                  future: _checkIfFileExist(),  //TODO: SI PDF NO EXISTE, USAR UN BLOCBUILDER CON PREGUNAS CUBIT
+                  future: _checkIfFileExist(),
                   builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
                     if (kDebugMode) {
                       print("marta snapshot ${snapshot.connectionState}");
@@ -182,7 +203,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                       );
                     } else {
                       return Container(
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Theme.of(context).colorScheme.background,
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +213,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                               MyButton(
                                 adaptableWidth: true,
                                 onTap: () {
-                                  _accion = null;
+                                  _generatingPdf = true;
                                   BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
                                 },
                                 text: "Generar",
@@ -205,24 +226,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                   },
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(Dimensions.marginMedium),
-            child: MyButton(
-              adaptableWidth: false,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NuevaEvaluacionPage(
-                      evaluacion: _evaluacion,
-                      imagenes: _imagenes,
-                    ),
-                  ),
-                );
-              },
-              text: S.of(context).modify,
             ),
           ),
         ],

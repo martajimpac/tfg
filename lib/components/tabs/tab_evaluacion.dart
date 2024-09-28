@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 import '../../utils/Constants.dart';
-import '../../utils/Utils.dart';
-import '../my_button.dart';
 
 class TabEvaluacion extends StatelessWidget {
   final EvaluacionDetailsDataModel evaluacion;
@@ -185,7 +183,7 @@ class TabEvaluacion extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(width: 8),
-                Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
+                Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondary)),
                 Text(value),
               ],
             ),
