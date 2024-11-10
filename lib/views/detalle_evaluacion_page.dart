@@ -46,7 +46,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
     if (file != null) {
-      PdfHelper.sharePdf(_evaluacion.ideval, file);
+      PdfHelper.sharePdf(_evaluacion.ideval, _evaluacion.nombreMaquina, file);
     } else {
       BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
     }
@@ -56,7 +56,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
     if (file != null) {
-      PdfHelper.savePdf(_evaluacion.ideval);
+      PdfHelper.savePdf(_evaluacion.ideval, _evaluacion.nombreMaquina);
     } else {
       BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
     }

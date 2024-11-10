@@ -14,6 +14,7 @@ import 'package:evaluacionmaquinas/cubit/settings_cubit.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_autenticacion.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
+import 'package:uni_links/uni_links.dart';
 import 'cubit/centros_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -63,9 +64,21 @@ void main() async {
   /// Se inicializa el bloc observer para que muestre los eventos de los blocs
   Bloc.observer = SimpleBlocObserver();
 
+
+
   runApp(MyApp(supabase: supabase));
 }
 
+void handleDeepLink(Uri uri, BuildContext context) {
+  // Parseo y navegación según el link recibido
+  if (uri.pathSegments.contains('product')) {
+    final productId = uri.queryParameters['id'];
+    if (productId != null) {
+      GoRouter.of(context).go('/product/$productId');
+    }
+  }
+  // Agregar más condiciones según tus rutas
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({required this.supabase, super.key});
@@ -106,6 +119,22 @@ class _MyAppState extends State<MyApp> {
     //Por defecto el locale es el castellano
     _locale = const Locale('es', 'ES');
     initialization(widget.supabase);
+
+
+    // Manejar links iniciales
+    /*final initialLink = await getInitialLink();
+    if (initialLink != null) {
+      handleDeepLink(initialLink);
+    }
+
+    // Escuchar links futuros
+    uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        handleDeepLink(uri.toString());
+      }
+    }, onError: (err) {
+      // Manejar errores
+    });*/
   }
 
 

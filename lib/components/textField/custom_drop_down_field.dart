@@ -1,6 +1,8 @@
-import 'package:dropdownfield2/dropdownfield2.dart';
+
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/modelos/centro_dm.dart';
+import 'package:evaluacionmaquinas/components/textField/dropdownfield2.dart';
+
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -50,13 +52,15 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
           });
         },
         child: DropDownField(
+          context: context,
           controller: widget.controller,
           hintText: widget.hintText,
           hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
-          //textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.normal, fontSize: Dimensions.smallTextSize),
           enabled: true,
           itemsVisibleInDropdown: widget.numItems,
           items: widget.items.map((centro) => centro.denominacion).toList(),
+          strict: false
         ),
       ),
     );

@@ -1,9 +1,11 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/modelos/pregunta_dm.dart';
 import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -30,6 +32,11 @@ import 'almacenamiento.dart'  as almacenamiento;
 ///Clase que se encarga de generar las diferentes ficheros con los datos de la inspección inicial
 
 class PdfHelper {
+
+  static const double tamanoFuente = 9;
+  static const double tamanoFuenteCabera = 11;
+  static const double padding = 5;
+  static PdfColor yellowColor = PdfColor.fromHex('EEE2BC');
 
   static Future<String?> generarInformePDF(
       EvaluacionDetailsDataModel evaluacion,
@@ -82,46 +89,51 @@ class PdfHelper {
   }
 
   ///move pdf from internal to external storage
-  static savePdf(int idEval) async {
+  static Future<void> savePdf(int idEval, String nombreMaquina) async {
 
+    // Obtén la ruta del archivo en el almacenamiento interno
     String internalPath = await almacenamiento.getNameFicheroAlmacenamientoLocal(idEval);
-    String fileName = almacenamiento.dameNombrePorDefectoFichero(idEval, TiposFicheros.pdf);
-    await almacenamiento.almacenaEnDestinoElegido(internalPath, fileName);
+
+    // Asigna un nuevo nombre al archivo PDF para seguridad
+    String newFileName = getNamePdf(nombreMaquina);
+
+    // Almacena el archivo con el nuevo nombre en el destino elegido
+    await almacenamiento.almacenaEnDestinoElegido(internalPath, newFileName);
   }
 
-  //share pdf from internal extorage
-  static sharePdf(int idEval, File file) async {
-    XFile xFile = XFile(file.path);
+  ///share pdf from internal extorage
+  static Future<void> sharePdf(int idEval, String nombreMaquina, File file) async {
+    // Obtén el directorio temporal
+    final directory = await getTemporaryDirectory();
+
+    // Crea una nueva ruta con el nombre modificado
+    final newFilePath = '${directory.path}/${getNamePdf(nombreMaquina)}.pdf';
+
+    // Copia el archivo a la nueva ubicación con el nuevo nombre
+    final newFile = await file.copy(newFilePath);
+
+    // Crea el XFile a partir del nuevo archivo
+    XFile xFile = XFile(newFile.path);
+
     // Comparte el archivo usando share_plus
     await Share.shareXFiles([xFile], text: '');
   }
 
-  ///Método que construye el cuerpo de página del informe
-  ///Modificable controla si los campos del pdf son editables/modiifcables por el
-  ///usuario o no
+  ///Funcion para obtener el nombre del pdf a partir del nombre de la máquina
+  static String getNamePdf(String nombreMaquina) {
+    // Reemplaza los espacios por guiones bajos
+    String nombreConGuionesBajos = nombreMaquina.replaceAll(' ', '_');
 
-  ///Método que devuelve una celda de la cabecera de la tabla
+    // Trunca el nombre si es necesario
+    String truncatedNombreMaquina = nombreConGuionesBajos.length > 10
+        ? nombreConGuionesBajos.substring(0, 10)
+        : nombreConGuionesBajos;
 
-  static Widget _dameCeldaCabeceraTabla(
-      String texto,
-      double tamanoFuenteCabecera,
-      TextAlign alineadoTexto,
-      double? padding,
-      int maxLines) {
-    return Padding(
-        padding: EdgeInsets.all(padding ?? 5),
-        child: pw.Text(
-          texto,
-          style: pw.TextStyle(
-              fontSize: tamanoFuenteCabecera, fontWeight: pw.FontWeight.bold),
-          textAlign: alineadoTexto,
-          maxLines: maxLines,
-        ));
+    return truncatedNombreMaquina;
   }
 
 
-  ///Método que genera el pdf de un chequeo que siga un modelo que no sea el de chequeo inicial de la actividad preventiva de minisdef
-
+  ///Método que genera la cabecera del pdf
   static Widget _buildCabeceraPaginaChecklist(
       Context context, MemoryImage imagenLogo) {
     return pw.Table(children: [
@@ -131,10 +143,11 @@ class PdfHelper {
         pw.Column(
           children: [
             pw.Align(
-              alignment: pw.Alignment.centerRight, // Alineación hacia el final (derecha)
-              child: pw.Text(
+              alignment: pw.AlignmentDirectional.centerEnd, // Alineación hacia el final (derecha)
+              child: Text(
                 'LISTA DE COMPROBACIÓN DE SEGURIDAD EN EQUIPOS DE TRABAJO Y EN SU UTILIZACIÓN RD 1215/97',
-                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                style: TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                textAlign: TextAlign.end
               ),
             ),
           ],
@@ -155,116 +168,212 @@ class PdfHelper {
       EvaluacionDetailsDataModel evaluacion
       )
   {
-    TextAlign alineadoTexto = TextAlign.left;
-
-    double? tamanoFuenteCuerpo = 9;
-    double paddingCelda = 5;
 
     return [
-      pw.SizedBox(height: 20),
+      //pw.SizedBox(height: 20),
 
       // Invocar la función para construir la tabla de la evaluación
-      ..._dameTabla(evaluacion, tamanoFuenteCuerpo),
+      // Invocar la función para construir la tabla de la evaluación
+      ..._dameTablaDatos(evaluacion, preguntas, respuestas),
 
-      pw.SizedBox(height: 20), // Espacio entre la tabla y el resto del contenido
+
 
       // Aquí se construyen las filas del checklist
-      pw.Table(children: [
-        ..._dameFilasItemChecklist(preguntas, respuestas, categorias, tamanoFuenteCuerpo, alineadoTexto, paddingCelda),
-      ]),
+      ..._dameTablaPreguntas(preguntas, respuestas, categorias),
     ];
   }
 
+  /******************************** GENERAR TABLA *******************************************************/
 
-  static List<pw.Widget> _dameTabla(EvaluacionDetailsDataModel evaluacion, double tamanoFuenteCuerpo) {
+  static List<pw.Widget> _dameTablaDatos(EvaluacionDetailsDataModel evaluacion, List<PreguntaDataModel> preguntas, List<OpcionRespuestaDataModel> respuestas) {
+    // Agrupar las preguntas por idCategoria
+    List<PreguntaDataModel> preguntasIdentificacion = [];
+    for (var pregunta in preguntas) {
+      if (pregunta.idCategoria == 1) {
+        preguntasIdentificacion.add(pregunta);
+      }
+    }
+
     return [
       pw.Table(
+        columnWidths: {
+          0: const pw.FlexColumnWidth(4),
+          1: const pw.FlexColumnWidth(2),
+        },
         border: pw.TableBorder.all(width: 1, color: PdfColors.black),
         children: [
           pw.TableRow(children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Centro:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(evaluacion.nombreCentro, style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Fecha:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(evaluacion.fechaRealizacion.toString(), style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
+            _buildTableCellWithValue("Centro:", evaluacion.nombreCentro),
+            _buildTableCellWithValue("Fecha:", DateFormat(DateFormatString).format(evaluacion.fechaRealizacion)),
           ]),
-          pw.TableRow(children: [ //TODO QUIERO MODIFICAR ESTA TABLE ROW PARA QUE NO TENGA COLUMNAS, ES DECIR UNIR TODAS LAS COLUMNAS EN UNA EN ESTA FILA
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("IDENTIFICACIÓN DEL EQUIPO DE TRABAJO/MÁQUINA:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo, fontWeight: pw.FontWeight.bold), textAlign: pw.TextAlign.center),
-            ),
-          ], decoration: const pw.BoxDecoration(color: PdfColors.grey300),),
+        ],
+      ),
+
+
+      pw.Table(
+        border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+        children: [
+          pw.TableRow(
+            children: [
+              _buildTableCellTitle("IDENTIFICACIÓN DEL EQUIPO DE TRABAJO/MÁQUINA:", TextAlign.center) //TODO CATEGORIA 1
+            ],
+            decoration: pw.BoxDecoration(color: yellowColor),
+          ),
+        ],
+      ),
+
+
+      pw.Table(
+        columnWidths: {
+          0: const pw.FlexColumnWidth(1),
+          1: const pw.FlexColumnWidth(1),
+        },
+        border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+        children: [
           pw.TableRow(children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Denominación:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(evaluacion.nombreMaquina, style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
+            _buildTableCellWithValue("Denominación:", evaluacion.nombreMaquina),
           ]),
           pw.TableRow(children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Fabricante:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(evaluacion.fabricante ?? 'N/A', style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Nº de Fabricación/Nº de serie:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(evaluacion.numeroSerie, style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
+            _buildTableCellWithValue("Fabricante:", evaluacion.fabricante ?? 'N/A'),
+            _buildTableCellWithValue("Nº de Fabricación/Nº de serie:", evaluacion.numeroSerie),
           ]),
           pw.TableRow(children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Fecha de Fabricación:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(
+            _buildTableCellWithValue(
+                "Fecha de Fabricación:",
                 evaluacion.fechaFabricacion != null
                     ? DateFormat(DateFormatString).format(evaluacion.fechaFabricacion!)
-                    : 'N/A', // Texto a mostrar si es null
-                style: pw.TextStyle(fontSize: tamanoFuenteCuerpo),
-              ),
+                    : 'N/A'
             ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text("Fecha de puesta en servicio:", style: pw.TextStyle(fontSize: tamanoFuenteCuerpo)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(5),
-              child: pw.Text(
+            _buildTableCellWithValue(
+                "Fecha de puesta en servicio:",
                 evaluacion.fechaPuestaServicio != null
                     ? DateFormat(DateFormatString).format(evaluacion.fechaPuestaServicio!)
-                    : 'N/A', // Texto a mostrar si es null
-                style: pw.TextStyle(fontSize: tamanoFuenteCuerpo),
-              ),
+                    : 'N/A'
             ),
           ]),
+
+
+          ...preguntasIdentificacion.map((pregunta) => pw.TableRow(
+              children: [
+                _buildTableCellQuestion(respuestas, pregunta),
+                _buildTableCellWithValue(
+                    "Observaciones:",
+                    pregunta.observaciones ?? ""
+                ),
+              ]
+          )),
+
+
         ],
       ),
     ];
   }
+
+  static pw.Widget _buildTableCellTitle(String label, TextAlign textAlign) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(padding),
+
+      child: pw.Text(
+        label,
+        style: pw.TextStyle(fontSize: tamanoFuenteCabera, fontWeight: pw.FontWeight.bold),
+        textAlign: textAlign,
+      ),
+    );
+  }
+
+  static pw.Widget _buildTableCell(String label, TextAlign textAlign) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(padding),
+
+      child: pw.Text(
+        label,
+        style: pw.TextStyle(fontSize: tamanoFuente, fontWeight: pw.FontWeight.normal),
+        textAlign: textAlign,
+      ),
+    );
+  }
+
+  static pw.Widget _buildTableCellWithValue(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(padding),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start, // Alinea el contenido en la parte superior
+        children: [
+          // Usamos un Column para mantener el label en la parte superior
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start, // Alinea el texto del label a la izquierda
+            children: [
+              pw.Text(
+                label,
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: tamanoFuente),
+              ),
+            ],
+          ),
+          // Espaciado entre el label y el value
+          pw.SizedBox(width: Dimensions.marginMedium),
+          // El texto del value ocupará el espacio restante
+          pw.Expanded(
+            child: pw.Text(
+              value,
+              style: const pw.TextStyle(fontSize: tamanoFuente),
+              softWrap: true,  // Permite que el texto se ajuste si es muy largo.
+              textAlign: pw.TextAlign.end,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  static pw.Widget _buildTableCellQuestion(List<OpcionRespuestaDataModel> respuestas, PreguntaDataModel pregunta) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(padding),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+              pregunta.pregunta,
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: tamanoFuente),
+              textAlign: pw.TextAlign.start,
+          ),
+          _buildAnswersRow(respuestas, pregunta)
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildAnswersRow(List<OpcionRespuestaDataModel> respuestas, PreguntaDataModel pregunta) {
+    return pw.Padding(
+        padding: const pw.EdgeInsets.all(padding),
+        child:       pw.Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (var respuesta in respuestas)
+                pw.Row(
+                    children: [
+                      pw.Text(
+                        respuesta.opcion,
+                        style: const pw.TextStyle(fontSize: tamanoFuenteCabera),
+                      ),
+                      pw.SizedBox(width: padding),
+                      pw.Checkbox(
+                        activeColor: PdfColors.black,
+                        checkColor: PdfColors.white,
+                        width: 10,
+                        height: 10,
+                        name: '${pregunta.idpregunta}${respuesta.idopcion}',
+                        value: (pregunta.idRespuestaSeleccionada == respuesta.idopcion),
+                      ),
+                    ]
+                )
+            ]
+        )
+    );
+  }
+
+  /// *********************** FIN TABLA **********************
 
   static Widget _buildPiePaginaChecklist(Context context) {
     return Container(
@@ -277,19 +386,21 @@ class PdfHelper {
     );
   }
 
-  static List<pw.TableRow> _dameFilasItemChecklist(
+  static List<pw.Widget> _dameTablaPreguntas(
       List<PreguntaDataModel> preguntas,
       List<OpcionRespuestaDataModel> respuestas,
-      List<CategoriaPreguntaDataModel> categorias,
-      double tamanoFuenteCuerpo,
-      TextAlign alineadoTexto,
-      double paddingCelda,
+      List<CategoriaPreguntaDataModel> todasLasCategorias,
       ) {
-    List<pw.TableRow> celdasItem = [];
 
-    // Agrupar las preguntas por idCategoria
+    List<CategoriaPreguntaDataModel> categorias = todasLasCategorias.where((categoria) => categoria.idcat != 1).toList();
+
+    // Agrupar las preguntas por idCategoria, excluyendo las de idCategoria == 1
     Map<int?, List<PreguntaDataModel>> preguntasPorCategoria = {};
     for (var pregunta in preguntas) {
+      if (pregunta.idCategoria == 1) {
+        continue; // Omitir preguntas con idCategoria 1
+      }
+
       if (preguntasPorCategoria.containsKey(pregunta.idCategoria)) {
         preguntasPorCategoria[pregunta.idCategoria]!.add(pregunta);
       } else {
@@ -297,161 +408,84 @@ class PdfHelper {
       }
     }
 
-    //AÑADIR TITULO CHECKLIST
-    celdasItem.add(pw.TableRow(children: [
-      pw.Padding(
-        padding: const pw.EdgeInsets.symmetric(vertical: 10),
-        child: pw.Text(
-          "REQUISITOS MÍNIMOS DE SEGURIDAD",
-          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
-          textAlign: pw.TextAlign.left,
-        ),
-      ),
-    ]));
-
     // Ordenar las categorías por su id
     categorias.sort((a, b) => a.idcat.compareTo(b.idcat));
 
-    // Recorrer las categorías y agregar las filas correspondientes
-    for (var categoria in categorias) {
-      // Añadir título de la categoría
-      celdasItem.add(pw.TableRow(children: [
-        pw.Padding(
-          padding: const pw.EdgeInsets.symmetric(vertical: 10),
-          child: pw.Text(
-            categoria.categoria,
-            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
-            textAlign: pw.TextAlign.left,
-          ),
-        ),
-      ]));
-
-      // Obtener preguntas de la categoría actual
-      var preguntasDeLaCategoria = preguntasPorCategoria[categoria.idcat] ?? [];
-
-      // Añadir las filas de cada pregunta
-      for (var pregunta in preguntasDeLaCategoria) {
-        celdasItem.add(pw.TableRow(children: [
-          pw.SizedBox(height: 20),
-        ]));
-
-        celdasItem.add(pw.TableRow(children: [
-          pw.Table(
-            border: pw.TableBorder.symmetric(
-              inside: BorderSide.none,
-              outside: const BorderSide(
-                width: 1,
-                style: BorderStyle.solid,
-                color: PdfColor(1, 1, 1),
-              ),
-            ),
+    return [
+      pw.Table(
+        border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+        children: [
+          pw.TableRow(
             children: [
-              pw.TableRow(
-                decoration: pw.BoxDecoration(color: PdfColor.fromHex('EEE2BC')),
+              _buildTableCellTitle("REQUISITOS MÍNIMOS DE SEGURIDAD", TextAlign.center) //TODO CATEGORIA 1
+            ],
+            decoration: pw.BoxDecoration(color: yellowColor),
+          ),
+        ],
+      ),
+
+      ...categorias.expand((categoria) {
+        var preguntasDeLaCategoria =
+            preguntasPorCategoria[categoria.idcat] ?? [];
+
+        // Título de la categoría + las preguntas de esa categoría
+        return [
+          pw.Table(
+            border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+            children: [
+              pw.TableRow( //FILA DE TITULO DE LA CATEGORIA
                 children: [
-                  _dameCeldaCabeceraTabla(
-                    pregunta.pregunta,
-                    11,
-                    alineadoTexto,
-                    paddingCelda,
-                    3,
+                  _buildTableCellTitle("${categoria.idcat - 1}. ${categoria.categoria}", TextAlign.left),
+                ],
+                decoration: pw.BoxDecoration(color: yellowColor),
+              ),
+            ],
+          ),
+          // Fila de título de la categoría
+
+          // Filas de preguntas
+          ...preguntasDeLaCategoria.expand((pregunta) {
+            return [
+              pw.Table(
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(3),
+                  1: const pw.FlexColumnWidth(1),
+                },
+                border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+                children: [
+                  pw.TableRow(
+                    children: [
+                      _buildTableCell(
+                        pregunta.pregunta,
+                        TextAlign.left
+                      ),
+                      _buildAnswersRow(respuestas, pregunta),
+                    ],
                   ),
                 ],
               ),
-              // Espacio en blanco antes de la primera respuesta
-              pw.TableRow(children: [pw.SizedBox(height: 10)]),
-
-              // Opciones de respuesta
-              for (var respuesta in respuestas)
-                pw.TableRow(children: [
-                  pw.Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Padding(
-                        padding: const pw.EdgeInsets.fromLTRB(10, 2, 10, 2),
-                        child: pw.Text(
-                          respuesta.opcion,
-                          style: const pw.TextStyle(fontSize: 11),
-                        ),
-                      ),
-                      pw.Padding(
-                        padding: const pw.EdgeInsets.fromLTRB(20, 2, 10, 2),
-                        child: pw.Checkbox(
-                          activeColor: PdfColors.black,
-                          checkColor: PdfColors.white,
-                          width: 10,
-                          height: 10,
-                          name: '${pregunta.idpregunta}${respuesta.idopcion}',
-                          value: (pregunta.idRespuestaSeleccionada == respuesta.idopcion),
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-            ],
-          ),
-        ]));
-
-        // Añadir espacio después de las opciones
-        celdasItem.add(pw.TableRow(children: [pw.SizedBox(height: 16)]));
-
-        // Mostrar observaciones si la pregunta las tiene TODO ESTO NO VA
-        if (pregunta.tieneObservaciones && pregunta.observaciones != null && pregunta.observaciones!.isNotEmpty) {
-          celdasItem.add(pw.TableRow(children: [
-            pw.Table(
-              border: const pw.TableBorder(
-                verticalInside: BorderSide.none,
-                horizontalInside: BorderSide.none,
-              ),
-              columnWidths: {
-                0: const FlexColumnWidth(2),
-                1: const FlexColumnWidth(7),
-              },
-              children: [
-                pw.TableRow(children: [
-                  _dameCeldaCabeceraTabla(
-                    'Observaciones:',
-                    10,
-                    alineadoTexto,
-                    5,
-                    5,
-                  ),
-                  _dameCeldaEditableTabla(
-                    '${pregunta.idCategoria}-${pregunta.idpregunta}',
-                    pregunta.observaciones ?? '',
-                    10,
-                    alineadoTexto,
-                    5,
-                  ),
-                ]),
-              ],
-            ),
-          ]));
-        }
-      }
-    }
-
-    return celdasItem;
+            ];
+          }).toList(),
+        ];
+      }).toList(),
+    ];
   }
-
-
+  
+  //TODO OBSERVACIONES DEBERIA SER UNA CELDA EDITABLE??
   static Widget _dameCeldaEditableTabla(
       String idTextField,
       String texto,
-      double tamanoFuente,
-      TextAlign alineadoTexto,
-      double? padding,
       {int? maxLong = 200, double altura = 30, double anchura = 110}
       ) {
     return Padding(
-      padding: EdgeInsets.all(padding ?? 5),
+      padding: const EdgeInsets.all(padding),
       child: pw.TextField(
           name: idTextField,
           value: texto,
           maxLength: maxLong,
           height: altura,
           width: anchura,
-          textStyle: pw.TextStyle(fontSize: tamanoFuente)),
+          textStyle: const pw.TextStyle(fontSize: tamanoFuente)),
     );
   }
 

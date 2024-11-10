@@ -62,6 +62,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   int? _idCentro;
   String _nombreCentro = "";
   final List<ImagenDataModel> _imageList = [];
+  late DateTime _fechaRealizacion;
   late DateTime _fechaCaducidad;
   DateTime? _fechaFabricacion;
   DateTime? _fechaPuestaServicio;
@@ -145,7 +146,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       Utils.showMyOkDialog(context, S.of(context).error, errorMessage, () =>  Navigator.of(context).pop());
     } else if(_fechaFabricacion != null && _fechaPuestaServicio != null){
 
-      if(_fechaFabricacion!.isBefore(_fechaPuestaServicio!)){
+      if(_fechaFabricacion!.isBefore(_fechaPuestaServicio!) || _fechaFabricacion == _fechaPuestaServicio){
         _showResume(context);
       }else{
         setState(() {
@@ -262,13 +263,16 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   Future<void> _insertarEvaluacion() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final id =  prefs.getString('id') ?? '';
+
+    _fechaRealizacion = DateTime.now();
+
     _cubitInsertarEvaluacion.insertarEvaluacion(
         context,
         id, //idinspector (de supabase)
         _idCentro!,
         _nombreCentro,
         1, //idtipoeval
-        DateTime.now(), //fecha realizacion
+        _fechaRealizacion, //fecha realizacion
         _fechaCaducidad,
         _fechaFabricacion,
         _fechaPuestaServicio,
@@ -280,8 +284,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   Future<void> _modificarEvaluacion() async {
+    print("MARTAAA VAMOS A MODIFIICAR LA EVALUACION");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final id =  prefs.getString('id') ?? '';
+
+    print("MARTA VAMOS DE VERDAD");
     _cubitInsertarEvaluacion.modificarEvaluacion(
         context,
         id,  //idinspector (de supabase)
@@ -289,7 +296,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _idCentro!,
         _nombreCentro,
         1, //idtipoeval TODO
-        widget.evaluacion!.fechaRealizacion,
+        _fechaRealizacion,
         DateTime.now(), //fecha modificacion
         _fechaCaducidad,
         _fechaFabricacion,
@@ -320,6 +327,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       if(widget.evaluacion!.nombreCentro.isNotEmpty){
         _centrosController.text = widget.evaluacion!.nombreCentro;
       }
+      _fechaRealizacion = widget.evaluacion!.fechaRealizacion;
       _fechaCaducidad = widget.evaluacion!.fechaCaducidad;
 
       if(widget.evaluacion!.fechaFabricacion != null){
@@ -352,7 +360,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     _numeroSerieController.dispose();
     _fechaFabricacionNotifier.dispose();
     _fechaPuestaServicioNotifier.dispose();
-    _centrosController.dispose();
 
     super.dispose();
   }
@@ -444,7 +451,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
         body: Padding(
         padding: const EdgeInsets.all(Dimensions.marginSmall), // Puedes ajustar los valores según sea necesario
-        child:Column(
+        child: Column(
           children: [
             //const SizedBox(height: Dimensions.marginMedium),
             Expanded(
@@ -452,6 +459,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                 scrollDirection: Axis.vertical,
                 children: <Widget>[
                   /**********************DATOS EVALUACION***********************/
+                  const SizedBox(height: Dimensions.marginSmall),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -522,7 +530,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).serialNumberAsterisk),
-                  MyTextField(controller: _numeroSerieController, hintText: S.of(context).hintSerialNumber, isRed: _isNumeroSerieRed,),
+                  MyTextField(controller: _numeroSerieController, hintText: S.of(context).hintSerialNumber, isRed: _isNumeroSerieRed),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).manufacturedDateAsterisk),
@@ -632,7 +640,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                                   },
                                   child: Image.asset(
                                     'lib/images/ic_close.png',
-                                    height: 25, // Ajusta el tamaño de la imagen según sea necesario
+                                    height: 25,
                                     width: 25,
                                   ),
                                 ),
@@ -662,9 +670,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                         // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
                         if(state is InsertarEvaluacionLoading){
                           Navigator.of(context).pop(); //cerrar resumen
-                          Utils.showLoadingDialog(context);
+                          Utils.showLoadingDialog(context, text: "Insertando la evaluación...");
                         }else if(state is EvaluacionInsertada) {
-                          Navigator.of(context).pop(); //cerrar cargando TODO
+                          Navigator.of(context).pop(); //cerrar cargando
 
                           if(_exit){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
@@ -688,11 +696,14 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                       listener: (context, state) {
                         if(state is EliminarEvaluacionCompletada){
-                          Navigator.of(context).pop();
+                          print("EVALUACION ELIMINADA");
+                          //Navigator.of(context).pop();
+                          print("EVALUACION ELIMINADA 22");
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
                         }else if (state is EliminarEvaluacionLoading) {
                           Utils.showLoadingDialog(context);
                         } else if (state is EliminarEvaluacionError) {
+                          print("EVALUACION ERROR");
                           Navigator.of(context).pop();
                           Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                             Navigator.of(context).pop();

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de correo electrónico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            color: #5371AA;
+        }
+        .container p {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>¡Correo confirmado!</h1>
+    <p>Tu correo electrónico ha sido confirmado exitosamente.</p>
+    <p>Serás redirigido a la página de inicio de sesión en unos segundos...</p>
+</div>
+
+<!-- JavaScript para redireccionar después de unos segundos -->
+<script>
+    setTimeout(function() {
+        window.location.href = "eval24://evalapp.com/login/";
+    }, 5000); // Redirige después de 5 segundos
+</script>
+</body>
+</html>

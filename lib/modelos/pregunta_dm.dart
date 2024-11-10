@@ -7,7 +7,7 @@ class PreguntaDataModel extends Equatable {
   int? idRespuestaSeleccionada;
   bool isAnswered;
   bool tieneObservaciones;
-  late final String? observaciones;
+  String? observaciones;
 
   PreguntaDataModel({
     required this.idpregunta,

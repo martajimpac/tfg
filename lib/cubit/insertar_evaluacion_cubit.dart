@@ -84,7 +84,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
       emit(EvaluacionInsertada(evaluacion, listImagenesIds));
     } catch (e) {
-      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
+      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsError));
     }
 
   }
@@ -106,6 +106,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       String fabricante,
       String numeroSerie,
       List<ImagenDataModel> imagenes) async {
+
     emit(InsertarEvaluacionLoading());
 
     try {
@@ -155,7 +156,8 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       );
       emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {
-      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsError));
+
+      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
     }
 
   }

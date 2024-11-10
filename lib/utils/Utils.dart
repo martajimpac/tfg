@@ -49,38 +49,64 @@ class Utils {
   }
 
   static String getDifferenceBetweenDates(BuildContext context, DateTime from, DateTime to) {
-
     from = DateTime(from.year, from.month, from.day);
     to = DateTime(to.year, to.month, to.day);
-    int daysOfDifference = (to.difference(from).inHours / 24).round();
+
+    int years = 0;
+    int months = 0;
+    int days = 0;
 
     // Calcular años completos
-    int years = daysOfDifference ~/ 365;
+    while (DateTime(from.year + years + 1, from.month, from.day).isBefore(to) ||
+        DateTime(from.year + years + 1, from.month, from.day) == to) {
+      years++;
+    }
 
-    // Calcular días restantes después de restar los años completos
-    int remainingDays = daysOfDifference % 365;
+    // Calcular meses completos después de restar años completos
+    while (DateTime(from.year + years, from.month + months + 1, from.day).isBefore(to) ||
+        DateTime(from.year + years, from.month + months + 1, from.day) == to) {
+      months++;
+    }
 
-    // Calcular meses completos (asumiendo que cada mes tiene 30 días)
-    int months = remainingDays ~/ 30;
-
-    // Calcular días restantes finales
-    int days = remainingDays % 30;
+    // Calcular días restantes después de restar meses completos
+    days = to.difference(DateTime(from.year + years, from.month + months, from.day)).inDays;
 
     // Construir el mensaje según los resultados
-    String message = 'Quedan ';
+    String message = 'Caduca en ';
 
-    if (years > 0) {
+    if (years == 1) {
+      message += '$years año ';
+    } else if (years > 0) {
       message += '$years años ';
     }
-    if (months > 0) {
+
+    if (months == 1) {
+      if (years != 0) {
+        message += ', ';
+      }
+      message += '$months mes ';
+    } else if (months > 0) {
+      if (years != 0) {
+        message += ', ';
+      }
       message += '$months meses ';
     }
-    if (days > 0) {
-      message += 'y $days días';
+
+    if (days == 1) {
+      if (years != 0 || months != 0) {
+        message += 'y ';
+      }
+      message += '$days día';
+    } else if (days > 0) {
+      if (years != 0 || months != 0) {
+        message += 'y ';
+      }
+      message += '$days días';
     }
 
     return message;
   }
+
 
   static String getDays(BuildContext context, DateTime to) {
     to = DateTime(to.year, to.month, to.day);

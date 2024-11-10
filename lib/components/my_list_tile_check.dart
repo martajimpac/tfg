@@ -1,16 +1,18 @@
+import 'package:evaluacionmaquinas/components/textField/my_login_textfield.dart';
 import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import '../generated/l10n.dart';
-import '../views/checklist_page.dart';
 
 class MyListTile extends StatefulWidget {
   final String text;
   final List<OpcionRespuestaDataModel> listAnswers;
   final OpcionRespuestaDataModel? answerSelected;
   final Function(OpcionRespuestaDataModel) onAnswerSelected;
+  final Function(String) onObservationsChanged;
   final bool isAnswered;
   final bool tieneObservaciones;
+  final String observaciones;
 
   const MyListTile({
     super.key,
@@ -18,8 +20,10 @@ class MyListTile extends StatefulWidget {
     required this.listAnswers,
     required this.answerSelected,
     required this.onAnswerSelected,
-    this.isAnswered = false, //por defecto false
+    required this.onObservationsChanged,
+    this.isAnswered = false,
     this.tieneObservaciones = false,
+    this.observaciones = "", //TODO PASARLE SOLO LA VARIABLE PREGUNTA!!!
   });
 
   @override
@@ -29,25 +33,37 @@ class MyListTile extends StatefulWidget {
 class _MyListTileState extends State<MyListTile> {
   OpcionRespuestaDataModel? selectedAnswer;
   bool _isAnswered = false;
-  String _observaciones = '';
+  final _observacionesController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     selectedAnswer = widget.answerSelected;
     _isAnswered = widget.isAnswered;
+    _observacionesController.text = widget.observaciones;
   }
 
-
+  @override
+  void dispose() {
+    _observacionesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Dimensions.marginSmall, horizontal: Dimensions.marginMedium),
+      padding: const EdgeInsets.symmetric(
+        vertical: Dimensions.marginSmall,
+        horizontal: Dimensions.marginMedium,
+      ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal:Dimensions.marginMedium),
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.marginMedium),
         decoration: BoxDecoration(
-          border: Border.all(color: _isAnswered ? Theme.of(context).colorScheme.secondaryContainer : Colors.white),
+          border: Border.all(
+            color: _isAnswered
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Colors.white,
+          ),
           color: Theme.of(context).colorScheme.onBackground,
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
         ),
@@ -55,59 +71,34 @@ class _MyListTileState extends State<MyListTile> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: Dimensions.marginMedium),
-            Text(
-              widget.text,
-            ),
+            Text(widget.text),
             const SizedBox(height: Dimensions.marginSmall),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                buildCheckbox(widget.listAnswers[0], widget.listAnswers[0]),
-                buildCheckbox(widget.listAnswers[1], widget.listAnswers[0]),
-                buildCheckbox(widget.listAnswers[2], widget.listAnswers[0]),
-              ],
+              children: widget.listAnswers.map((answer) {
+                return buildCheckbox(answer, widget.listAnswers[0]);
+              }).toList(),
             ),
-          if (widget.tieneObservaciones) ...[
-            Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(
-                  S.of(context).observationsTitle,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-                ),
-                trailing: Icon(Icons.keyboard_arrow_down_rounded),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _observaciones = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Colors.transparent,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0), // Ajusta el radio según sea necesario
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0), // Ajusta el radio según sea necesario
-                        ),
-                        hintText: S.of(context).observationsDesc,
-                      ),
-                    ),
+            if (widget.tieneObservaciones) ...[
+              Theme(
+                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: Text(
+                    S.of(context).observationsTitle,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: Dimensions.smallTextSize),
                   ),
-                ],
+                  trailing: const Icon(Icons.keyboard_arrow_down_rounded),
+                  children: [
+                    MyLoginTextField(
+                      controller: _observacionesController,
+                      hintText: S.of(context).observationsDesc,
+                      onTextChanged: widget.onObservationsChanged,
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-          ]else
+            ] else
               const SizedBox(height: Dimensions.marginMedium),
           ],
         ),
@@ -121,9 +112,7 @@ class _MyListTileState extends State<MyListTile> {
         Checkbox(
           activeColor: _isAnswered ? Theme.of(context).appBarTheme.iconTheme?.color : Colors.grey,
           checkColor: Theme.of(context).colorScheme.background,
-          value: _isAnswered
-              ? answer == selectedAnswer
-              : answer == defaultAnswer,
+          value: _isAnswered ? answer == selectedAnswer : answer == defaultAnswer,
           onChanged: (value) {
             setState(() {
               _isAnswered = true;

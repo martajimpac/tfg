@@ -35,14 +35,14 @@ class _TerminarPageState extends State<TerminarPage> {
 
     // Verifica si el archivo existe
     if (file != null) {
-      PdfHelper.sharePdf(widget.evaluacion.ideval, file);
+      PdfHelper.sharePdf(widget.evaluacion.ideval, widget.evaluacion.nombreMaquina, file);
     } else {
       Utils.showMyOkDialog(context, "Error", "Se ha producido un error al compartir el pdf", () => null);
     }
   }
 
   Future<void> _savePdf() async {
-    PdfHelper.savePdf(widget.evaluacion.ideval);
+    PdfHelper.savePdf(widget.evaluacion.ideval, widget.evaluacion.nombreMaquina);
   }
 
   @override

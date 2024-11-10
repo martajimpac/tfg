@@ -274,11 +274,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                       Navigator.of(context).pop();
                     });
-                  } else {
-                    Navigator.of(context).pop();
-                    Utils.showMyOkDialog(context, "DESCONOCIDO", "Ha ocurrido un error inesperado", () {
-                      Navigator.of(context).pop();
-                    });
                   }
                 },child: const SizedBox()
             )
@@ -407,6 +402,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                     Text(
                                       evaluacion.nombreMaquina,
                                       style: const TextStyle(fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
                                     ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,

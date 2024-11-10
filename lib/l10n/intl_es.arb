@@ -95,9 +95,9 @@
   "serialNumberAsterisk": "*Nº de fabricante / Nº de serie",
   "hintSerialNumber": "Número",
   "manufacturedDate": "Fecha de fabricación",
-  "manufacturedDateAsterisk": "*Fecha de fabricación",
+  "manufacturedDateAsterisk": "Fecha de fabricación",
   "comissioningDate": "Fecha de puesta en servicio",
-  "comissioningDateAsterisk": "*Fecha de puesta en servicio",
+  "comissioningDateAsterisk": "Fecha de puesta en servicio",
   "summary": "Resumen",
   "addImage": "Añadir imagen",
   "errorLimitImageTitle": "Límite de imágenes alcanzado",
@@ -106,7 +106,7 @@
   "errorCenterDoesntMatch": "El centro introducido debe coincidir con uno de los de la lista de centros disponibles",
   "errorComissioningDate": "La fecha de puesta en servicio no puede ser anterior a la fecha de fabricación",
 
-  "modifyChecklistTitle": "Modify checklist",
+  "modifyChecklistTitle": "Modificar checklist",
   "checklistTitle": "Checklist",
 
   "evaluationsDetailsTitle": "Detalles de la evaluación",

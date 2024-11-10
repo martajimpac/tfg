@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 import '../../utils/Constants.dart';
+import '../../utils/Utils.dart';
 
 class TabEvaluacion extends StatelessWidget {
   final EvaluacionDetailsDataModel evaluacion;
@@ -74,7 +75,24 @@ class TabEvaluacion extends StatelessWidget {
                         value: DateFormat(DateFormatString).format(evaluacion.fechaCaducidad),
                       ),
 
-                      // Datos de la Máquina
+                      const SizedBox(height: Dimensions.marginMedium),
+
+                      Center(
+                        child: Text(
+                          Utils.getDifferenceBetweenDates(context, DateTime.now(), evaluacion.fechaCaducidad),
+                          style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        )
+                      ),
+
+                      const SizedBox(height: Dimensions.marginMedium),
+
+                      Divider(
+                        color: Theme.of(context).colorScheme.background,  // Color de la línea
+                        thickness: 1,        // Grosor de la línea
+                      ),
+
+                      /// Datos de la Máquina
                       const SizedBox(height: Dimensions.marginMedium),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -174,24 +192,36 @@ class TabEvaluacion extends StatelessWidget {
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: Dimensions.marginSmall),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
-            const SizedBox(width: Dimensions.marginMedium),
-            Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
+          const SizedBox(width: Dimensions.marginMedium),
+          Expanded( // Para que la columna ocupe todo el espacio disponible
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(width: 8),
-                Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondary)),
-                Text(value),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
+                Text(
+                  value,
+                  softWrap: true, // Permite que el texto se ajuste a múltiples líneas si es necesario.
+                ),
               ],
             ),
-
-          ],
-        )
+          ),
+        ],
+      ),
     );
   }
+
+
 
 
 }

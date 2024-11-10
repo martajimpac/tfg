@@ -37,11 +37,12 @@ class PreguntasLoaded extends PreguntasState {
   final List<PreguntaDataModel> preguntas;
   final List<CategoriaPreguntaDataModel> categorias;
   final List<OpcionRespuestaDataModel> respuestas;
+  final int idEval;
 
-  const PreguntasLoaded(this.preguntas, this.categorias, this.respuestas);
+  const PreguntasLoaded(this.preguntas, this.categorias, this.respuestas, this.idEval);
 
   @override
-  List<Object> get props => [preguntas, categorias, respuestas];
+  List<Object> get props => [preguntas, categorias, respuestas, idEval];
 }
 
 
@@ -78,8 +79,8 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   PreguntasCubit(this.repositorio) : super(const PreguntasLoading("Cargando las preguntas..."));
 
   Future<void> getPreguntas(BuildContext context, int idEvaluacion) async {
-    if (state is PreguntasLoaded) {
-      // Si el estado actual ya tiene preguntas, no hacemos nada
+    if (state is PreguntasLoaded && (state as PreguntasLoaded).idEval == idEvaluacion) {
+      // Si las preguntas de la evaluacion actual ya están cargadas, no hacemos nada
       return;
     }
 
@@ -92,7 +93,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       final categorias = await repositorio.getCategorias();
       final respuestas = await repositorio.getRespuestas();
 
-      emit(PreguntasLoaded(preguntas, categorias, respuestas));
+      emit(PreguntasLoaded(preguntas, categorias, respuestas, idEvaluacion));
     } catch (e) {
       emit(PreguntasError(S.of(context).cubitQuestionsError));
     }
@@ -104,7 +105,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         return pregunta.idpregunta == updatedPregunta.idpregunta ? updatedPregunta : pregunta;
       }).toList();
 
-      emit(PreguntasLoaded(updatedPreguntas, loadedState.categorias, loadedState.respuestas));
+      emit(PreguntasLoaded(updatedPreguntas, loadedState.categorias, loadedState.respuestas, loadedState.idEval));
     }
   }
 
@@ -129,15 +130,12 @@ class PreguntasCubit extends Cubit<PreguntasState> {
           emit(PdfGenerated(pathFichero));
 
           //RESTAURAR EL ESTADO DEL CUBIT
-          //emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas));
+          emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas, loadedState.idEval));
         }
       } catch (e) {
         debugPrint('MARTA Excepcion PDF: $e');
         emit(const PdfError("Se ha producido un error al generar el pdf."));
       }
-
-
-
     }
   }
 

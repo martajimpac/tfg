@@ -5,6 +5,7 @@ import 'package:evaluacionmaquinas/modelos/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
 import 'package:evaluacionmaquinas/utils/pdf.dart';
 import 'package:evaluacionmaquinas/views/pdf_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -37,8 +38,8 @@ class _CheckListPageState extends State<CheckListPage> {
   @override
   void initState() {
     super.initState();
+    _selectedCircle = 0; // Reinicia al primer círculo
     BlocProvider.of<PreguntasCubit>(context).getPreguntas(context, widget.evaluacion.ideval);
-
   }
 
   final _pageViewController = PageController(initialPage: 0);
@@ -56,12 +57,10 @@ class _CheckListPageState extends State<CheckListPage> {
     // Filtra las preguntas sin respuesta
     List<PreguntaDataModel> preguntasSinResponder = preguntas.where((pregunta) => pregunta.idRespuestaSeleccionada == null).toList();
 
-
     //asignar por defecto la respuesta si a lal preguntas sin resoonder
     for (var pregunta in preguntasSinResponder) {
       pregunta.idRespuestaSeleccionada = 1; //ID DE Sí
     }
-
     //ConstantsHelper.showLoadingDialog(context);
     context.read<PreguntasCubit>().insertarRespuestasAndGeneratePdf(widget.evaluacion, AccionesPdfChecklist.guardar);
   }
@@ -84,7 +83,7 @@ class _CheckListPageState extends State<CheckListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -123,99 +122,44 @@ class _CheckListPageState extends State<CheckListPage> {
               final List<OpcionRespuestaDataModel> respuestas = state.respuestas;
 
               return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 66, //(50 + 16 margen)
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      child:
-                      ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(Dimensions.marginSmall),
-                            child: GestureDetector(
-                              onTap: () {
-                                goToPage(index);
-                              },
-                              child: Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: index == _selectedCircle ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.tertiaryContainer,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    categorias[index].idcat.toString(),
-                                    style:  TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: index == _selectedCircle ? Colors.black : Colors.white
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount: categorias.length,
-                      ),
-
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildHorizontalCategoryList(categorias),
+                  const SizedBox(height: Dimensions.marginMedium),
+                  _buildCategoryTitle(context, categorias[_selectedCircle].categoria),
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageViewController,
+                      itemCount: categorias.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, pageIndex) {
+                        return _buildQuestionsList(context, pageIndex, preguntas, categorias, respuestas);
+                      },
                     ),
-                    const SizedBox(height: Dimensions.marginMedium),
-                    Text(categorias[_selectedCircle].categoria, style: Theme.of(context).textTheme.headlineMedium),
-                    Expanded(
-                        child : Column(
-                          children: [
-                            const SizedBox(height: Dimensions.marginSmall),
-                            Expanded(
-                              child: PageView.builder(
-                                controller:
-                                _pageViewController,
-                                itemCount: categorias.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, pageIndex) {
-                                  final preguntasPagina = preguntas.where((pregunta) => pregunta.idCategoria == categorias[pageIndex].idcat).toList();
-                                  return ListView.builder(
-                                    itemCount: preguntasPagina.length,
-                                    controller: _scrollController,
-                                    itemBuilder: (context, index) {
-                                      return MyListTile(
-                                        text: preguntasPagina[index].pregunta,
-                                        listAnswers: respuestas,
-                                        answerSelected: preguntasPagina[index].idRespuestaSeleccionada != null
-                                            ? respuestas.firstWhere(
-                                              (respuesta) => respuesta.idopcion == preguntasPagina[index].idRespuestaSeleccionada,
-                                              orElse: () => respuestas[0],
-                                        ): null,
-                                        onAnswerSelected: (answer){
-                                          preguntasPagina[index].idRespuestaSeleccionada = answer.idopcion; //TODO GUARDAR ESTOS CAMBIOS EN EL CUBIT
-                                          preguntasPagina[index].isAnswered = true;
-                                          context.read<PreguntasCubit>().updatePreguntas(preguntasPagina[index]);
-                                        },
-                                        isAnswered: preguntasPagina[index].isAnswered,
-                                        tieneObservaciones: preguntasPagina[index].tieneObservaciones
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-                    ),
-                    if(_selectedCircle == (categorias.length - 1))
-                      MyButton(
-                          adaptableWidth: false,
-                          onTap: (){
-                            //comprobar que todas las preguntas han sido respondidas
-                            checkAllAnswer(state.preguntas);
-                          },
-                          text: S.of(context).finish,
-                          roundBorders: false,
-                      )
-                  ]
+                  ),
+                  if (_selectedCircle == (categorias.length - 1))
+                  // Botón "Terminar" si estás en la última página
+                    MyButton(
+                      adaptableWidth: false,
+                      onTap: () {
+                        // Comprobar que todas las preguntas han sido respondidas
+                        checkAllAnswer(state.preguntas);
+                      },
+                      text: S.of(context).finish,
+                      roundBorders: false,
+                    )
+                  else
+                  // Botón "Siguiente" si no estás en la última página
+                    MyButton(
+                      adaptableWidth: false,
+                      onTap: () {
+                        // Ir a la siguiente página
+                        goToPage(_selectedCircle + 1);
+                      },
+                      text: "Siguiente", // Asumiendo que tienes el texto traducido
+                      roundBorders: false,
+                    )
+                ],
               );
 
             }  else {
@@ -238,6 +182,92 @@ class _CheckListPageState extends State<CheckListPage> {
     );
   }
 
+
+  // Widget para construir la lista horizontal de categorías
+  Widget _buildHorizontalCategoryList(List<CategoriaPreguntaDataModel> categorias) {
+    return Container(
+      height: 66, //(50 + 16 margen)
+      color: Theme.of(context).colorScheme.primaryContainer,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categorias.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(Dimensions.marginSmall),
+            child: GestureDetector(
+              onTap: () {
+                goToPage(index);
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: index == _selectedCircle
+                      ? Theme.of(context).colorScheme.secondaryContainer
+                      : Theme.of(context).colorScheme.tertiaryContainer,
+                ),
+                child: Center(
+                  child: Text(
+                    categorias[index].idcat.toString(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: index == _selectedCircle ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Widget para construir el título de la categoría
+  Widget _buildCategoryTitle(BuildContext context, String category) {
+    return Text(
+      category,
+      style: Theme.of(context).textTheme.headlineMedium,
+    );
+  }
+
+  // Widget para construir la lista de preguntas
+  Widget _buildQuestionsList(BuildContext context, int pageIndex, List<PreguntaDataModel> preguntas, List<CategoriaPreguntaDataModel> categorias, List<OpcionRespuestaDataModel> respuestas) {
+    final preguntasPagina = preguntas.where(
+          (pregunta) => pregunta.idCategoria == categorias[pageIndex].idcat,
+    ).toList();
+
+    return ListView.builder(
+      itemCount: preguntasPagina.length,
+      controller: _scrollController,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return MyListTile(
+          text: preguntasPagina[index].pregunta,
+          listAnswers: respuestas,
+          answerSelected: preguntasPagina[index].idRespuestaSeleccionada != null
+              ? respuestas.firstWhere(
+                (respuesta) => respuesta.idopcion == preguntasPagina[index].idRespuestaSeleccionada,
+            orElse: () => respuestas[0],
+          )
+              : null,
+          onAnswerSelected: (answer) {
+            preguntasPagina[index].idRespuestaSeleccionada = answer.idopcion;
+            preguntasPagina[index].isAnswered = true;
+            context.read<PreguntasCubit>().updatePreguntas(preguntasPagina[index]);
+          },
+          onObservationsChanged: (observaciones) {
+            preguntasPagina[index].observaciones = observaciones;
+            preguntasPagina[index].isAnswered = true;
+          },
+          isAnswered: preguntasPagina[index].isAnswered,
+          tieneObservaciones: preguntasPagina[index].tieneObservaciones,
+        );
+      },
+    );
+  }
 
 }
 

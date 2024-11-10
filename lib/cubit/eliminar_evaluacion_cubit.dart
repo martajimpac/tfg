@@ -32,8 +32,10 @@ class EliminarEvaluacionCubit extends Cubit<EliminarEvaluacionState> {
       await repositorio.eliminarMaquina(idMaquina);
       await deleteFileFromIdEval(idEvaluacion);
       emit(EliminarEvaluacionCompletada());
+      emit(EliminarEvaluacionInicial());
     } catch (e) {
-      emit(EliminarEvaluacionError(S.of(context).cubitDeleteEvaluationError)); //TODO ESTO DA PROBLEMAS SI HAY UNA EXCEPCION!
+      emit(EliminarEvaluacionError(S.of(context).cubitDeleteEvaluationError));
+      emit(EliminarEvaluacionInicial());
     }
   }
 }

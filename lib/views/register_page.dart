@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 //import 'package:evaluacionmaquinas/views/register_page.dart';
@@ -107,69 +109,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           final email = _emailController.text.trim();
                           final password = _passwordController.text.trim();
                           final repeatPassword = _repeatPasswordController.text.trim();
-                          if(email.isEmpty || password.isEmpty || repeatPassword.isEmpty){
-                            setState(() {
-                              if(email.isEmpty){
-                                _isEmailRed = true;
-                              }
-                              if(password.isEmpty){
-                                _isPasswordRed = true;
-                              }
-                              if(repeatPassword.isEmpty){
-                                _isRepeatPasswordRed = true;
-                              }
-                            });
-                          }else if(password != repeatPassword){
-                            setState(() {
-                              _isRepeatPasswordRed = true;
-                              _isPasswordRed = true;
-                              _isEmailRed = false;
-                            });
-
-                            Fluttertoast.showToast(
-                              msg: S.of(context).errorPasswordsDontMatch,
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              backgroundColor: Colors.grey,
-                              textColor: Colors.white,
-                            );
-                          }else{
-                            _isEmailRed = false;
-                            _isPasswordRed = false;
-                            _isRepeatPasswordRed = false;
-                              try {
-                                final authResponse = await supabase.auth.signUp(password: password, email: email, data: {'username': _nameController.text});
-
-                                final user = authResponse.user;
-                                if (user != null && user.userMetadata != null) {
-                                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  prefs.setString('email', user.email.toString());
-                                  prefs.setString('id', user.id.toString());
-                                  prefs.setString('name',  user.userMetadata!['username'].toString());
-
-                                  // Autenticación exitosa, navega a la siguiente página
-                                  Utils.showMyOkDialog(context, S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const MyHomePage()),
-                                    );
-                                  });
-
-                                } else {
-                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
-                                }
-                              } on AuthException catch (error) {
-                                if (error.statusCode == "429") {
-                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegisterLimit, () {
-                                    Navigator.of(context).pop();
-                                  });
-                                } else {
-                                  Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
-                                }
-                              }catch (error){
-                                Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {Navigator.of(context).pop();});
-                              }
-                          }
+                          final name = _nameController.text.trim();
+                          _register(name, email, password, repeatPassword);
                         },
                         text:S.of(context).registerAndLoginButton,
                       ),
@@ -181,4 +122,99 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  Future<void> _register(String name, String email, String password, String repeatPassword) async {
+    if (email.isEmpty || password.isEmpty || repeatPassword.isEmpty) {
+      setState(() {
+        if (email.isEmpty) {
+          _isEmailRed = true;
+        }
+        if (password.isEmpty) {
+          _isPasswordRed = true;
+        }
+        if (repeatPassword.isEmpty) {
+          _isRepeatPasswordRed = true;
+        }
+      });
+    } else if (password != repeatPassword) {
+      setState(() {
+        _isRepeatPasswordRed = true;
+        _isPasswordRed = true;
+        _isEmailRed = false;
+      });
+
+      Fluttertoast.showToast(
+        msg: S.of(context).errorPasswordsDontMatch,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
+    } else {
+      _isEmailRed = false;
+      _isPasswordRed = false;
+      _isRepeatPasswordRed = false;
+
+      try {
+        // Proceder con el registro
+        final authResponse = await supabase.auth.signUp(
+          password: password,
+          email: email,
+          data: {'username': name},
+        );
+
+        // Verificar si el usuario existe, pero no tiene identidades (usuario "falso")
+        if (authResponse.user != null &&
+            authResponse.user!.identities != null &&
+            authResponse.user!.identities!.isEmpty)
+        {
+          Utils.showMyOkDialog(context, S.of(context).error, "Ha habido un error al realizar el registro. Ya existe un usuario con este correo.", () {
+            Navigator.of(context).pop();
+          });
+        }else{
+
+          //si el usuario no existe procedemos a crear la cuenta
+          print("MARTA ${authResponse.user.hashCode}");
+          final user = authResponse.user;
+          if (user != null && user.userMetadata != null) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('email', user.email.toString());
+            await prefs.setString('password', password);
+            prefs.setString('id', user.id.toString());
+            prefs.setString('name', user.userMetadata!['username'].toString());
+
+            // Autenticación exitosa, navega a la siguiente página
+            Utils.showMyOkDialog(context, "1" + S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyHomePage()),
+              );
+            });
+          } else {
+            Utils.showMyOkDialog(context, "2" + S.of(context).error, S.of(context).errorRegister, () {
+              Navigator.of(context).pop();
+            });
+          }
+
+        }
+
+
+      } on AuthException catch (error) {
+        if (error.statusCode == "429") {
+          Utils.showMyOkDialog(context, "3" + S.of(context).error, S.of(context).errorRegisterLimit, () {
+            Navigator.of(context).pop();
+          });
+        } else {
+          Utils.showMyOkDialog(context, "4" + S.of(context).error,"$error ${S.of(context).errorRegister}" , () {
+            Navigator.of(context).pop();
+          });
+        }
+      } catch (error) {
+        Utils.showMyOkDialog(context, "5" + S.of(context).error, "$error", () {
+          Navigator.of(context).pop();
+        });
+      }
+    }
+  }
+
 }

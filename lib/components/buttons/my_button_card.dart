@@ -6,8 +6,14 @@ class MyButtonCard extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
   final Icon icon;
+  final Color? iconContainerColor; // Parámetro opcional para el color del contenedor
 
-  MyButtonCard({required this.onTap, required this.text, required this.icon});
+  MyButtonCard({
+    required this.onTap,
+    required this.text,
+    required this.icon,
+    this.iconContainerColor, // Agregamos el parámetro opcional
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class MyButtonCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    color: iconContainerColor ?? Theme.of(context).colorScheme.secondaryContainer, // Usa el color proporcionado o el predeterminado
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: Center(
@@ -50,7 +56,7 @@ class MyButtonCard extends StatelessWidget {
             ),
           ),
         ),
-      )
+      ),
     );
   }
 }

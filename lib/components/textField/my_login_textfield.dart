@@ -6,12 +6,14 @@ class MyLoginTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
   final bool isRed;
+  final Function(String)? onTextChanged;
 
   const MyLoginTextField({super.key,
     required this.controller,
     required this.hintText,
     this.obscureText = false,
     this.isRed = false,
+    this.onTextChanged,
   });
 
   @override
@@ -44,6 +46,11 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
           setState(() {
             _isTyping = text.isNotEmpty;
           });
+
+          // Llama a la función onTextChanged si no es nula
+          if (widget.onTextChanged != null) {
+            widget.onTextChanged!(text);
+          }
         },
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(

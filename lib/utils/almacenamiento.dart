@@ -111,33 +111,47 @@ Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileNam
   String? pathFicheroAlmacenado;
 
   try {
-    ///Una vez generado el fichero en temporal preguntamos al usuario dónde quiere guardaro
+    ///Obtenemos la extensión del archivo desde `internalFilePath`
+    String extension = internalFilePath.split('.').last;
+
+    /// Generamos un nuevo nombre de archivo con la extensión correcta
+    String newFileName = '$fileName.$extension';
+
+    /// Una vez generado el fichero en temporal, preguntamos al usuario dónde quiere guardarlo
     if (Platform.isAndroid) {
-      final params = SaveFileDialogParams(sourceFilePath: internalFilePath);
+      // Obtiene el directorio temporal y crea una nueva ruta con el nuevo nombre
+      final Directory extDir = await getTemporaryDirectory();
+      final newFilePath = '${extDir.path}/$newFileName';
+
+      // Copia el archivo con el nuevo nombre
+      final newFile = await File(internalFilePath).copy(newFilePath);
+
+      // Guardar en la ubicación elegida por el usuario
+      final params = SaveFileDialogParams(sourceFilePath: newFile.path);
       final finalPath = await FlutterFileDialog.saveFile(params: params);
 
       if (kDebugMode) {
-        print('MARTA El fichero se ha guardado en $finalPath');
+        print('El fichero se ha guardado en $finalPath');
       }
       pathFicheroAlmacenado = finalPath;
+
     } else if (Platform.isWindows) {
       String? outputFile = await FilePicker.platform.saveFile(
-          dialogTitle: 'Elija la carpeta destino del fichero',
-          fileName: ((internalFilePath).replaceAll('/', '\\')));
+        dialogTitle: 'Elija la carpeta destino del fichero',
+        fileName: newFileName,  // Usa el nombre personalizado
+      );
 
       File returnedFile = File(outputFile!);
-
-      //await returnedFile.writeAsBytes(datos);
-
       pathFicheroAlmacenado = outputFile;
     }
 
     return pathFicheroAlmacenado;
   } catch (e) {
-    print('MARTA Error al generar el informe word: $e');
+    print('Error al generar el informe: $e');
     rethrow;
   }
 }
+
 
 
 
