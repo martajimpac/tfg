@@ -58,7 +58,7 @@ class DropDownField extends FormField<String> {
           icon: icon,
           suffixIcon: IconButton(
               icon: Icon(Icons.arrow_drop_down,
-                  size: 30.0, color: Theme.of(context).colorScheme.onPrimary),
+                  size: 30.0, color: Theme.of(context).colorScheme.onSurface),
               onPressed: () {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
                 state.setState(() {

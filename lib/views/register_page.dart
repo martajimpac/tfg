@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 //import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
@@ -187,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Utils.showMyOkDialog(context, "1" + S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MyHomePage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             });
           } else {
@@ -204,7 +205,11 @@ class _RegisterPageState extends State<RegisterPage> {
           Utils.showMyOkDialog(context, "3" + S.of(context).error, S.of(context).errorRegisterLimit, () {
             Navigator.of(context).pop();
           });
-        } else {
+        } else if (error.statusCode == "422") {
+          Utils.showMyOkDialog(context, "4" + S.of(context).error,"$error ${S.of(context).errorRegisterPasswordMin}" , () {
+            Navigator.of(context).pop();
+          });
+        }else{
           Utils.showMyOkDialog(context, "4" + S.of(context).error,"$error ${S.of(context).errorRegister}" , () {
             Navigator.of(context).pop();
           });

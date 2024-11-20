@@ -49,9 +49,10 @@
   "repeatPassword": "Repite la contraseña",
   "errorPasswordsDontMatch": "Las contraseñas no coinciden",
   "registerSuccessTitle": "¡Registrado!",
-  "registerSuccessDesc": "Usuario registrado con éxito",
+  "registerSuccessDesc": "Usuario registrado con éxito. Revise su bandeja de entrada para validar su subscripcion",
   "errorRegister": "Ha habido un error al tratar de realizar el registro.",
   "errorRegisterLimit": "Se ha excedido el límite de intentos de registro con este correo electrónico.",
+  "errorRegisterPasswordMin": "La contraseña tiene que tener por lo menos 6 caracteres.",
   "registerAndLoginButton": "Registrarse y iniciar sesión",
 
   "changePasswordTitle": "Cambio de contraseña",

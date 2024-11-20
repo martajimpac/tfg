@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class FloatingButtons extends StatelessWidget {
   final VoidCallback onSharePressed;
   final VoidCallback onDownloadPressed;
+  final VoidCallback onQRPressed;
 
   const FloatingButtons({
     super.key,
     required this.onSharePressed,
     required this.onDownloadPressed,
+    required this.onQRPressed,
   });
 
   @override
@@ -38,6 +40,15 @@ class FloatingButtons extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
               foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
               child: const Icon(Icons.download),
+            ),
+            const SizedBox(height: 10),
+            FloatingActionButton(
+              heroTag: "btnQR",
+              onPressed: onQRPressed,
+              shape: const CircleBorder(),
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              child: const Icon(Icons.qr_code),
             ),
             const SizedBox(height: 80),
           ],

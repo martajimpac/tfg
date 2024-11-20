@@ -3,7 +3,6 @@ part of '../main.dart';
 //
 ///Configuración y definición de las rutas
 final GoRouter _enrutador = GoRouter(
-  //TO-DO Cambiar a false en producción
   debugLogDiagnostics: false,
   initialLocation: '/',
   //Página a mostrar si no se encuentra la ruta u otro error en el enrutamiento
@@ -11,12 +10,8 @@ final GoRouter _enrutador = GoRouter(
     mensajeError: state.error.toString(),
   ),
   routes: [
-    /// Página de splash
-    GoRoute(
-      path: "/",
-      name: 'splash',
-      builder: (context, state) => const SplashPage(),
-    ),
+
+    /// DEEPLINKS ********************************************************************************/
 
     /// Página de login
     GoRoute(
@@ -24,6 +19,17 @@ final GoRouter _enrutador = GoRouter(
         name: 'login',
         builder: (context, state) => const LoginPage(),
     ),
+
+    /// Página de detalle de evaluación
+    GoRoute(
+      path: "/details/:itemId", // Define el parámetro dinámico
+      name: "details", // Corrige el nombre
+      builder: (context, state) => DetalleEvaluacionPage(
+        idEvaluacion: int.parse(state.pathParameters['itemId']!), // Convierte a int
+      ),
+    ),
+
+    ///*******************************************************************************************/
 
     /// Página de inicio
     /*GoRoute(
@@ -78,6 +84,13 @@ final GoRouter _enrutador = GoRouter(
       ],
     ),*/
 
+
+    /// Página de splash
+    GoRoute(
+      path: "/",
+      name: 'splash',
+      builder: (context, state) => const SplashPage(),
+    ),
 
 
     ///Página de error

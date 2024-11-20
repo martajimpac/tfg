@@ -29,6 +29,8 @@ dependencies:
   envied: ^0.5.4+1
   shared_preferences: ^2.0.8
   diacritic: 0.1.6
+  qr_flutter: 4.1.0
+  screenshot: ^2.5.0
 
   #PDF
   flutter_pdfview: ^1.2.7

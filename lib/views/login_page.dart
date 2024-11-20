@@ -1,9 +1,11 @@
+import 'package:evaluacionmaquinas/components/dialog/my_two_buttons_dialog.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/views/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/buttons/my_button.dart';
@@ -164,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
         _showErrorDialog(S.of(context).errorAuthentication);
       }
     } on AuthException catch (error) {
-      _handleAuthError(error);
+      _handleAuthError(error, email, password);
     } catch (error) {
       _showErrorDialog("Error desconocido: $error");
     }
@@ -185,22 +187,63 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _handleAuthError(AuthException error) {
+  void _handleAuthError(AuthException error, String email, String password) {
     String message;
 
     switch (error.message) {
       case "Invalid login credentials":
         message = S.of(context).errorAuthenticationCredentials;
+        _showErrorDialog(message);
         break;
       case "Email not confirmed":
         message = S.of(context).errorAuthenticationNotConfirmed;
+        _showErrorDialogWithResendOption(message, email, password);
         break;
       default:
         message = S.of(context).errorAuthentication;
+        _showErrorDialog(message);
         break;
     }
+  }
 
-    _showErrorDialog(message);
+  /// Muestra un diálogo de error con opción de reenviar correo
+  void _showErrorDialogWithResendOption(String message, String email, String password) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MyTwoButtonsDialog(
+          title: S.of(context).error,
+          desc: message,
+          primaryButtonText: "Reenviar correo",
+          onPrimaryButtonTap: () async {
+            Navigator.of(context).pop();
+            await _resendConfirmationEmail(email, password);
+          },
+          secondaryButtonText: "Cerrar",
+          onSecondaryButtonTap: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
+  /// Función para reenviar el correo de confirmación
+  Future<void> _resendConfirmationEmail(String email, String password) async {
+    try {
+      final authResponse = await supabase.auth.signUp(
+        password: password,
+        email: email,
+      );
+      if(authResponse.user != null){
+        Utils.showMyOkDialog(context, "title", "exito", () {
+          Navigator.of(context).pop();
+        });
+      }
+      //TODO SHOW SUCESS DIALOG
+    } catch (error) {
+      _showErrorDialog("Ha ocurrido un error al reenviar el correo");
+    }
   }
 
   void _showErrorDialog(String message) {

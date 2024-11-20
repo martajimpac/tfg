@@ -51,12 +51,12 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
             isFocused = hasFocus;
           });
         },
-        child: DropDownField(
+        child: DropDownFiehld(
           context: context,
           controller: widget.controller,
           hintText: widget.hintText,
           hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
-          textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.normal, fontSize: Dimensions.smallTextSize),
+          textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.normal, fontSize: Dimensions.smallTextSize),
           enabled: true,
           itemsVisibleInDropdown: widget.numItems,
           items: widget.items.map((centro) => centro.denominacion).toList(),

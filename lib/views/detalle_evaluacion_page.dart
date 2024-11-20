@@ -16,6 +16,7 @@ import 'package:share_plus/share_plus.dart';
 import '../components/buttons/floating_buttons.dart';
 import '../components/buttons/my_button.dart';
 import '../components/circle_tab_indicator.dart';
+import '../components/dialog/my_qr_dialog.dart';
 import '../components/tabs/tab_evaluacion.dart';
 import '../components/tabs/tab_pdf.dart';
 import '../cubit/detalles_evaluacion_cubit.dart';
@@ -71,6 +72,19 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       return null;
 
     }
+  }
+
+  void _onQRPressed() {
+    setState(() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyQrDialog(
+            qrData: "https://www.google.es",
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -150,6 +164,9 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
         ],
       ),
       floatingActionButton: FloatingButtons(
+        onQRPressed: () {
+          _onQRPressed();
+        },
         onSharePressed: () async {
           _sharePdf();
         },

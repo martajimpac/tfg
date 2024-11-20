@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:evaluacionmaquinas/components/dialog/my_qr_dialog.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/utils/almacenamiento.dart';
 import 'package:evaluacionmaquinas/utils/pdf.dart';
@@ -45,9 +46,23 @@ class _TerminarPageState extends State<TerminarPage> {
     PdfHelper.savePdf(widget.evaluacion.ideval, widget.evaluacion.nombreMaquina);
   }
 
+  void _onQRPressed() {
+    setState(() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyQrDialog(
+            qrData: "eval24://evalapp.com/details/${widget.evaluacion.ideval}",
+          );
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
- 
+
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -121,6 +136,9 @@ class _TerminarPageState extends State<TerminarPage> {
           },
           onDownloadPressed: () {
             _savePdf();
+          },
+          onQRPressed: () {
+            _onQRPressed();
           },
         ),
       ),
