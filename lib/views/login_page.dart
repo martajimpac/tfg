@@ -236,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
       );
       if(authResponse.user != null){
-        Utils.showMyOkDialog(context, "title", "exito", () {
+        Utils.showMyOkDialog(context, "Correo reenviado", "El correo se ha reenviado con éxito. Revise su bandeja de entrada.", () {
           Navigator.of(context).pop();
         });
       }

@@ -27,6 +27,8 @@ Future<String> getNameFicheroAlmacenamientoLocal(int ideval) async {
 Future<Directory?> damePathAlmacenamientoExterno() async {
   Directory? path;
 
+  permisosAlmacenamiento();
+
   if (Platform.isAndroid) {
     final Directory extDir = await getTemporaryDirectory();
 
@@ -109,6 +111,8 @@ Future<void> deleteFile(File file) async {
 ///Almacena el fichero en un destino elegido por el usuario:
 Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileName) async {
   String? pathFicheroAlmacenado;
+
+  permisosAlmacenamiento();
 
   try {
     ///Obtenemos la extensión del archivo desde `internalFilePath`

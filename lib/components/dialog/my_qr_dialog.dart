@@ -1,58 +1,82 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/rendering.dart';
 import 'package:screenshot/screenshot.dart';
-
+import '../../generated/l10n.dart';
+import '../../utils/Utils.dart';
+import '../../utils/almacenamiento.dart'  as almacenamiento;
 import '../../theme/dimensions.dart';
+import '../../utils/pdf.dart';
 
 class MyQrDialog extends StatelessWidget {
   final String qrData;
+  final String nombreMaquina;
   final ScreenshotController _screenshotController = ScreenshotController();
 
   MyQrDialog({
     Key? key,
+    required this.nombreMaquina,
     required this.qrData,
   }) : super(key: key);
 
-  Future<void> _shareQrCode() async {
+  Future<void> _shareQrCode(BuildContext context) async {
+    Utils.showLoadingDialog(context, text: "");
     try {
-      // Captura el widget como imagen
+      await Future.delayed(const Duration(milliseconds: 200)); // Espera un breve momento
       final image = await _screenshotController.capture();
       if (image != null) {
-        // Guarda la imagen en un archivo temporal
         final tempDir = await getTemporaryDirectory();
         final file = await File('${tempDir.path}/qr_code.png').create();
         await file.writeAsBytes(image);
-
-        // Comparte el archivo
-        await Share.shareXFiles([XFile(file.path)], text: '¡Mira este QR!');
+        await Share.shareXFiles([XFile(file.path)], text: 'QR de la máquina: $nombreMaquina');
+      }else{
+        _showErrorDialogQR(context, "Ha habido un error al compartir el QR.");
       }
     } catch (e) {
+      _showErrorDialogQR(context, "Ha habido un error al compartir el QR.");
       debugPrint('Error al compartir el QR: $e');
+    }finally{
+      // Cierra el diálogo de carga al finalizar
+      Navigator.of(context).pop();
     }
   }
 
+  void _showErrorDialogQR(BuildContext context, String message) {
+    Utils.showMyOkDialog(
+      context,
+      S.of(context).error,
+      message,
+          () {
+        Navigator.of(context).pop(); // Cierra el diálogo
+      },
+    );
+  }
+
   Future<void> _downloadQrCode(BuildContext context) async {
+    Utils.showLoadingDialog(context, text: "");
     try {
-      // Captura el widget como imagen
+      await Future.delayed(const Duration(milliseconds: 200)); // Espera un breve momento
       final image = await _screenshotController.capture();
       if (image != null) {
-        // Guarda la imagen en la carpeta de descargas
+        //almacenar en el almacenamiento interno
         final downloadsDir = await getApplicationDocumentsDirectory();
-        final file = await File('${downloadsDir.path}/qr_code.png').create();
+        final internalPath = '${downloadsDir.path}/qr_code.png';
+        final file = await File(internalPath).create();
         await file.writeAsBytes(image);
 
-        // Muestra un snackbar de confirmación
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('El QR se ha descargado en: ${file.path}')),
-        );
+        await almacenamiento.almacenaEnDestinoElegido(internalPath, PdfHelper.getNamePdf(nombreMaquina));
+      }else{
+        _showErrorDialogQR(context, "Ha habido un error al compartir el QR.");
       }
     } catch (e) {
+      _showErrorDialogQR(context, "Ha habido un error al compartir el QR.");
       debugPrint('Error al descargar el QR: $e');
+    }finally{
+      // Cierra el diálogo de carga al finalizar
+      Navigator.of(context).pop();
     }
   }
 
@@ -75,11 +99,15 @@ class MyQrDialog extends StatelessWidget {
                 const SizedBox(height: Dimensions.marginMedium),
                 Screenshot(
                   controller: _screenshotController,
-                  child: QrImageView(
-                    data: qrData,
-                    version: QrVersions.auto,
-                    size: 200.0,
-                    gapless: false,
+                  child: Container(
+                    color: Colors.white, // Fondo sólido (puedes cambiarlo a otro color si lo prefieres)
+                    padding: const EdgeInsets.all(16.0), // Opcional, para dar algo de espacio alrededor del QR
+                    child: QrImageView(
+                      data: qrData,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                      gapless: false,
+                    ),
                   ),
                 ),
                 const SizedBox(height: Dimensions.marginMedium),
@@ -87,19 +115,17 @@ class MyQrDialog extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Botón para compartir
-                    IconButton(
-                      onPressed: () => _shareQrCode(),
-                      icon: Icon(Icons.share),
-                      color: Theme.of(context).primaryColor,
-                      iconSize: 36,
+                    _buildRoundedButton(
+                      icon: Icons.share,
+                      onPressed: () => _shareQrCode(context),
+                      context: context,
                     ),
                     const SizedBox(width: Dimensions.marginSmall),
                     // Botón para descargar
-                    IconButton(
+                    _buildRoundedButton(
+                      icon: Icons.download,
                       onPressed: () => _downloadQrCode(context),
-                      icon: Icon(Icons.download),
-                      color: Theme.of(context).primaryColor,
-                      iconSize: 36,
+                      context: context,
                     ),
                   ],
                 ),
@@ -119,6 +145,28 @@ class MyQrDialog extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRoundedButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required BuildContext context,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(28),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          size: 28,
+        ),
       ),
     );
   }

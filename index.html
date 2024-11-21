@@ -21,15 +21,15 @@
             border-radius: 8px;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px; /* Limita el ancho máximo del contenedor */
+            max-width: 500px;
         }
         .container img {
-            width: 100px;  /* Ajusta el tamaño del logo según lo desees */
+            width: 100px;
             height: auto;
-            margin-bottom: 20px; /* Espacio entre el logo y el contenido */
+            margin-bottom: 20px;
         }
         .container h1 {
-            color: #5371AA; /* Verde para el título */
+            color: #5371AA;
             margin-bottom: 10px;
         }
         .container p {
@@ -42,6 +42,21 @@
            height: auto;
            margin-bottom: 20px;
         }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #5371AA;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #435a8a;
+        }
     </style>
 </head>
 <body>
@@ -50,15 +65,15 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Logotipo_del_Ministerio_de_Defensa.svg/1920px-Logotipo_del_Ministerio_de_Defensa.svg.png" alt="Logo" class="logo">
     <h1>¡Correo confirmado!</h1>
     <p>Tu correo electrónico ha sido confirmado exitosamente.</p>
-    <p>Serás redirigido a la página de inicio de sesión en unos segundos...</p>
+    <p>Si tienes la apliación instalanda en el dispositivo en el que estás viendo esto, haz clic en el botón para ir a la página de inicio de sesión.</p>
+    <button class="btn" onclick="redirectToApp()">Ir a inicio de sesión</button>
 </div>
 
-<!-- JavaScript para redireccionar después de unos segundos -->
+<!-- JavaScript para redirigir al hacer clic en el botón -->
 <script>
-    setTimeout(function() {
+    function redirectToApp() {
         window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app
-    }, 5000); // Redirige después de 5 segundos
+    }
 </script>
 </body>
 </html>
-

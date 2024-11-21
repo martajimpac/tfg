@@ -51,7 +51,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
             isFocused = hasFocus;
           });
         },
-        child: DropDownFiehld(
+        child: DropDownField(
           context: context,
           controller: widget.controller,
           hintText: widget.hintText,

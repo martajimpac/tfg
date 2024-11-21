@@ -53,6 +53,7 @@ class _TerminarPageState extends State<TerminarPage> {
         builder: (BuildContext context) {
           return MyQrDialog(
             qrData: "eval24://evalapp.com/details/${widget.evaluacion.ideval}",
+            nombreMaquina: widget.evaluacion.nombreMaquina,
           );
         },
       );
