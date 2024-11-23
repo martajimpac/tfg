@@ -42,11 +42,12 @@
         // Función para redirigir manualmente
         function manualRedirect() {
             const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
+            window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app
+            <!--const id = params.get('id');
             if (id) {
                 const deeplink = `eval24://evalapp.com/login/`; //details/${id}`
                 window.location.href = deeplink;
-            }
+            }-->
         }
     </script>
     <style>
