@@ -4,7 +4,11 @@ import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../generated/l10n.dart';
 import '../utils/Utils.dart';
+import 'login_page.dart';
 
+/** PÁGINA PARA RESETEAR LA CONTRASEÑA
+ *  Solo se puede acceder aqui mediante un deeplink
+ */
 class ResetPasswordPage extends StatefulWidget {
   final String token;
   final String email;
@@ -69,33 +73,31 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       return;
     }
 
-    /*try {
+    try {
       // Usamos el método resetPassword de Supabase para resetear la contraseña usando el token
-      final response = await supabase.auth.signInWithIdToken(
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(
           email: widget.email,
-          redirectTo: ,
-          token: widget.token
+          password: newPassword,
+        ),
       );
 
-      if (response.error != null) {
-        // Muestra el error si ocurre
-        Utils.showMyOkDialog(context, S.of(context).error, response.error!.message, () {
-          Navigator.of(context).pop();
-        });
-        return;
-      }
-
       // Si el restablecimiento es exitoso
-      Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).changePasswordSuccess, () {
+      Utils.showMyOkDialog(context, S.of(context).exito, "La contraseña se ha modificado correctamente. Ya puede iniciar sesión.", () {
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        //ir al login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+
       });
 
     } catch (error) {
       Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePassword, () {
         Navigator.of(context).pop();
       });
-    }*/
+    }
   }
 
   @override
