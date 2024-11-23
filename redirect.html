@@ -12,17 +12,16 @@
 
             if (id) {
 
+                // Intenta redirigir al esquema deeplink con el ID proporcionado
+                const deeplink = `eval24://evalapp.com/details/${id}`;
+                window.location.href = deeplink;
 
-                // Mostrar la URL antes de redirigir TODO QUITAR
+
+                // Mostrar la URL antes de redirigir
                 document.getElementById('message').innerHTML = `
                     <p>La URL a la que se redirigirá es: <strong>${deeplink}</strong></p>
                     <p>Redirigiendo...</p>
                 `;
-
-
-                // Intenta redirigir al esquema deeplink con el ID proporcionado
-                const deeplink = `eval24://evalapp.com/details/${id}`;
-                window.location.href = deeplink;
 
                 // Mensaje de confirmación para redirección en curso
                 setTimeout(() => {
