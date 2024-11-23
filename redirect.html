@@ -44,7 +44,7 @@
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
             if (id) {
-                const deeplink = `eval24://evalapp.com/login`; //details/${id}`
+                const deeplink = `eval24://evalapp.com/login/`; //details/${id}`
                 window.location.href = deeplink;
             }
         }
