@@ -11,7 +11,7 @@ const EntornoVersion entornoVersion = EntornoVersion.desarrollo;
 
 const DateFormatString = 'dd/MM/yyyy';
 
-const QRPage = "https://martajimpac.github.io/tfg/redireccion?id=";
+const QRPage = "https://martajimpac.github.io/tfg/redirect?id=";
 
 ///Acciones que se pueden realizar con los pdf y execl de los checkist
 enum AccionesPdfChecklist { guardar, compartir }

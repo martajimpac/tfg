@@ -96,7 +96,8 @@ class MyQrDialog extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: Dimensions.marginMedium),
+                const SizedBox(height: Dimensions.marginSmall),
+                const SizedBox(height: Dimensions.marginBig),
                 Screenshot(
                   controller: _screenshotController,
                   child: Container(
@@ -132,13 +133,13 @@ class MyQrDialog extends StatelessWidget {
               ],
             ),
           ),
-          // Botón de cerrar en la esquina superior izquierda
+          // Botón de cerrar con más espacio arriba
           Positioned(
-            top: 0,
+            top: Dimensions.marginSmall,  // Ajusta este valor si quieres que esté más cerca o más lejos de la parte superior
             left: 0,
             child: IconButton(
               icon: Icon(Icons.close),
-              color: Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
               onPressed: () => Navigator.of(context).pop(),
               iconSize: 36,
               padding: const EdgeInsets.all(Dimensions.marginSmall),
@@ -148,6 +149,9 @@ class MyQrDialog extends StatelessWidget {
       ),
     );
   }
+
+
+
 
   Widget _buildRoundedButton({
     required IconData icon,
