@@ -47,6 +47,7 @@
 
                 <!-- Specific paths -->
                 <data android:path="/login/" />
+                <data android:pathPrefix="/details/" />  <!-- Esto maneja todas las rutas que empiecen con /details/ -->
 
             </intent-filter>
 

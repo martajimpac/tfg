@@ -22,10 +22,10 @@ final GoRouter _enrutador = GoRouter(
 
     /// Página de detalle de evaluación
     GoRoute(
-      path: "/details/:itemId", // Define el parámetro dinámico
-      name: "details", // Corrige el nombre
+      path: "/details/:idEvaluacion", // Define el parámetro dinámico
+      name: "details",
       builder: (context, state) => DetalleEvaluacionPage(
-        idEvaluacion: int.parse(state.pathParameters['itemId']!), // Convierte a int
+        idEvaluacion: int.parse(state.pathParameters['idEvaluacion']!), // Convierte a int
       ),
     ),
 

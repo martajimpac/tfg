@@ -4,58 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirección a la App</title>
-    <script>
-        window.onload = function() {
-            // Obtener los parámetros de la URL
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id'); // Extrae el valor del parámetro 'id'
-
-            if (id) {
-
-                // Construir el deeplink
-                const deeplink = `eval24://evalapp.com/details/${id}`;
-
-                // Mostrar la URL antes de redirigir
-                document.getElementById('message').innerHTML = `
-                    <p>La URL a la que se redirigirá es: <strong>${deeplink}</strong></p>
-                    <p>Redirigiendo...</p>
-                `;
-
-                // Esperar 3 segundos antes de realizar la redirección
-                setTimeout(() => {
-                    window.location.href = deeplink;
-                }, 3000);
-
-                // Mensaje de confirmación para redirección en curso
-                setTimeout(() => {
-                    document.getElementById('message').innerHTML = `
-                        <p>No hemos podido abrir la aplicación automáticamente.</p>
-                        <button onclick="manualRedirect()">Abrir manualmente</button>
-                        <p>Si el problema persiste, asegúrate de tener la aplicación instalada. prueba con id con barra</p>
-                    `;
-                }, 3000); // Espera 3 segundos antes de mostrar el mensaje de error
-            } else {
-                // Mensaje si no se encuentra un ID en la URL
-                document.getElementById('message').innerHTML = `
-                    <p>No se encontró un ID en la URL. Por favor, verifica el enlace.</p>
-                `;
-            }
-        };
-
-        // Función para redirigir manualmente
-        function manualRedirect() {
-
-            window.location.href = "eval24://evalapp.com/details/338/";
-
-            /*window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-            if (id) {
-                const deeplink = `eval24://evalapp.com/details/${id}`
-                window.location.href = deeplink;
-            }*/
-        }
-    </script>
+    <script src="redirect.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
