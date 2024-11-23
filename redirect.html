@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirección a la App</title>
+    <script>
+        window.onload = function() {
+            // Obtener los parámetros de la URL
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id'); // Extrae el valor del parámetro 'id'
+
+            if (id) {
+                // Intenta redirigir al esquema deeplink con el ID proporcionado
+                const deeplink = `eval24://evalapp.com/details/${id}`;
+                window.location.href = deeplink;
+
+                // Mensaje de confirmación para redirección en curso
+                setTimeout(() => {
+                    document.getElementById('message').innerHTML = `
+                        <p>No hemos podido abrir la aplicación automáticamente.</p>
+                        <button onclick="manualRedirect()">Abrir manualmente</button>
+                        <p>Si el problema persiste, asegúrate de tener la aplicación instalada.</p>
+                    `;
+                }, 3000); // Espera 3 segundos antes de mostrar el mensaje de error
+            } else {
+                // Mensaje si no se encuentra un ID en la URL
+                document.getElementById('message').innerHTML = `
+                    <p>No se encontró un ID en la URL. Por favor, verifica el enlace.</p>
+                `;
+            }
+        };
+
+        // Función para redirigir manualmente
+        function manualRedirect() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                const deeplink = `eval24://evalapp.com/details/${id}`;
+                window.location.href = deeplink;
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        #message {
+            color: #333;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #5371AA;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #435a8a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="message">
+        <p>Procesando redirección...</p>
+    </div>
+</div>
+</body>
+</html>

@@ -12,6 +12,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
   final Function()? onSecondaryButtonTap;
   final String primaryButtonText;
   final String secondaryButtonText;
+  final bool isVertical; // Nuevo parámetro para determinar la orientación de los botones
 
   const MyTwoButtonsDialog({
     Key? key,
@@ -21,6 +22,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
     required this.secondaryButtonText,
     this.onPrimaryButtonTap,
     this.onSecondaryButtonTap,
+    this.isVertical = false, // Por defecto los botones serán horizontales
   }) : super(key: key);
 
   @override
@@ -43,14 +45,36 @@ class MyTwoButtonsDialog extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: Dimensions.marginMedium), // Espacio entre el título y el texto siguiente
+            const SizedBox(height: Dimensions.marginMedium),
             Text(
               desc,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: Dimensions.marginMedium),
-            Row(
+            isVertical
+                ? Column( // Disposición vertical
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: MyButton(
+                    adaptableWidth: false,
+                    onTap: onSecondaryButtonTap,
+                    text: secondaryButtonText,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: MyButton(
+                    adaptableWidth: false,
+                    onTap: onPrimaryButtonTap,
+                    text: primaryButtonText,
+                  ),
+                ),
+              ],
+            )
+                : Row( // Disposición horizontal
               children: [
                 Expanded(
                   child: Padding(
@@ -59,17 +83,17 @@ class MyTwoButtonsDialog extends StatelessWidget {
                       adaptableWidth: false,
                       onTap: onSecondaryButtonTap,
                       text: secondaryButtonText,
-                      color: Colors.grey.shade700
+                      color: Colors.grey.shade700,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Padding( //TODO:
+                  child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: MyButton(
                       adaptableWidth: false,
                       onTap: onPrimaryButtonTap,
-                      text: primaryButtonText
+                      text: primaryButtonText,
                     ),
                   ),
                 ),
@@ -80,5 +104,4 @@ class MyTwoButtonsDialog extends StatelessWidget {
       ),
     );
   }
-
 }

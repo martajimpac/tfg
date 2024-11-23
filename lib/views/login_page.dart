@@ -223,6 +223,7 @@ class _LoginPageState extends State<LoginPage> {
           onSecondaryButtonTap: () {
             Navigator.of(context).pop();
           },
+          isVertical: true,
         );
       },
     );

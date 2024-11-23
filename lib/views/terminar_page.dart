@@ -16,7 +16,8 @@ import '../components/tabs/tab_evaluacion.dart';
 import '../components/tabs/tab_pdf.dart';
 import '../generated/l10n.dart';
 import '../modelos/evaluacion_details_dm.dart';
-import '../modelos/imagen_dm.dart'; // Importa el archivo generado
+import '../modelos/imagen_dm.dart';
+import '../utils/Constants.dart'; // Importa el archivo generado
 
 class TerminarPage extends StatefulWidget {
 
@@ -52,7 +53,7 @@ class _TerminarPageState extends State<TerminarPage> {
         context: context,
         builder: (BuildContext context) {
           return MyQrDialog(
-            qrData: "eval24://evalapp.com/details/${widget.evaluacion.ideval}",
+            qrData: QRPage + widget.evaluacion.ideval.toString(),
             nombreMaquina: widget.evaluacion.nombreMaquina,
           );
         },

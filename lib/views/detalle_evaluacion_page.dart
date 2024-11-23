@@ -80,7 +80,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
         context: context,
         builder: (BuildContext context) {
           return MyQrDialog(
-            qrData: "eval24://evalapp.com/login", //"eval24://evalapp.com/details/${_evaluacion.ideval}"
+            qrData: QRPage + _evaluacion.ideval.toString(),
             nombreMaquina: _evaluacion.nombreMaquina,
           );
         },
