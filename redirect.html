@@ -12,17 +12,21 @@
 
             if (id) {
 
+             // Mostrar la URL antes de redirigir
+                document.getElementById('message').innerHTML = `
+                    PROCESANDO REDIRECCION: tenemos el id
+                `;
 
                 // Intenta redirigir al esquema deeplink con el ID proporcionado
                 const deeplink = `eval24://evalapp.com/details/${id}`;
                 window.location.href = deeplink;
 
-                // Mostrar la URL antes de redirigir TODO QUITAR
+
+                // Mostrar la URL antes de redirigir
                 document.getElementById('message').innerHTML = `
                     <p>La URL a la que se redirigirá es: <strong>${deeplink}</strong></p>
                     <p>Redirigiendo...</p>
                 `;
-
 
                 // Mensaje de confirmación para redirección en curso
                 setTimeout(() => {
@@ -42,11 +46,12 @@
 
         // Función para redirigir manualmente
         function manualRedirect() {
+
             window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app
-            <!--<const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
+                       <!-- const params = new URLSearchParams(window.location.search);-->
+            <!--const id = params.get('id');
             if (id) {
-                const deeplink = `eval24://evalapp.com/login`; //details/${id}`
+                const deeplink = `eval24://evalapp.com/login/`; //details/${id}`
                 window.location.href = deeplink;
             }-->
         }
