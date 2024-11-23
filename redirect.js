@@ -35,7 +35,11 @@
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
         if (id) {
-            const deeplink = "eval24://evalapp.com/details/${id}"
-            window.location.href = deeplink;
+             /*
+             encodeURIComponent() codifica los parámetros de la URL, garantizando que todos los caracteres especiales se
+             conviertan en su forma segura de escape y evitando que la URL sea interpretada incorrectamente o cause errores.
+             */
+             const deeplink = "eval24://evalapp.com/reset_password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}";
+             window.location.href = deeplink;
         }
     }

@@ -64,7 +64,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   }
 
   Future<String?> _checkIfFileExist() async { //TODO LA SOLUCION VA A SER METER LA GENERACION DEL PDF EN EL BLOC BUILDER Y RECARGAR TODO!!!
-    final RepositorioDBSupabase repositorio;
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
     if(file != null){
       return file.path;
@@ -226,7 +225,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Aún no se ha generado el PDF en este dispositivo"),
+                              const Text("Aún no se ha generado el PDF en este dispositivo."),
                               const SizedBox(height: Dimensions.marginMedium),
                               MyButton(
                                 adaptableWidth: true,

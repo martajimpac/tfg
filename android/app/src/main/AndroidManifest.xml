@@ -48,6 +48,7 @@
                 <!-- Specific paths -->
                 <data android:path="/login/" />
                 <data android:pathPrefix="/details/" />  <!-- Esto maneja todas las rutas que empiecen con /details/ -->
+                <data android:pathPrefix="/reset_password/" />
 
             </intent-filter>
 

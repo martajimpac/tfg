@@ -6,6 +6,7 @@ import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:evaluacionmaquinas/utils/Constants.dart';
 import 'package:evaluacionmaquinas/views/detalle_evaluacion_page.dart';
 import 'package:evaluacionmaquinas/views/login_page.dart';
+import 'package:evaluacionmaquinas/views/reset_password_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
