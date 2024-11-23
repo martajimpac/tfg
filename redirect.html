@@ -6,20 +6,11 @@
     <title>Redirección a la App</title>
     <script>
         window.onload = function() {
-            // Mostrar un mensaje inicial para confirmar que la función está siendo ejecutada
-            document.getElementById('message').innerHTML = `
-                ENTRAMOS EN LA FUNCION
-            `;
-
             // Obtener los parámetros de la URL
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id'); // Extrae el valor del parámetro 'id'
 
             if (id) {
-                // Mostrar que tenemos el ID y estamos procesando la redirección
-                document.getElementById('message').innerHTML = `
-                    PROCESANDO REDIRECCION: tenemos el id
-                `;
 
                 // Construir el deeplink
                 const deeplink = `eval24://evalapp.com/details/${id}`;
@@ -31,9 +22,9 @@
                 `;
 
                 // Esperar 3 segundos antes de realizar la redirección
-                setTimeout(() => {
+                <!--setTimeout(() => {
                     window.location.href = deeplink;
-                }, 3000); // Redirigir después de 3 segundos
+                }, 3000); // Redirigir después de 3 segundos-->
 
                 // Mensaje de confirmación para redirección en curso
                 setTimeout(() => {
@@ -53,7 +44,14 @@
 
         // Función para redirigir manualmente
         function manualRedirect() {
-            window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app
+            <!--window.location.href = "eval24://evalapp.com/login/"; // Redirige al link de la app-->
+
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                const deeplink = `eval24://evalapp.com/details/${id}`
+                window.location.href = deeplink;
+            }
         }
     </script>
     <style>
@@ -97,7 +95,7 @@
 <body>
 <div class="container">
     <div id="message">
-        <p>Procesando redirección...nuevo AHORA SI</p>
+        <p>Procesando redirección...</p>
     </div>
 </div>
 </body>
