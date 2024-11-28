@@ -72,6 +72,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         _isEmailRed = false;
                         try {
                           final authResponse = await supabase.auth.resetPasswordForEmail(_emailController.text);
+                          Utils.showMyOkDialog(context,
+                              "Correo enviado",
+                              "El correo de recuperación se ha enviado correctamente.\nConsulte su bandeja de correo electrónico.",
+                                  () {Navigator.of(context).pop();}
+                          );
                         } on AuthException catch (error) {
                           // Manejar errores de autenticación
                           if (error.statusCode == "429") {
@@ -83,16 +88,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               Navigator.of(context).pop();
                             });
                           }
-                          Utils.showMyOkDialog(context,
-                              "Correo enviado",
-                              "El correo de recuperación se ha enviado correctamente.\nConsulte su bandeja de correo electrónico.",
-                                  () {Navigator.of(context).pop();}
-                          );
                         } catch (error) {
                           Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
                             Navigator.of(context).pop();
                           });
                         }
+
+
                       }
                     },
                     text: S.of(context).sendEmail,
