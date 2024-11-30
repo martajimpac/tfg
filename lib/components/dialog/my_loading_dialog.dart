@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class MyLoadingAlertDialog extends StatelessWidget {
-
   final String message; // Mensaje que se mostrará en el diálogo
 
   // Asignamos un valor predeterminado vacío al parámetro `message`
@@ -11,7 +10,13 @@ class MyLoadingAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.onBackground,
-      title: Text(message, style: Theme.of(context).textTheme.bodyMedium),
+      title: Center( // Envolvemos el texto con Center
+        child: Text(
+          message,
+          style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+      ),
       content: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [

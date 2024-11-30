@@ -42,7 +42,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   late List<ImagenDataModel> _imagenes;
   bool _generatingPdf = false;
 
-
   Future<void> _sharePdf() async {
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
@@ -104,61 +103,43 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
         children: [
           Expanded(child:
             BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
-            builder: (context, state) {
-              if (state is DetallesEvaluacionLoading) {
-                return Center(
-                  child: Padding(
-                      padding: const EdgeInsets.all(Dimensions.marginMedium),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (_generatingPdf) ...[
-                            const Text("Generando PDF..."),
-                            const SizedBox(height: Dimensions.marginMedium),
+              builder: (context, state) {
+                if (state is DetallesEvaluacionLoading) {
+                  return Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.marginMedium),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (_generatingPdf) ...[
+                              const Text("Generando PDF..."),
+                              const SizedBox(height: Dimensions.marginMedium),
+                            ],
+                            const CircularProgressIndicator(),
                           ],
-                          const CircularProgressIndicator(),
-                        ],
-                      )
-                  ),
-                );
-              } else if (state is DetallesEvaluacionLoaded) {
-                _evaluacion = state.evaluacion;
-                _imagenes = state.imagenes;
-                return _buildView();
-              } else if (state is DetallesEvaluacionError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(Dimensions.marginMedium),
-                    child: Text(state.errorMessage),
-                  ),
-                );
-              } else if (state is DetallesEvaluacionPdfGenerated) {
-                return _buildView();
-              } else if(state is DetallesEvaluacionPdfError){
-                return const SizedBox();
-              }else{
-                return const SizedBox();
-              }
-            },
-          ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
-            child: MyButton(
-              adaptableWidth: false,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NuevaEvaluacionPage(
-                      evaluacion: _evaluacion,
-                      imagenes: _imagenes,
+                        )
                     ),
-                  ),
-                );
+                  );
+                } else if (state is DetallesEvaluacionLoaded) {
+                  _evaluacion = state.evaluacion;
+                  _imagenes = state.imagenes;
+                  return _buildView();
+                } else if (state is DetallesEvaluacionError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(Dimensions.marginMedium),
+                      child: Text(state.errorMessage),
+                    ),
+                  );
+                } else if (state is DetallesEvaluacionPdfGenerated) {
+                  return _buildView();
+                } else if(state is DetallesEvaluacionPdfError){
+                  return const SizedBox();
+                }else{
+                  return const SizedBox();
+                }
               },
-              text: S.of(context).modify,
             ),
           ),
         ],
@@ -243,6 +224,25 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                   },
                 ),
               ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
+            child: MyButton(
+              adaptableWidth: false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NuevaEvaluacionPage(
+                      evaluacion: _evaluacion,
+                      imagenes: _imagenes,
+                    ),
+                  ),
+                );
+              },
+              text: S.of(context).modify,
             ),
           ),
         ],
