@@ -3,7 +3,7 @@
         const params = new URLSearchParams(window.location.search);
         const email = params.get('email'); // Extrae el valor del parámetro 'email'
 
-        if (!email || !token) {
+        if (!email) {
             // Si no se encuentran los parámetros 'email' o 'token', muestra un mensaje de error
             document.getElementById('message').innerHTML = `
                 <p>No se encontraron los parámetros necesarios en la URL. Por favor, verifica el enlace.</p>
