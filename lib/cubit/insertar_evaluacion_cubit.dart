@@ -134,8 +134,10 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       final listImagenesIds = await repositorio.insertarImagenes(imagenesInsertar.map((imageModel) => imageModel.imagen).toList(), idEvaluacion);
       // Actualizar los ids de las imagenes que acabamos de eliminar
       imagenes.removeWhere((imagen) => imagen.idimg == null);
+      debugPrint("MARTA imagenes IMAGEIDS ${listImagenesIds} ");
       imagenes.addAll(listImagenesIds);
 
+      debugPrint("MARTA IMAGENES ${imagenes} ");
       //creamos el objeto evaluación
       EvaluacionDetailsDataModel evaluacion =
       EvaluacionDetailsDataModel(
@@ -154,9 +156,10 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fabricante: fabricante,
           numeroSerie: numeroSerie
       );
+      debugPrint("MARTA imágenes antes de emitir el estado: ${imagenes}");
       emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {
-
+      debugPrint("MARTA ERROR");
       emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
     }
 

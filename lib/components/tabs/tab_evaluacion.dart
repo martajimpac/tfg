@@ -9,6 +9,7 @@ import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 import '../../utils/Constants.dart';
 import '../../utils/Utils.dart';
+import '../dialog/my_image_dialog.dart';
 
 class TabEvaluacion extends StatelessWidget {
   final EvaluacionDetailsDataModel evaluacion;
@@ -19,6 +20,18 @@ class TabEvaluacion extends StatelessWidget {
     required this.evaluacion,
     required this.imagenes,
   });
+
+
+  void _showImageDialog(BuildContext context, Image image) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MyImageDialog(
+          image: image,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,13 +173,21 @@ class TabEvaluacion extends StatelessWidget {
                           physics: const ClampingScrollPhysics(),
                           itemCount: imagenes.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: const EdgeInsets.all(8.0),
-                              width: 200,
-                              height: 200,
-                              child: Image.memory(
-                                imagenes[index].imagen,
-                                fit: BoxFit.cover,
+                            return GestureDetector(
+                              onTap: () {
+                                _showImageDialog(
+                                    context,
+                                    Image.memory(imagenes[index].imagen, fit: BoxFit.contain)
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.all(8.0),
+                                width: 200,
+                                height: 200,
+                                child: Image.memory(
+                                  imagenes[index].imagen,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             );
                           },
@@ -197,7 +218,7 @@ class TabEvaluacion extends StatelessWidget {
         children: [
           Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
           const SizedBox(width: Dimensions.marginMedium),
-          Expanded( // Para que la columna ocupe todo el espacio disponible
+          Expanded( // Para que la columna ocupe toodo el espacio disponible
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

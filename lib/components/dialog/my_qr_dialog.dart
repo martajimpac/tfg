@@ -133,10 +133,9 @@ class MyQrDialog extends StatelessWidget {
               ],
             ),
           ),
-          // Botón de cerrar con más espacio arriba
           Positioned(
-            top: Dimensions.marginSmall,  // Ajusta este valor si quieres que esté más cerca o más lejos de la parte superior
-            left: 0,
+            top: Dimensions.marginSmall,
+            right: 0,
             child: IconButton(
               icon: Icon(Icons.close),
               color: Theme.of(context).colorScheme.onSurface,

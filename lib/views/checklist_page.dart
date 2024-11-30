@@ -169,6 +169,7 @@ class _CheckListPageState extends State<CheckListPage> {
             if(state is PdfGenerated){
               //Utils.showMyOkDialog(context, "generado", "GENERADO", () => null);
               //Navigator.pop(context);
+              debugPrint("MARTA imagenes checklist ${widget.imagenes}");
               Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
             }else if(state is PdfError){
               //Navigator.pop(context);

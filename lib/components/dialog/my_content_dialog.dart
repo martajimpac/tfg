@@ -1,4 +1,5 @@
 
+import 'package:evaluacionmaquinas/components/dialog/my_image_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/dimensions.dart';
@@ -21,6 +22,7 @@ class MyContentDialog extends StatelessWidget {
     this.onPrimaryButtonTap,
     this.onSecondaryButtonTap,
   });
+
 
   @override
   Widget build(BuildContext context) {

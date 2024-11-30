@@ -41,24 +41,29 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   late EvaluacionDetailsDataModel _evaluacion;
   late List<ImagenDataModel> _imagenes;
   bool _generatingPdf = false;
+  bool _isEvaluationLoaded = false;
 
   Future<void> _sharePdf() async {
-    File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
+    if(_isEvaluationLoaded){
+      File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
-    if (file != null) {
-      PdfHelper.sharePdf(_evaluacion.ideval, _evaluacion.nombreMaquina, file);
-    } else {
-      BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+      if (file != null) {
+        PdfHelper.sharePdf(_evaluacion.ideval, _evaluacion.nombreMaquina, file);
+      } else {
+        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+      }
     }
   }
 
   Future<void> _savePdf() async {
-    File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
+    if(_isEvaluationLoaded){
+      File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
-    if (file != null) {
-      PdfHelper.savePdf(_evaluacion.ideval, _evaluacion.nombreMaquina);
-    } else {
-      BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+      if (file != null) {
+        PdfHelper.savePdf(_evaluacion.ideval, _evaluacion.nombreMaquina);
+      } else {
+        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+      }
     }
   }
 
@@ -73,17 +78,19 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   }
 
   void _onQRPressed() {
-    setState(() {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return MyQrDialog(
-            qrData: QRPage + _evaluacion.ideval.toString(),
-            nombreMaquina: _evaluacion.nombreMaquina,
-          );
-        },
-      );
-    });
+    if(_isEvaluationLoaded){
+      setState(() {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return MyQrDialog(
+              qrData: QRPage + _evaluacion.ideval.toString(),
+              nombreMaquina: _evaluacion.nombreMaquina,
+            );
+          },
+        );
+      });
+    }
   }
 
   @override
@@ -105,6 +112,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
             BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
               builder: (context, state) {
                 if (state is DetallesEvaluacionLoading) {
+                  _isEvaluationLoaded = false;
                   return Center(
                     child: Padding(
                         padding: const EdgeInsets.all(Dimensions.marginMedium),
@@ -122,6 +130,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                     ),
                   );
                 } else if (state is DetallesEvaluacionLoaded) {
+                  _isEvaluationLoaded = true;
                   _evaluacion = state.evaluacion;
                   _imagenes = state.imagenes;
                   return _buildView();
@@ -133,8 +142,10 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                     ),
                   );
                 } else if (state is DetallesEvaluacionPdfGenerated) {
+                  _isEvaluationLoaded = true;
                   return _buildView();
                 } else if(state is DetallesEvaluacionPdfError){
+
                   return const SizedBox();
                 }else{
                   return const SizedBox();
@@ -144,18 +155,11 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingButtons(
-        onQRPressed: () {
-          _onQRPressed();
-        },
-        onSharePressed: () async {
-          _sharePdf();
-        },
-        onDownloadPressed: () {
-          _savePdf();
-        },
-      ),
-
+      floatingActionButton:  FloatingButtons(
+        onQRPressed: _onQRPressed,
+        onSharePressed: _sharePdf,
+        onDownloadPressed: _savePdf,
+      )
     );
   }
 

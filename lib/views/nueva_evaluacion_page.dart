@@ -64,6 +64,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   int? _idCentro;
   String _nombreCentro = "";
   final List<ImagenDataModel> _imageList = [];
+  bool _loadingImage = false;
   late DateTime _fechaRealizacion;
   late DateTime _fechaCaducidad;
   DateTime? _fechaFabricacion;
@@ -286,11 +287,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   }
 
   Future<void> _modificarEvaluacion() async {
-    print("MARTAAA VAMOS A MODIFIICAR LA EVALUACION");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final id =  prefs.getString('id') ?? '';
 
-    print("MARTA VAMOS DE VERDAD");
     _cubitInsertarEvaluacion.modificarEvaluacion(
         context,
         id,  //idinspector (de supabase)
@@ -323,6 +322,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     if(widget.evaluacion != null){
       _isModifiying = true;
 
+      //cargar los datos de la evaluación
       _idEvaluacion = widget.evaluacion!.ideval;
       _idMaquina = widget.evaluacion!.idmaquina;
       _idCentro = widget.evaluacion!.idcentro;
@@ -376,26 +376,35 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             final picker = ImagePicker();
             final pickedFile = await picker.pickImage(source: ImageSource.camera);
             if (pickedFile != null) {
+              setState(() {
+                _loadingImage = true;
+              });
               final compressedImage = await _compressImage(await pickedFile.readAsBytes());
               setState(() {
                 _imageList.add(ImagenDataModel(
                   idimg: null,
                   imagen: compressedImage,
                 ));
+                _loadingImage = false;
               });
             }
           },
           onGalleryButtonTap: () async {
             Navigator.pop(context); // Cerrar el diálogo
             final picker = ImagePicker();
+            setState(() {
+              _loadingImage = true;
+            });
             final pickedFile = await picker.pickImage(source: ImageSource.gallery);
             if (pickedFile != null) {
+
               final compressedImage = await _compressImage(await pickedFile.readAsBytes());
               setState(() {
                 _imageList.add(ImagenDataModel(
                   idimg: null,
                   imagen: compressedImage,
                 ));
+                _loadingImage = false;
               });
             }
           },
@@ -406,6 +415,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
   /// Función para comprimir imágenes
   Future<Uint8List> _compressImage(Uint8List imageBytes) async {
+
+
     // Decodificar la imagen
     final image = img.decodeImage(imageBytes);
     if (image == null) {
@@ -418,8 +429,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       width: 800, // Cambia este valor según tus necesidades
     );
 
+    Uint8List finalImage = Uint8List.fromList(img.encodeJpg(resizedImage, quality: 70)); // Cambia el `quality` (0-100) según tus necesidades
+
     // Codificar la imagen comprimida a JPEG
-    return Uint8List.fromList(img.encodeJpg(resizedImage, quality: 70)); // Cambia el `quality` (0-100) según tus necesidades
+    return finalImage;
   }
 
   @override
@@ -573,7 +586,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Visibility(
-                    visible: _imageList.isEmpty,
+                    visible: !_loadingImage && _imageList.isEmpty,
                     child: Container(
                       height: 200,
                       decoration: BoxDecoration(
@@ -592,16 +605,29 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                             S.of(context).addImage,
                             style: const TextStyle(
                               fontSize: Dimensions.smallTextSize,
-                              color: Colors.grey
+                              color: Colors.grey,
                             ),
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ),
+
+                  // Mostrar un cargando si _loadingImage es verdadero
+                  Visibility(
+                    visible: _loadingImage,
+                    child: const SizedBox(
+                      height: 200,
+                      child:  Center(
+                        child: Text("Subiendo imagen...")
+                      ),
+                    ),
+                  ),
+
+                  // Mostrar la lista de imágenes cuando no esté vacía y no se esté cargando
                   SizedBox(
-                    height: _imageList.isNotEmpty ? 200 : 0, // Ajusta la altura según lo necesites
-                    child: _imageList.isNotEmpty
+                    height: _imageList.isNotEmpty && !_loadingImage ? 200 : 0, // Ajusta la altura según lo necesites
+                    child: _imageList.isNotEmpty && !_loadingImage
                         ? ListView.builder(
                       scrollDirection: Axis.horizontal,
                       physics: const ClampingScrollPhysics(),
@@ -669,7 +695,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                     )
                         : const SizedBox(),
                   ),
-
                   const SizedBox(height: Dimensions.marginSmall),
                   MyButton(
                     adaptableWidth: false,
@@ -689,18 +714,22 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           Navigator.of(context).pop(); //cerrar resumen
                           Utils.showLoadingDialog(context, text: "Insertando la evaluación...");
                         }else if(state is EvaluacionInsertada) {
+
+                          debugPrint("MARTA imagenes nueva ${state.imagenes} ");
+
+                          // Crea una copia para evitar problemas con la mutabilidad
+                          List<ImagenDataModel> imagenesCopy = List.from(state.imagenes);
+
                           Navigator.of(context).pop(); //cerrar cargando
 
-                          if(_exit){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-                          }else{
-                            _idEvaluacion = state.evaluacion.ideval;
-                            _idMaquina = state.evaluacion.idmaquina;
-                            _imageList.clear();
-                            _imageList.addAll(state.imagenes);
-                            // Si la evaluación se inserta con éxito, puedes navegar a la página de checklist
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
-                          }
+                          _idEvaluacion = state.evaluacion.ideval;
+                          _idMaquina = state.evaluacion.idmaquina;
+                          _imageList.clear();
+                          _imageList.addAll(imagenesCopy);
+
+                          debugPrint("MARTA imagenes nueva2 ${_imageList} ");
+
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
 
                         }else if(state is InsertarEvaluacionError){
                           Navigator.of(context).pop(); //cerrar cargando
