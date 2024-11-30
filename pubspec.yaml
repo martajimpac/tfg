@@ -31,6 +31,7 @@ dependencies:
   diacritic: 0.1.6
   qr_flutter: 4.1.0
   screenshot: ^2.5.0
+  image: ^4.0.21
 
   #PDF
   flutter_pdfview: ^1.2.7

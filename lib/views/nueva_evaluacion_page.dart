@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:evaluacionmaquinas/components/dialog/my_loading_dialog.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_select_photo_dialog.dart';
@@ -28,6 +29,7 @@ import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/centros_cubit.dart';
 import '../cubit/eliminar_evaluacion_cubit.dart';
 import '../cubit/insertar_evaluacion_cubit.dart';
+import 'package:image/image.dart' as img;
 import '../generated/l10n.dart';
 import '../utils/Constants.dart';
 
@@ -364,9 +366,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     super.dispose();
   }
 
-
-    Future<void> _getImage() async {
-    // Mostrar un diálogo con opciones
+  Future<void> _getImage() async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -376,11 +376,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             final picker = ImagePicker();
             final pickedFile = await picker.pickImage(source: ImageSource.camera);
             if (pickedFile != null) {
-              final bytes = await pickedFile.readAsBytes();
+              final compressedImage = await _compressImage(await pickedFile.readAsBytes());
               setState(() {
                 _imageList.add(ImagenDataModel(
                   idimg: null,
-                  imagen: bytes,
+                  imagen: compressedImage,
                 ));
               });
             }
@@ -390,20 +390,37 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             final picker = ImagePicker();
             final pickedFile = await picker.pickImage(source: ImageSource.gallery);
             if (pickedFile != null) {
-              final bytes = await pickedFile.readAsBytes();
+              final compressedImage = await _compressImage(await pickedFile.readAsBytes());
               setState(() {
                 _imageList.add(ImagenDataModel(
                   idimg: null,
-                  imagen: bytes,
+                  imagen: compressedImage,
                 ));
               });
             }
-          }
+          },
         );
       },
     );
   }
 
+  /// Función para comprimir imágenes
+  Future<Uint8List> _compressImage(Uint8List imageBytes) async {
+    // Decodificar la imagen
+    final image = img.decodeImage(imageBytes);
+    if (image == null) {
+      throw Exception("Error al decodificar la imagen");
+    }
+
+    // Redimensionar la imagen (opcional)
+    final resizedImage = img.copyResize(
+      image,
+      width: 800, // Cambia este valor según tus necesidades
+    );
+
+    // Codificar la imagen comprimida a JPEG
+    return Uint8List.fromList(img.encodeJpg(resizedImage, quality: 70)); // Cambia el `quality` (0-100) según tus necesidades
+  }
 
   @override
   Widget build(BuildContext context) {

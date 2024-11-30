@@ -2,7 +2,6 @@
         // Obtener los parámetros de la URL
         const params = new URLSearchParams(window.location.search);
         const email = params.get('email'); // Extrae el valor del parámetro 'email'
-        const token = params.get('token'); // Extrae el valor del parámetro 'token'
 
         if (!email || !token) {
             // Si no se encuentran los parámetros 'email' o 'token', muestra un mensaje de error
@@ -19,14 +18,13 @@
     function redirectToResetPassword() {
         const params = new URLSearchParams(window.location.search);
         const email = params.get('email');
-        const token = params.get('token');
 
         if (email && token) {
-                    /*
+                    /* TODO SOLO QUEDA ENCODE URI COMPONENT
                      encodeURIComponent() codifica los parámetros de la URL, garantizando que todos los caracteres especiales se
                      conviertan en su forma segura de escape y evitando que la URL sea interpretada incorrectamente o cause errores.
                      */
-            const deeplink = "eval24://evalapp.com/reset_password/?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}";
+            const deeplink = "eval24://evalapp.com/reset_password/email";
             window.location.href = deeplink;
         }
     }

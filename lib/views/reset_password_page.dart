@@ -10,9 +10,8 @@ import 'login_page.dart';
  *  Solo se puede acceder aqui mediante un deeplink
  */
 class ResetPasswordPage extends StatefulWidget {
-  final String token;
   final String email;
-  const ResetPasswordPage({Key? key, required this.token, required this.email}) : super(key: key);
+  const ResetPasswordPage({Key? key, required this.email}) : super(key: key);
 
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
@@ -86,11 +85,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       Utils.showMyOkDialog(context, S.of(context).exito, "La contraseña se ha modificado correctamente. Ya puede iniciar sesión.", () {
         Navigator.of(context).pop();
         //ir al login
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
-
       });
 
     } catch (error) {

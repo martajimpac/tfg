@@ -1,3 +1,5 @@
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
+import 'package:evaluacionmaquinas/views/login_page.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
@@ -28,14 +30,21 @@ class ErrorPage extends StatelessWidget {
               style: const TextStyle(fontSize: 20),
             ),
             SizedBox(height: 10),
-            Text(
-              mensajeError,
-              style: TextStyle(fontSize: 16),
+            Padding(
+              padding: const EdgeInsets.all(Dimensions.marginMedium),
+              child:         Text(
+                mensajeError,
+                style: TextStyle(fontSize: 16),
+              ),
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-                // Aquí puedes manejar el botón de manera adecuada, como regresar a la página anterior o reiniciar la aplicación.
+              onPressed: () {Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginPage(),
+                ),
+              );// Aquí puedes manejar el botón de manera adecuada, como regresar a la página anterior o reiniciar la aplicación.
               },
               child: Text(S.of(context).back),
             ),

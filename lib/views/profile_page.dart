@@ -212,7 +212,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     text: S.of(context).changePasswordButton,
                     icon: const Icon(Icons.lock, color: Colors.white),
                   ),
-                  MyButtonCard(
+                  /*MyButtonCard(
                     onTap: () async {
                       showDialog(
                         context: context,
@@ -237,7 +237,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     text: "Eliminar cuenta",
                     icon: const Icon(Icons.delete, color: Colors.white),
                     iconContainerColor: Colors.red,
-                  ),
+                  ),*/
+                  const SizedBox(height: Dimensions.marginBig),
                   BlocBuilder<SettingsCubit, SettingsState>(
                     builder: (context, state) {
                       return Row(
