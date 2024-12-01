@@ -63,10 +63,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         borderRadius: BorderRadius.circular(12.0), // Bordes redondeados
                         border: Border.all(color: Colors.grey), // Borde visible
                       ),
-                      child: Text(
-                        S.of(context).forgotPasswordDesc,
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        softWrap: true, // Permite que el texto se ajuste a varias líneas
+                      child: Center(
+                        child: Text(
+                          S.of(context).forgotPasswordDesc,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          softWrap: true, // Permite que el texto se ajuste a varias líneas
+                        ),
                       ),
                     ),
                   ),

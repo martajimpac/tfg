@@ -12,7 +12,8 @@ import 'login_page.dart';
  */
 class ResetPasswordPage extends StatefulWidget {
   final String email;
-  const ResetPasswordPage({super.key, required this.email});
+  final String token; // Agregar el token de restablecimiento de contraseña
+  const ResetPasswordPage({super.key, required this.email, required this.token});
 
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
@@ -74,6 +75,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     try {
+
+      await Supabase.instance.client.auth.setSession(widget.token);
       // Usamos el método resetPassword de Supabase para resetear la contraseña usando el token
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(
@@ -93,7 +96,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       });
 
     } catch (error) {
-      Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePassword, () {
+      Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePassword + "\n$error", () {
         Navigator.of(context).pop();
       });
     }

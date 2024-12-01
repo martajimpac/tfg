@@ -31,10 +31,11 @@ final GoRouter _enrutador = GoRouter(
 
     /// Página de recuperar contraseña
     GoRoute(
-      path: "/reset_password/:email", // Define dos parámetros dinámicos
+      path: "/reset_password/:token/:email", // Define dos parámetros dinámicos
       name: "reset_password",
       builder: (context, state) => ResetPasswordPage(
-        email: state.pathParameters['email']!
+        email: state.pathParameters['email']!,
+        token: state.pathParameters['token']!,
       )
     ),
 
