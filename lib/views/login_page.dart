@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
     } on AuthException catch (error) {
       _handleAuthError(error, email, password);
     } catch (error) {
-      _showErrorDialog("Error desconocido: $error");
+      _showErrorDialog(S.of(context).unknownError + "$error");
     }
   }
 
@@ -214,12 +214,12 @@ class _LoginPageState extends State<LoginPage> {
         return MyTwoButtonsDialog(
           title: S.of(context).error,
           desc: message,
-          primaryButtonText: "Reenviar correo",
+          primaryButtonText: S.of(context).resentEmail,
           onPrimaryButtonTap: () async {
             Navigator.of(context).pop();
             await _resendConfirmationEmail(email, password);
           },
-          secondaryButtonText: "Cerrar",
+          secondaryButtonText: S.of(context).close,
           onSecondaryButtonTap: () {
             Navigator.of(context).pop();
           },
@@ -237,13 +237,15 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
       );
       if(authResponse.user != null){
-        Utils.showMyOkDialog(context, "Correo reenviado", "El correo se ha reenviado con éxito. Revise su bandeja de entrada.", () {
-          Navigator.of(context).pop();
-        });
+        Utils.showMyOkDialog(
+            context,
+            S.of(context).emailResent,
+            S.of(context).emailResentDesc,
+            () {Navigator.of(context).pop();});
       }
       //TODO SHOW SUCESS DIALOG
     } catch (error) {
-      _showErrorDialog("Ha ocurrido un error al reenviar el correo");
+      _showErrorDialog(S.of(context).errorEmailResent);
     }
   }
 

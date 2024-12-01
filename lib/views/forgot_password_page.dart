@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../generated/l10n.dart';
+import '../theme/dimensions.dart';
 import '../utils/Utils.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -53,6 +54,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Text(
+                    S.of(context).resetPasswordDesc,
+                  ),
+                  const SizedBox(height: Dimensions.marginBig),
+
                   Text(S.of(context).email),
                   MyLoginTextField(
                     controller: _emailController,
@@ -73,8 +79,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         try {
                           final authResponse = await supabase.auth.resetPasswordForEmail(_emailController.text);
                           Utils.showMyOkDialog(context,
-                              "Correo enviado",
-                              "El correo de recuperación se ha enviado correctamente.\nConsulte su bandeja de correo electrónico.",
+                              S.of(context).emailSent,
+                              S.of(context).emailSentDesc,
                                   () {Navigator.of(context).pop();}
                           );
                         } on AuthException catch (error) {
@@ -83,7 +89,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordLimit, () {
                               Navigator.of(context).pop();
                             });
-                          } else { //"Email rate limit exceeded"
+                          } else { //Email rate limit exceeded
                             Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
                               Navigator.of(context).pop();
                             });

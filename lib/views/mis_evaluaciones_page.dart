@@ -261,14 +261,14 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   if(state is EliminarEvaluacionCompletada){
                     Navigator.of(context).pop();
                     //Navigator.of(context).pop();
-                    Utils.showMyOkDialog(context, "¡Evaluación eliminada", "La evaluación se ha eliminado correctamente.", () {
+                    Utils.showMyOkDialog(context, S.of(context).evaluationDeleted,  S.of(context).evaluationDeletedDesc, () {
                       Navigator.of(context).pop();
                     });
                     setState(() {
                       _evaluaciones.removeAt(_indexToDelete);
                     });
                   }else if (state is EliminarEvaluacionLoading) {
-                    Utils.showLoadingDialog(context, text: "Eliminando la evaluación...");
+                    Utils.showLoadingDialog(context, text: S.of(context).deletingEvaluation);
                   } else if (state is EliminarEvaluacionError) {
                     Navigator.of(context).pop();
                     Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {

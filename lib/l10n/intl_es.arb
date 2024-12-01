@@ -2,6 +2,8 @@
   "@@locale": "es",
   "appTitle": "Mi Aplicación",
 
+  "next": "Siguiente",
+  "close": "Cerrar",
   "error": "Error",
   "defaultError": "Ha ocurrido un error",
   "back": "Volver",
@@ -25,6 +27,7 @@
   "retryTitle": "Reintentar",
   "observationsTitle": "Observaciones",
   "observationsDesc": "Escriba sus observaciones aqui...",
+  "unknownError": "Error desconocido.",
 
   "loginTitle": "Inicio de sesión",
   "email": "Correo electrónico",
@@ -37,11 +40,19 @@
   "errorAuthenticationCredentials": "Credenciales de inicio de sesión inválidas.",
   "errorAuthenticationNotConfirmed": "Correo electrónico no confirmado.",
   "registerButton": "Registrarse",
+  "resentEmail": "Reenviar correo",
+  "emailAlredyRegistered": "Ha habido un error al realizar el registro.\nYa existe un usuario con este correo.",
+  "emailResent": "Correo reenviado",
+  "emailResentDesc": "El correo se ha reenviado con éxito.\nRevise su bandeja de entrada.",
+  "errorEmailResent": "Ha ocurrido un error al reenviar el correo..",
+
 
   "recoverPasswordTitle": "Recuperar contraseña",
   "errorRecoverPasswordLimit": "Se ha excedido el límite de intentos con este correo electrónico.",
   "errorRecoverPasswordEmail": "Ha ocurrido un error.\nComprueba que el correo sea correcto.",
   "sendEmail": "Enviar correo electrónico",
+  "emailSent": "Correo enviado",
+  "emailSentDesc": "El correo de recuperación se ha enviado correctamente.\nConsulte su bandeja de correo electrónico.",
 
   "registerTitle": "Registro",
   "name": "Nombre",
@@ -67,6 +78,11 @@
   "changePasswordSuccess": "Contraseña cambiada con éxito",
   "changePasswordButton": "Cambiar contraseña",
 
+  "resetPasswordTitle": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+  "resetPasswordDesc": "Resetear contraseña",
+  "resetPasswordButton": "Cambiar contraseña",
+  "passwordReseted": "La contraseña se ha modificado con éxito, ya puede iniciar sesión.",
+
   "myEvaluationsTitle": "Mis evaluaciones",
   "evaluationsSortedName": "Evaluaciones ordenadas por el nombre de la máquina",
   "evaluationsSortedNameDescendant": "Evaluaciones ordenadas por el nombre de la máquina en orden descendente",
@@ -75,6 +91,9 @@
   "deleteEvaluationsTitle": "¿Está seguro de que desea eliminar la evaluación?",
   "deleteEvaluationsDesc": "Una vez eliminada, no podrá recuperar los datos",
   "evaluationHasExpired": "La evaluación ha caducado",
+  "evaluationDeleted": "¡Evaluación eliminada!",
+  "evaluationDeletedDesc": "La evaluación se ha elimiando con éxito",
+  "deletingEvaluation": "Eliminando evaluación...",
 
   "newEvaluationTitle": "Crear nueva evaluación",
   "exitEvaluation": "¿Está seguro de que quiere salir?\nLos datos de la evaluación no se guardarán.",
@@ -95,7 +114,6 @@
   "serialNumber": "Nº de fabricante / Nº de serie",
   "serialNumberAsterisk": "*Nº de fabricante / Nº de serie",
   "hintSerialNumber": "Número",
-  "hintSerialNumber": "Número",
   "manufacturedDate": "Fecha de fabricación",
   "manufacturedDateAsterisk": "Fecha de fabricación",
   "comissioningDate": "Fecha de puesta en servicio",
@@ -107,20 +125,30 @@
   "errorMandatoryFields": "Los siguientes campos son obligatorios y no pueden estar vacíos:\n\n",
   "errorCenterDoesntMatch": "El centro introducido debe coincidir con uno de los de la lista de centros disponibles",
   "errorComissioningDate": "La fecha de puesta en servicio no puede ser anterior a la fecha de fabricación",
-
   "modifyChecklistTitle": "Modificar checklist",
+  "uploadingImage": "Subiendo la imagen...",
+  "errorUploadingImage": "Error al subir la imagen",
+  "savingEvaluation": "Guardando datos de la evaluación...",
+
+
   "checklistTitle": "Checklist",
+  "errorPdf": "Ha habido un error al generar el pdf",
 
   "evaluationsDetailsTitle": "Detalles de la evaluación",
   "unknownDate": "Fecha desconocida",
   "unknownManufacterer": "Fabricante desconocido",
   "completionDate": "Fecha de realización",
+  "generatingPdf": "Generando PDF...",
+  "notGenerated": "Aún no se ha generado el pdf en este dispositivo.",
+  "generate": "Generar",
+  "errorChargingPdf": "Ha habido un error al cargar el pdf",
 
   "unknownName": "Nombre desconocido",
   "numEvaluations": "Nº de evaluaciones:",
   "sessionClosedSuccess": "Sesión cerrada exitosamente.",
   "sessionCloseError": "Ocurrió un error al cerrar la sesión.",
   "logout": "Cerrar sesión",
+  "logoutConfirmation": "¿Está seguro de que desea cerrar sesión?",
   "darkMode": "Modo oscuro",
 
   "filters": "Filtros",
@@ -129,6 +157,7 @@
 
   "evaluationFinished": "Evaluación terminada",
   "pdf": "PDF",
+  "errorSharingPdf": "Se ha producido un error al compartir el PDF",
 
   "cubitCentersError": "Error al obtener los centros",
   "cubitEvaluationDetailsError": "Error al obtener los detalles de la evaluación",
@@ -137,4 +166,6 @@
   "cubitInsertEvaluationsError": "Error al insertar la evaluación",
   "cubitInsertEvaluationsModifyError": "Error al modificar la evaluación",
   "cubitQuestionsError": "Error al obtener las preguntas"
+
+
 }

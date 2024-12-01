@@ -416,11 +416,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   /// Función para comprimir imágenes
   Future<Uint8List> _compressImage(Uint8List imageBytes) async {
 
-
     // Decodificar la imagen
     final image = img.decodeImage(imageBytes);
     if (image == null) {
-      throw Exception("Error al decodificar la imagen");
+      throw Exception(S.of(context).errorUploadingImage);
     }
 
     // Redimensionar la imagen (opcional)
@@ -616,10 +615,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   // Mostrar un cargando si _loadingImage es verdadero
                   Visibility(
                     visible: _loadingImage,
-                    child: const SizedBox(
+                    child: SizedBox(
                       height: 200,
                       child:  Center(
-                        child: Text("Subiendo imagen...")
+                        child: Text(S.of(context).uploadingImage)
                       ),
                     ),
                   ),
@@ -632,10 +631,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                       scrollDirection: Axis.horizontal,
                       physics: const ClampingScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: _imageList.length + 1, // +1 para el botón "más"
+                      itemCount: _imageList.length + 1, // +1 para el botón más
                       itemBuilder: (BuildContext context, int index) {
                         if (index == _imageList.length) {
-                          // Último ítem, mostrar el botón "más"
+                          // Último ítem, mostrar el botón más
                           return GestureDetector(
                             onTap: () {
                               _checkImageLimit();
@@ -712,10 +711,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                         // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
                         if(state is InsertarEvaluacionLoading){
                           Navigator.of(context).pop(); //cerrar resumen
-                          Utils.showLoadingDialog(context, text: "Insertando la evaluación...");
+                          Utils.showLoadingDialog(context, text: S.of(context).savingEvaluation);
                         }else if(state is EvaluacionInsertada) {
-
-                          debugPrint("MARTA imagenes nueva ${state.imagenes} ");
 
                           // Crea una copia para evitar problemas con la mutabilidad
                           List<ImagenDataModel> imagenesCopy = List.from(state.imagenes);
@@ -727,7 +724,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           _imageList.clear();
                           _imageList.addAll(imagenesCopy);
 
-                          debugPrint("MARTA imagenes nueva2 ${_imageList} ");
 
                           Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
 
@@ -742,14 +738,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
                       listener: (context, state) {
                         if(state is EliminarEvaluacionCompletada){
-                          print("EVALUACION ELIMINADA");
-                          //Navigator.of(context).pop();
-                          print("EVALUACION ELIMINADA 22");
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
                         }else if (state is EliminarEvaluacionLoading) {
                           Utils.showLoadingDialog(context);
                         } else if (state is EliminarEvaluacionError) {
-                          print("EVALUACION ERROR");
                           Navigator.of(context).pop();
                           Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                             Navigator.of(context).pop();

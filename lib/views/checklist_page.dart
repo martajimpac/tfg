@@ -156,7 +156,7 @@ class _CheckListPageState extends State<CheckListPage> {
                         // Ir a la siguiente página
                         goToPage(_selectedCircle + 1);
                       },
-                      text: "Siguiente", // Asumiendo que tienes el texto traducido
+                      text: S.of(context).next, // Asumiendo que tienes el texto traducido
                       roundBorders: false,
                     )
                 ],
@@ -167,15 +167,12 @@ class _CheckListPageState extends State<CheckListPage> {
             }
           }, listener: (BuildContext context, PreguntasState state) {
             if(state is PdfGenerated){
-              //Utils.showMyOkDialog(context, "generado", "GENERADO", () => null);
-              //Navigator.pop(context);
-              debugPrint("MARTA imagenes checklist ${widget.imagenes}");
               Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
             }else if(state is PdfError){
               //Navigator.pop(context);
-              Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null); //TODO SI ESTO OCURRE....
+              Utils.showMyOkDialog(context, S.of(context).errorPdf, state.errorMessage, () => null); //TODO SI ESTO OCURRE....
             }else if(state is PreguntasError){
-              Utils.showMyOkDialog(context, "Ha habido un error al generar el pdf", state.errorMessage, () => null);
+              Utils.showMyOkDialog(context, S.of(context).errorPdf, state.errorMessage, () => null);
             }
         },
         ),

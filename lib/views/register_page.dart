@@ -169,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
             authResponse.user!.identities != null &&
             authResponse.user!.identities!.isEmpty)
         {
-          Utils.showMyOkDialog(context, S.of(context).error, "Ha habido un error al realizar el registro. Ya existe un usuario con este correo.", () {
+          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).emailAlredyRegistered, () {
             Navigator.of(context).pop();
           });
         }else{
@@ -185,14 +185,14 @@ class _RegisterPageState extends State<RegisterPage> {
             prefs.setString('name', user.userMetadata!['username'].toString());
 
             // Autenticación exitosa, navega a la siguiente página
-            Utils.showMyOkDialog(context, "1" + S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
+            Utils.showMyOkDialog(context, S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             });
           } else {
-            Utils.showMyOkDialog(context, "2" + S.of(context).error, S.of(context).errorRegister, () {
+            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegister, () {
               Navigator.of(context).pop();
             });
           }
@@ -202,20 +202,20 @@ class _RegisterPageState extends State<RegisterPage> {
 
       } on AuthException catch (error) {
         if (error.statusCode == "429") {
-          Utils.showMyOkDialog(context, "3" + S.of(context).error, S.of(context).errorRegisterLimit, () {
+          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRegisterLimit, () {
             Navigator.of(context).pop();
           });
         } else if (error.statusCode == "422") {
-          Utils.showMyOkDialog(context, "4" + S.of(context).error,"$error ${S.of(context).errorRegisterPasswordMin}" , () {
+          Utils.showMyOkDialog(context, S.of(context).error,"$error ${S.of(context).errorRegisterPasswordMin}" , () {
             Navigator.of(context).pop();
           });
         }else{
-          Utils.showMyOkDialog(context, "4" + S.of(context).error,"$error ${S.of(context).errorRegister}" , () {
+          Utils.showMyOkDialog(context, S.of(context).error,"$error ${S.of(context).errorRegister}" , () {
             Navigator.of(context).pop();
           });
         }
       } catch (error) {
-        Utils.showMyOkDialog(context, "5" + S.of(context).error, "$error", () {
+        Utils.showMyOkDialog(context, S.of(context).error, "$error", () {
           Navigator.of(context).pop();
         });
       }

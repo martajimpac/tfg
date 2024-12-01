@@ -39,7 +39,7 @@ class _TerminarPageState extends State<TerminarPage> {
     if (file != null) {
       PdfHelper.sharePdf(widget.evaluacion.ideval, widget.evaluacion.nombreMaquina, file);
     } else {
-      Utils.showMyOkDialog(context, "Error", "Se ha producido un error al compartir el pdf", () => null);
+      Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorSharingPdf, () => null);
     }
   }
 

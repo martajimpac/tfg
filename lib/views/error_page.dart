@@ -29,7 +29,7 @@ class ErrorPage extends StatelessWidget {
               S.of(context).defaultError,
               style: const TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(Dimensions.marginMedium),
               child:         Text(
@@ -37,7 +37,7 @@ class ErrorPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {Navigator.push(
                 context,

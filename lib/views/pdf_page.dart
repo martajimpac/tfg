@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'dart:async';
 
+import '../generated/l10n.dart';
+
 class PdfPage extends StatefulWidget {
   final String filePath;
 
@@ -57,8 +59,8 @@ class _PdfPageState extends State<PdfPage> {
             if (errorMessage.isNotEmpty)
               Container(
                 color: Theme.of(context).colorScheme.onBackground,
-                child: const Center(
-                  child: Text("Ha ocurrido un error al cargar el PDF"),
+                child: Center(
+                  child: Text(S.of(context).errorChargingPdf),
                 ),
               ),
             if (!isReady && errorMessage.isEmpty)

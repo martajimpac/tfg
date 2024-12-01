@@ -104,7 +104,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: Text("Detalles de la evaluación", style: Theme.of(context).textTheme.titleMedium),
+        title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
       ),
       body: Column(
         children: [
@@ -121,7 +121,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (_generatingPdf) ...[
-                              const Text("Generando PDF..."),
+                              Text(S.of(context).generatingPdf),
                               const SizedBox(height: Dimensions.marginMedium),
                             ],
                             const CircularProgressIndicator(),
@@ -192,9 +192,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                 FutureBuilder<String?>(
                   future: _checkIfFileExist(),
                   builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                    if (kDebugMode) {
-                      print("marta snapshot ${snapshot.connectionState}");
-                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
@@ -210,7 +207,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Aún no se ha generado el PDF en este dispositivo."),
+                              Text(S.of(context).notGenerated),
                               const SizedBox(height: Dimensions.marginMedium),
                               MyButton(
                                 adaptableWidth: true,
@@ -218,7 +215,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                                   _generatingPdf = true;
                                   BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
                                 },
-                                text: "Generar",
+                                text: S.of(context).generate,
                               ),
                             ],
                           ),

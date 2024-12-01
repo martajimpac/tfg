@@ -1,3 +1,4 @@
+import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/buttons/my_button.dart';
@@ -82,7 +83,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
 
       // Si el restablecimiento es exitoso
-      Utils.showMyOkDialog(context, S.of(context).exito, "La contraseña se ha modificado correctamente. Ya puede iniciar sesión.", () {
+      Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).passwordReseted, () {
         Navigator.of(context).pop();
         //ir al login
         Navigator.push(
@@ -104,7 +105,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          S.of(context).changePasswordTitle,
+          S.of(context).resetPasswordTitle,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -137,7 +138,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   MyButton(
                     adaptableWidth: false,
                     onTap: _resetPassword,
-                    text: S.of(context).changePasswordButton,
+                    text: S.of(context).resetPasswordButton,
                   ),
                 ],
               ),

@@ -70,50 +70,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _deleteUser() async {
-    try {
-      await _deleteUserData();
-      final user = Supabase.instance.client.auth.currentUser;
-
-      if (user != null) {
-        await Supabase.instance.client.auth.admin.deleteUser(user.id);
-
-        if (!mounted) return;
-
-        Fluttertoast.showToast(
-          msg: "La cuenta se ha eliminado con éxito",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.grey,
-          textColor: Colors.white,
-        );
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      } else {
-        Fluttertoast.showToast(
-          msg: "Ha habido un error al eliminar la cuenta",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.grey,
-          textColor: Colors.white,
-        );
-      }
-    } catch (error) {
-      if (!mounted) return;
-      debugPrint("marta $error");
-      Fluttertoast.showToast(
-        msg: "Ha habido un error al eliminar la cuenta: $error",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.grey,
-        textColor: Colors.white,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -184,9 +140,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         barrierDismissible: false,
                         builder: (BuildContext context) {
                           return MyTwoButtonsDialog(
-                            title: "Cerrar sesión",
-                            desc: "¿Está seguro de que desea cerrar sesión?",
-                            primaryButtonText: "Cerrar",
+                            title: S.of(context).logout,
+                            desc: S.of(context).logoutConfirmation,
+                            primaryButtonText: S.of(context).close,
                             secondaryButtonText: S.of(context).cancel,
                             onPrimaryButtonTap: () async {
                               Navigator.of(context).pop();
@@ -212,32 +168,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     text: S.of(context).changePasswordButton,
                     icon: const Icon(Icons.lock, color: Colors.white),
                   ),
-                  /*MyButtonCard(
-                    onTap: () async {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return MyTwoButtonsDialog(
-                            title: "Eliminar cuenta",
-                            desc: "¿Está seguro de que desea eliminar la cuenta?\nEsta opción no se podrá deshacer.",
-                            primaryButtonText: "Eliminar",
-                            secondaryButtonText: S.of(context).cancel,
-                            onPrimaryButtonTap: () async {
-                              Navigator.of(context).pop();
-                              await _deleteUser();
-                            },
-                            onSecondaryButtonTap: () {
-                              Navigator.of(context).pop();
-                            },
-                          );
-                        },
-                      );
-                    },
-                    text: "Eliminar cuenta",
-                    icon: const Icon(Icons.delete, color: Colors.white),
-                    iconContainerColor: Colors.red,
-                  ),*/
                   const SizedBox(height: Dimensions.marginBig),
                   BlocBuilder<SettingsCubit, SettingsState>(
                     builder: (context, state) {
