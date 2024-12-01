@@ -34,67 +34,13 @@ final GoRouter _enrutador = GoRouter(
       path: "/reset_password/:token/:email", // Define dos parámetros dinámicos
       name: "reset_password",
       builder: (context, state) => ResetPasswordPage(
-        email: state.pathParameters['email']!,
         token: state.pathParameters['token']!,
+        email: state.pathParameters['email']!,
       )
     ),
 
 
     ///*******************************************************************************************/
-
-    /// Página de inicio
-    /*GoRoute(
-      path: "/home",
-      name: 'home',
-      builder: (context, state) => const MyHomePage(),
-      routes: [
-        /// Página de Mis evaluaciones
-        GoRoute(
-          name: 'mis_evaluaciones',
-          path: "mis_evaluaciones",
-          builder: (context, state) => const MisEvaluaccionesPage(),
-          routes: [
-            GoRoute(
-              name: 'filtros',
-              path: "filtros",
-              builder: (context, state) => const FiltrosPage(),
-            ),
-            GoRoute(
-              name: 'detalle_evaluaciones',
-              path: "detalle_evaluaciones",
-              builder: (context, state) => DetalleEvaluaccionPage(idEvaluacion: idEvaluacion), //TODO REVISAR
-            )
-          ]
-        ),
-        /// Página de Nueva evaluación
-        GoRoute(
-          name: 'nueva_evaluacion',
-          path: "nueva_evaluacion",
-          builder: (context, state) => const NuevaEvaluacionPage(),
-          routes: [
-            GoRoute(
-              name: 'checklist',
-              path: "checklist",
-              builder: (context, state) => const CheckListPage(),
-              routes: [
-                GoRoute(
-                    name: 'pdf',
-                    path: "pdf",
-                    builder: (context, state) => const PdfPage(),
-                )
-              ]
-            )
-          ],
-        ),
-        /// Página de Perfil de Usuario
-        GoRoute(
-          name: 'perfil',
-          path: "perfil",
-          builder: (context, state) => const ProfilePage(),
-        ),
-      ],
-    ),*/
-
 
     /// Página de splash
     GoRoute(
@@ -110,14 +56,5 @@ final GoRouter _enrutador = GoRouter(
       builder: (context, state) =>
           ErrorPage(mensajeError: state.extra as String),
     ),
-
-
-    ///Página de formulario de registro
-    /*GoRoute(
-      name: 'registro',
-      path: "/registro",
-      builder: (context, state) =>
-      const RegisterPage(),
-    ),*/
   ],
 );

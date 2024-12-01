@@ -13,7 +13,7 @@ import 'login_page.dart';
 class ResetPasswordPage extends StatefulWidget {
   final String email;
   final String token; // Agregar el token de restablecimiento de contraseña
-  const ResetPasswordPage({super.key, required this.email, required this.token});
+  const ResetPasswordPage({super.key, required this.token, required this.email});
 
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
