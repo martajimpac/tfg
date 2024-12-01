@@ -77,8 +77,8 @@
   "changePasswordSuccess": "Password changed successfully",
   "changePasswordButton": "Change password",
 
-  "resetPasswordTitle": "Enter your email address, and we will send you a link to reset your password",
-  "resetPasswordDesc": "Reset password",
+  "forgotPasswordDesc": "Enter your email address, and we will send you a link to reset your password",
+  "resetPasswordTitle": "Reset password",
   "resetPasswordButton": "Change password",
   "passwordReseted": "The password has been successfully changed. You can now log in.",
 
@@ -87,6 +87,7 @@
   "evaluationsSortedNameDescendant": "Evaluations sorted by machine name in descending order",
   "evaluationsSortedDate": "Evaluations sorted by completion date",
   "evaluationsSortedDateDescendant": "Evaluations sorted by completion date in descending order",
+  "deleteEvaluations": "Delete evaluations",
   "deleteEvaluationsTitle": "Are you sure you want to delete the evaluation?",
   "deleteEvaluationsDesc": "Once deleted, the data cannot be recovered",
   "evaluationHasExpired": "The evaluation has expired",

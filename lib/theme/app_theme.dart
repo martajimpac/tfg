@@ -3,9 +3,6 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 class MyAppTheme {
   static final lightTheme = ThemeData(
 
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: Colors.white,
-    ),
     brightness: Brightness.light,
 
     colorScheme: ColorScheme.light(
@@ -65,11 +62,6 @@ class MyAppTheme {
   );
 
   static final darkTheme = ThemeData(
-
-    drawerTheme: DrawerThemeData(
-      backgroundColor: Colors.grey.shade800,
-    ),
-
     brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
       background: const Color(0xFF131313), //Fondo

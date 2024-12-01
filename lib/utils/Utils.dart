@@ -11,7 +11,7 @@ import '../components/dialog/my_ok_dialog.dart';
 
 class Utils {
 
-  static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap) {
+  static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap, {String? buttonText = null}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -20,6 +20,7 @@ class Utils {
           title: title,
           desc: desc,
           onTap: onTap,
+          buttonText: buttonText ?? '', // Si buttonText es null, usa un valor vacío como predeterminado
         );
       },
     );

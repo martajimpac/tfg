@@ -392,12 +392,12 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           onGalleryButtonTap: () async {
             Navigator.pop(context); // Cerrar el diálogo
             final picker = ImagePicker();
-            setState(() {
-              _loadingImage = true;
-            });
+
             final pickedFile = await picker.pickImage(source: ImageSource.gallery);
             if (pickedFile != null) {
-
+              setState(() {
+                _loadingImage = true;
+              });
               final compressedImage = await _compressImage(await pickedFile.readAsBytes());
               setState(() {
                 _imageList.add(ImagenDataModel(
@@ -406,6 +406,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                 ));
                 _loadingImage = false;
               });
+            }else{
+
             }
           },
         );
@@ -447,24 +449,19 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           automaticallyImplyLeading: false,
+          centerTitle: true, // Esto centra el título
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
-            child: Row(
-              children: [
-                /*Image.asset(
-                  'lib/images/ic_maq.png',
-                  height: 60, // Ajusta el tamaño de la imagen según sea necesario
-                  width: 60,
-                ),*/
-                Text(
-                  _isModifiying == true ? S.of(context).modifyEvaluationTitle: S.of(context).newEvaluationTitle,
-                   style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: Dimensions.titleTextSize,
-                        fontWeight: FontWeight.bold
-                    ),
-                ),
-              ],
+            child: Text(
+              _isModifiying == true
+                  ? S.of(context).modifyEvaluationTitle
+                  : S.of(context).newEvaluationTitle,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: Dimensions.titleTextSize,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center, // Asegura que el texto esté centrado
             ),
           ),
           actions: [
@@ -472,11 +469,11 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
               icon: const Icon(Icons.close, color: Colors.white), // Icono de cruz
               onPressed: () {
                 _showExitDialog(context);
-                //GoRouter.of(context).go('/home');
               },
             ),
           ],
         ),
+
 
         body: Padding(
         padding: const EdgeInsets.all(Dimensions.marginSmall), // Puedes ajustar los valores según sea necesario

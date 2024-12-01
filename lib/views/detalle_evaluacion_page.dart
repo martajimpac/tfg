@@ -50,7 +50,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       if (file != null) {
         PdfHelper.sharePdf(_evaluacion.ideval, _evaluacion.nombreMaquina, file);
       } else {
-        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+        _showFileNotGeneratedDialog();
       }
     }
   }
@@ -62,12 +62,25 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       if (file != null) {
         PdfHelper.savePdf(_evaluacion.ideval, _evaluacion.nombreMaquina);
       } else {
-        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+        _showFileNotGeneratedDialog();
       }
     }
   }
 
-  Future<String?> _checkIfFileExist() async { //TODO LA SOLUCION VA A SER METER LA GENERACION DEL PDF EN EL BLOC BUILDER Y RECARGAR TODO!!!
+  void _showFileNotGeneratedDialog() {
+    Utils.showMyOkDialog(
+      context,
+      S.of(context).error,
+      S.of(context).notGenerated,
+          () {
+        Navigator.of(context).pop();
+        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+      },
+      buttonText: S.of(context).generate,
+    );
+  }
+
+  Future<String?> _checkIfFileExist() async {
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
     if(file != null){
       return file.path;
@@ -105,6 +118,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
+        centerTitle: true,
       ),
       body: Column(
         children: [

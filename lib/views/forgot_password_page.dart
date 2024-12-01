@@ -54,9 +54,24 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    S.of(context).resetPasswordDesc,
+
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent, // Fondo transparente
+                        borderRadius: BorderRadius.circular(12.0), // Bordes redondeados
+                        border: Border.all(color: Colors.grey), // Borde visible
+                      ),
+                      child: Text(
+                        S.of(context).forgotPasswordDesc,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                        softWrap: true, // Permite que el texto se ajuste a varias líneas
+                      ),
+                    ),
                   ),
+
+
                   const SizedBox(height: Dimensions.marginBig),
 
                   Text(S.of(context).email),

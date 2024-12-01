@@ -77,8 +77,8 @@
   "changePasswordSuccess": "Pasahitza arrakastaz aldatu da",
   "changePasswordButton": "Aldatu pasahitza",
 
-  "resetPasswordTitle": "Sartu zure helbide elektronikoa, eta pasahitza berrezartzeko esteka bidaliko dizugu",
-  "resetPasswordDesc": "Pasahitza berrezarri",
+  "forgotPasswordDesc": "Sartu zure helbide elektronikoa, eta pasahitza berrezartzeko esteka bidaliko dizugu",
+  "resetPasswordTitle": "Pasahitza berrezarri",
   "resetPasswordButton": "Pasahitza aldatu",
   "passwordReseted": "Pasahitza behar bezala aldatu da. Orain saioa hasi dezakezu.",
 
@@ -87,6 +87,7 @@
   "evaluationsSortedNameDescendant": "Ebaluazioak makinaren izenaren arabera ordenatuta, beheranzko ordenan",
   "evaluationsSortedDate": "Ebaluazioak egindako dataren arabera ordenatuta",
   "evaluationsSortedDateDescendant": "Ebaluazioak egindako dataren arabera ordenatuta, beheranzko ordenan",
+  "deleteEvaluations": "Ebaluazioak ezabatu",
   "deleteEvaluationsTitle": "Ziur al zaude ebaluazioa ezabatu nahi duzula?",
   "deleteEvaluationsDesc": "Behin ezabatuta, datuak ez dira berreskuratu ahal izango.",
   "evaluationHasExpired": "Ebaluazioa iraungita dago",

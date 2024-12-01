@@ -1,13 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:evaluacionmaquinas/components/dialog/my_two_buttons_dialog.dart';
 import 'package:evaluacionmaquinas/utils/Utils.dart';
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/views/register_page.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_launcher_icons/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
 import '../generated/l10n.dart';
@@ -44,113 +43,119 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop){
-
-      }, child: Scaffold(
+    return Scaffold(
+      extendBodyBehindAppBar: false,  // Esto permite que el contenido se dibuje detrás del AppBar
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Center(
           child: Text(
             S.of(context).loginTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.marginMedium),
-            child: Container(
-              padding: const EdgeInsets.all(Dimensions.marginMedium),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(S.of(context).email),
-                  MyLoginTextField(
-                    controller: _emailController,
-                    hintText: S.of(context).hintEmail,
-                    isRed: _isEmailRed,
-                  ),
-                  const SizedBox(height: Dimensions.marginMedium),
-                  Text(S.of(context).password),
-                  MyLoginTextField(
-                    controller: _passwordController,
-                    hintText: S.of(context).hintPassword,
-                    obscureText: true,
-                    isRed: _isPasswordRed,
-                  ),
-                  TextButton(
-                    onPressed: () async {
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                      );
-                    },
-
-
-                    child: Text(
-                      S.of(context).forgetPassword,
-                      style: const TextStyle(
-                        fontSize: Dimensions.smallTextSize,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: Dimensions.marginMedium),
-                  MyButton(
-                    adaptableWidth: false,
-                    onTap: () async {
-                      final email = _emailController.text.trim();
-                      final password = _passwordController.text.trim();
-
-                      _login(email, password);
-                      /*Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MyHomePage()),
-                      );*/
-                      if(email.isEmpty || password.isEmpty){
-                        setState(() {
-                          if(email.isEmpty){
-                            _isEmailRed = true;
-                          }
-                          if(password.isEmpty){
-                            _isPasswordRed = true;
-                          }
-                        });
-                      }else{
-                        _isEmailRed = false;
-                        _isPasswordRed = false;
-
-                      }
-                    },
-                    text: S.of(context).loginButton,
-                  ),
-                  const SizedBox(height: Dimensions.marginMedium),
-                  MyButton(
-                    adaptableWidth: false,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegisterPage()),
-                      );
-                    },
-                    color: Theme.of(context).colorScheme.primary,
-                    text: S.of(context).registerButton,
-                  ),
-                ],
-              ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer, // Aquí puedes poner el color que desees
             ),
           ),
         ),
+        elevation: 0,  // Eliminar sombra del AppBar
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
-    )
+      body: Stack(
+        children: [
+          // Imagen de fondo que ocupa toda la pantalla
+          Positioned.fill(
+            child: Image.asset(
+              'lib/images/bg_login.png',  // Asegúrate de que la imagen esté en esta ruta
+              fit: BoxFit.cover,  // Esto asegura que la imagen cubra toda la pantalla
+            ),
+          ),
+          // Contenido de la página
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.marginMedium),
+                child: Container(
+                  padding: const EdgeInsets.all(Dimensions.marginMedium),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,  // Esto asegura que el contenedor tenga solo la altura necesaria
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(S.of(context).email),
+                      MyLoginTextField(
+                        controller: _emailController,
+                        hintText: S.of(context).hintEmail,
+                        isRed: _isEmailRed,
+                      ),
+                      const SizedBox(height: Dimensions.marginMedium),
+                      Text(S.of(context).password),
+                      MyLoginTextField(
+                        controller: _passwordController,
+                        hintText: S.of(context).hintPassword,
+                        obscureText: true,
+                        isRed: _isPasswordRed,
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                          );
+                        },
+                        child: Text(
+                          S.of(context).forgetPassword,
+                          style: TextStyle(
+                            fontSize: Dimensions.smallTextSize,
+                            decoration: TextDecoration.underline,
+                            color: Theme.of(context).colorScheme.onSecondaryContainer
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: Dimensions.marginMedium),
+                      MyButton(
+                        adaptableWidth: false,
+                        onTap: () async {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+
+                          _login(email, password);
+                          if (email.isEmpty || password.isEmpty) {
+                            setState(() {
+                              if (email.isEmpty) {
+                                _isEmailRed = true;
+                              }
+                              if (password.isEmpty) {
+                                _isPasswordRed = true;
+                              }
+                            });
+                          } else {
+                            _isEmailRed = false;
+                            _isPasswordRed = false;
+                          }
+                        },
+                        text: S.of(context).loginButton,
+                      ),
+                      const SizedBox(height: Dimensions.marginMedium),
+                      MyButton(
+                        adaptableWidth: false,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          );
+                        },
+                        color: Theme.of(context).colorScheme.primary,
+                        text: S.of(context).registerButton,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -206,7 +211,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// Muestra un diálogo de error con opción de reenviar correo
   void _showErrorDialogWithResendOption(String message, String email, String password) {
     showDialog(
       context: context,
@@ -229,21 +233,17 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  /// Función para reenviar el correo de confirmación
   Future<void> _resendConfirmationEmail(String email, String password) async {
     try {
-      final authResponse = await supabase.auth.signUp(
-        password: password,
-        email: email,
-      );
-      if(authResponse.user != null){
+      final authResponse = await supabase.auth.signUp(password: password, email: email);
+      if (authResponse.user != null) {
         Utils.showMyOkDialog(
-            context,
-            S.of(context).emailResent,
-            S.of(context).emailResentDesc,
-            () {Navigator.of(context).pop();});
+          context,
+          S.of(context).emailResent,
+          S.of(context).emailResentDesc,
+              () { Navigator.of(context).pop(); },
+        );
       }
-      //TODO SHOW SUCESS DIALOG
     } catch (error) {
       _showErrorDialog(S.of(context).errorEmailResent);
     }
@@ -254,5 +254,4 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.of(context).pop();
     });
   }
-
 }

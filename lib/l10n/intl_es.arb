@@ -78,8 +78,8 @@
   "changePasswordSuccess": "Contraseña cambiada con éxito",
   "changePasswordButton": "Cambiar contraseña",
 
-  "resetPasswordTitle": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
-  "resetPasswordDesc": "Resetear contraseña",
+  "forgotPasswordDesc": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+  "resetPasswordTitle": "Resetear contraseña",
   "resetPasswordButton": "Cambiar contraseña",
   "passwordReseted": "La contraseña se ha modificado con éxito, ya puede iniciar sesión.",
 
@@ -88,6 +88,7 @@
   "evaluationsSortedNameDescendant": "Evaluaciones ordenadas por el nombre de la máquina en orden descendente",
   "evaluationsSortedDate": "Evaluaciones ordenadas por la fecha de realización",
   "evaluationsSortedDateDescendant": "Evaluaciones ordenadas por la fecha de realización en orden descendente",
+  "deleteEvaluations": "Eliminar evaluaciones",
   "deleteEvaluationsTitle": "¿Está seguro de que desea eliminar la evaluación?",
   "deleteEvaluationsDesc": "Una vez eliminada, no podrá recuperar los datos",
   "evaluationHasExpired": "La evaluación ha caducado",
@@ -165,7 +166,5 @@
   "cubitEvaluationsError": "Error al obtener las evaluaciónes",
   "cubitInsertEvaluationsError": "Error al insertar la evaluación",
   "cubitInsertEvaluationsModifyError": "Error al modificar la evaluación",
-  "cubitQuestionsError": "Error al obtener las preguntas"
-
-
+  "cubitQuestionsError": "Error al obtener las preguntas",
 }

@@ -77,8 +77,8 @@
   "changePasswordSuccess": "Contrasenya canviada amb èxit",
   "changePasswordButton": "Canviar contrasenya",
 
-  "resetPasswordTitle": "Introdueix la teva adreça de correu electrònic i t'enviarem un enllaç per restablir la teva contrasenya",
-  "resetPasswordDesc": "Restablir contrasenya",
+  "forgotPasswordDesc": "Introdueix la teva adreça de correu electrònic i t'enviarem un enllaç per restablir la teva contrasenya",
+  "resetPasswordTitle": "Restablir contrasenya",
   "resetPasswordButton": "Canviar contrasenya",
   "passwordReseted": "La contrasenya s'ha modificat amb èxit. Ja pots iniciar sessió.",
 
@@ -87,6 +87,7 @@
   "evaluationsSortedNameDescendant": "Avaluacions ordenades pel nom de la màquina en ordre descendent",
   "evaluationsSortedDate": "Avaluacions ordenades per la data de realització",
   "evaluationsSortedDateDescendant": "Avaluacions ordenades per la data de realització en ordre descendent",
+  "deleteEvaluations": "Eliminar avaluacions",
   "deleteEvaluationsTitle": "Estàs segur que vols eliminar l'avaluació?",
   "deleteEvaluationsDesc": "Un cop eliminada, no podreu recuperar les dades",
   "evaluationHasExpired": "L'avaluació ha caducat",

@@ -93,7 +93,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Container(
                         height: h / 4,
-                        color: Theme.of(context).colorScheme.primaryContainer,
+                        child: Positioned.fill(
+                          child: Image.asset(
+                            'lib/images/bg_profile.png',
+                            fit: BoxFit.fitHeight,
+                          ),
+                        ),
                       ),
                       Positioned(
                         bottom: -40,
@@ -105,6 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 50),
                   Text(
                     userName,
@@ -135,6 +141,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   MyButtonCard(
                     onTap: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                      );
+                    },
+                    text: S.of(context).changePasswordButton,
+                    icon: const Icon(Icons.lock, color: Colors.white),
+                  ),
+                  MyButtonCard(
+                    onTap: () async {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -157,16 +173,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     text: S.of(context).logout,
                     icon: const Icon(Icons.logout, color: Colors.white),
-                  ),
-                  MyButtonCard(
-                    onTap: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
-                      );
-                    },
-                    text: S.of(context).changePasswordButton,
-                    icon: const Icon(Icons.lock, color: Colors.white),
                   ),
                   const SizedBox(height: Dimensions.marginBig),
                   BlocBuilder<SettingsCubit, SettingsState>(

@@ -74,9 +74,10 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            _showDeleteIcons ? '' : S.of(context).myEvaluationsTitle,
+            _showDeleteIcons ? S.of(context).deleteEvaluations : S.of(context).myEvaluationsTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
+
           actions: [
           Visibility(
               visible: _showDeleteIcons,
@@ -91,6 +92,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           )
         ],
           automaticallyImplyLeading: false,
+            centerTitle: true
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Column(
@@ -114,21 +116,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     },
                   ),
                 ),
-                /*Container( TODO VER SI PONGO LO DEL MAPA
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.map),
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    onPressed: () {
-                      setState(() {
-                        _showMap =!_showMap;
-                      });
-                    },
-                  ),
-                ),*/
                 const Spacer(), // Para separar los contenedores de la izquierda y de la derecha
                 Container(
                   decoration: BoxDecoration(
@@ -139,7 +126,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     icon: (_sortNameDescendent)
                         ? Image.asset('lib/images/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize)
                         : Image.asset('lib/images/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize),
-                    color: Theme.of(context).colorScheme.onPrimaryContainer, //TODO CAMBIAR COLOR??
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                     onPressed: () {
                         setState(() {
 
@@ -252,6 +239,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
             /****************** FIN FILTROS **************************************************************************/
             /****************** EVALUACIONES **************************************************************************/
+            SizedBox(height: Dimensions.marginSmall),
             _buildLista(),
             ///_showMap ? _buildMap() : ,
 
@@ -404,6 +392,11 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                       style: const TextStyle(fontWeight: FontWeight.bold),
                                       textAlign: TextAlign.center,
                                     ),
+                                    const SizedBox(height: 8),
+                                    Divider(
+                                      color: Theme.of(context).colorScheme.background,
+                                      thickness: 1,
+                                    ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
@@ -415,7 +408,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                       children: [
                                         Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
                                         const Text(" - "),
-                                        Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: const TextStyle(color: Colors.red)),
+                                        Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
                                       ],
                                     ),
                                     const SizedBox(height: Dimensions.marginSmall),
@@ -435,7 +428,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                             child: _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
                                 ? IconButton(
                               icon: Image.asset(
-                                'lib/images/ic_close.png',
+                                'lib/images/ic_close_transparent.png',
                                 height: 40, // Ajusta el tamaño de la imagen según sea necesario
                                 width: 40,
                                 color: Colors.red,

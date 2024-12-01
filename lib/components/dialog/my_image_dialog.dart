@@ -25,7 +25,7 @@ class MyImageDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Botón de cerrar en la esquina superior izquierda
+            // Botón de cerrar en la esquina superior derecha
             Align(
               alignment: Alignment.topRight,
               child: IconButton(
@@ -37,11 +37,15 @@ class MyImageDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: Dimensions.marginSmall), // Espaciado debajo del botón
-            // Imagen centrada
+            // Imagen centrada con funcionalidad de zoom
             Flexible(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-                child: image, // Muestra la imagen directamente
+                child: InteractiveViewer(
+                  minScale: 0.1, // Escala mínima
+                  maxScale: 4.0, // Escala máxima
+                  child: image, // Muestra la imagen con capacidad de zoom
+                ),
               ),
             ),
           ],

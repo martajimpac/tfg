@@ -64,6 +64,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
           S.of(context).filters,
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        centerTitle: true,
       ),
       body: Container(
         height: MediaQuery.of(context).size.height, // Altura total de la pantalla

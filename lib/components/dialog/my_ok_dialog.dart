@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
 import '../../theme/dimensions.dart';
 import '../buttons/my_button.dart';
 
-
 class MyOkDialog extends StatelessWidget {
   final String title;
   final String desc;
+  final String buttonText;
   final Function()? onTap;
 
   const MyOkDialog({
@@ -16,6 +15,7 @@ class MyOkDialog extends StatelessWidget {
     required this.title,
     required this.desc,
     required this.onTap,
+    this.buttonText = '', // Valor por defecto
   });
 
   @override
@@ -48,7 +48,7 @@ class MyOkDialog extends StatelessWidget {
             MyButton(
               adaptableWidth: false,
               onTap: onTap,
-              text: S.of(context).accept,
+              text: buttonText.isNotEmpty ? buttonText : S.of(context).accept,
             ),
           ],
         ),

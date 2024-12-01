@@ -18,7 +18,7 @@ class Dimensions {
 
   static const double iconSize = 20.0;
 
-  static const double titleTextSize = 18.0;
+  static const double titleTextSize = 21.5;
   static const double subTitleTextSize = 17.0;
   static const double defaultTextSize = 15.0;
   static const double smallTextSize = 14.0;
