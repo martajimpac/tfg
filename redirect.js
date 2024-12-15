@@ -7,7 +7,7 @@
         if (id) {
 
             // Construir el deeplink
-            const deeplink = `eval24://evalapp.com/details/${id}`;
+            const deeplink = `eval24://evalapp.com/details?id=${id}`;
 
             // Esperar 3 segundos antes de realizar la redirección
             setTimeout(() => {
@@ -36,7 +36,7 @@
         const id = params.get('id');
         if (id) {
 
-             const deeplink = `eval24://evalapp.com/details/${id}`;
+             const deeplink = `eval24://evalapp.com/details?id=${id}`;
              window.location.href = deeplink;
         }
     }
