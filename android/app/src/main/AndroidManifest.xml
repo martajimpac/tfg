@@ -46,9 +46,9 @@
                     android:host="evalapp.com" />
 
                 <!-- Specific paths -->
-                <data android:path="/login/" />
-                <data android:pathPrefix="/details/" />  <!-- Esto maneja todas las rutas que empiecen con /details/ -->
-                <data android:pathPrefix="/reset_password/" />
+                <!--<data android:path="/login/" />
+                <data android:path="/reset_password/" />
+                <data android:pathPrefix="/details/" /> --> <!-- Esto maneja todas las rutas que empiecen con /details/ -->
 
             </intent-filter>
 

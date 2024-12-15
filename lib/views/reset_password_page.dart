@@ -11,9 +11,7 @@ import 'login_page.dart';
  *  Solo se puede acceder aqui mediante un deeplink
  */
 class ResetPasswordPage extends StatefulWidget {
-  final String email;
-  final String token; // Agregar el token de restablecimiento de contraseña
-  const ResetPasswordPage({super.key, required this.token, required this.email});
+  const ResetPasswordPage({super.key});
 
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
@@ -75,25 +73,29 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     try {
-
-      await Supabase.instance.client.auth.setSession(widget.token);
       // Usamos el método resetPassword de Supabase para resetear la contraseña usando el token
-      await Supabase.instance.client.auth.updateUser(
+      final userRes = await Supabase.instance.client.auth.updateUser(
         UserAttributes(
-          email: widget.email,
           password: newPassword,
         ),
       );
 
-      // Si el restablecimiento es exitoso
-      Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).passwordReseted, () {
-        Navigator.of(context).pop();
-        //ir al login
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      });
+      if(userRes.user != null){
+        // Si el restablecimiento es exitoso
+        Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).passwordReseted, () {
+          Navigator.of(context).pop();
+          //ir al login
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        });
+      }else{
+        Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePassword, () {
+          Navigator.of(context).pop();
+        });
+      }
+
 
     } catch (error) {
       Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePassword + "\n$error", () {

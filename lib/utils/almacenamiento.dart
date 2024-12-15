@@ -112,25 +112,22 @@ Future<void> deleteFile(File file) async {
 Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileName) async {
   String? pathFicheroAlmacenado;
 
-  permisosAlmacenamiento();
-
   try {
-    ///Obtenemos la extensión del archivo desde `internalFilePath`
+    // Obtenemos la extensión del archivo desde `internalFilePath`
     String extension = internalFilePath.split('.').last;
 
-    /// Generamos un nuevo nombre de archivo con la extensión correcta
+    // Generamos un nuevo nombre de archivo con la extensión correcta
     String newFileName = '$fileName.$extension';
 
-    /// Una vez generado el fichero en temporal, preguntamos al usuario dónde quiere guardarlo
-    if (Platform.isAndroid) {
-      // Obtiene el directorio temporal y crea una nueva ruta con el nuevo nombre
-      final Directory extDir = await getTemporaryDirectory();
-      final newFilePath = '${extDir.path}/$newFileName';
+    if (Platform.isAndroid || Platform.isIOS) {
+      // En Android e iOS usamos FlutterFileDialog para guardar en una ubicación elegida
+      final Directory tempDir = await getTemporaryDirectory();
+      final newFilePath = '${tempDir.path}/$newFileName';
 
-      // Copia el archivo con el nuevo nombre
+      // Copia el archivo a una ubicación temporal
       final newFile = await File(internalFilePath).copy(newFilePath);
 
-      // Guardar en la ubicación elegida por el usuario
+      // Mostramos el diálogo para elegir dónde guardar
       final params = SaveFileDialogParams(sourceFilePath: newFile.path);
       final finalPath = await FlutterFileDialog.saveFile(params: params);
 
@@ -138,15 +135,19 @@ Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileNam
         print('El fichero se ha guardado en $finalPath');
       }
       pathFicheroAlmacenado = finalPath;
-
     } else if (Platform.isWindows) {
+      // En Windows usamos FilePicker para elegir la ubicación
       String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Elija la carpeta destino del fichero',
-        fileName: newFileName,  // Usa el nombre personalizado
+        fileName: newFileName, // Usa el nombre personalizado
       );
 
-      File returnedFile = File(outputFile!);
-      pathFicheroAlmacenado = outputFile;
+      if (outputFile != null) {
+        await File(internalFilePath).copy(outputFile);
+        pathFicheroAlmacenado = outputFile;
+      }
+    } else {
+      throw UnsupportedError('Plataforma no soportada');
     }
 
     return pathFicheroAlmacenado;
@@ -155,8 +156,6 @@ Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileNam
     rethrow;
   }
 }
-
-
 
 
 ///Método que comprueba si un fichero existe en el almacenamiento interno

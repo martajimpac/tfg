@@ -51,5 +51,7 @@
 		<false/>
 		<key>FlutterDeepLinkingEnabled</key>
         <true/>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Permiso necesario para guardar archivos en el dispositivo.</string>
 	</dict>
 </plist>

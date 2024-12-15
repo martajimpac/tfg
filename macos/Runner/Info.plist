@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Permiso necesario para guardar archivos en el dispositivo.</string>
 </dict>
 </plist>
