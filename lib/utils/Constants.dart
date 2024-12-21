@@ -17,3 +17,5 @@ const QRPage = "https://martajimpac.github.io/tfg/redirect?id=";
 enum AccionesPdfChecklist { guardar, compartir }
 //Listado de tipos de ficheros que podemos crear
 enum TiposFicheros { word, excel, pdf }
+
+const bucketName = "images";

@@ -24,7 +24,7 @@ class MySelectPhotoDialog extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           padding: const EdgeInsets.all(Dimensions.marginMedium),
           child: Column(
@@ -47,7 +47,7 @@ class MySelectPhotoDialog extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                       foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
-                    child: const Icon(Icons.photo_library_rounded, color: Colors.white),
+                    child: const Icon(Icons.photo_library_rounded, color: Colors.white, semanticLabel: 'Añadir desde la galery'),
                   ),
                   ElevatedButton(
                     onPressed: onCameraButtonTap,
@@ -57,7 +57,7 @@ class MySelectPhotoDialog extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                       foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
-                    child: const Icon(Icons.camera_alt, color: Colors.white),
+                    child: const Icon(Icons.camera_alt, color: Colors.white, semanticLabel: 'Abrir cámara'),
                   )
                 ],
               ),

@@ -39,14 +39,23 @@ final GoRouter _enrutador = GoRouter(
 
     /// Página de detalle de evaluación
     GoRoute(
-        path: "/details", // Define el parámetro dinámico
-        builder: (context, state) {
-          // Obtén el parámetro de query string
-          final idEvaluacion = state.uri.queryParameters['idEvaluacion'] ?? '';
-          return DetalleEvaluacionPage(
-              idEvaluacion: int.parse(idEvaluacion)
+      path: '/details',
+      builder: (context, state) {
+        // Extraer el parámetro 'id' desde los query parameters
+        final idEvaluacion = state.uri.queryParameters['id'];
+
+        // Validar si el parámetro 'id' es nulo o no es un número
+        if (idEvaluacion == null || int.tryParse(idEvaluacion) == null) {
+          return const ErrorPage(
+            mensajeError: "ID no válido. Verifica el enlace.",
           );
         }
+
+        // Si es válido, navegar a la página de detalles
+        return DetalleEvaluacionPage(
+          idEvaluacion: int.parse(idEvaluacion), // Seguro convertirlo a entero
+        );
+      },
     ),
 
     /// Página de recuperar contraseña

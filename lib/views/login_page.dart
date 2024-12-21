@@ -5,6 +5,7 @@ import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:evaluacionmaquinas/views/forgot_password_page.dart';
 import 'package:evaluacionmaquinas/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/views/register_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/buttons/my_button.dart';
@@ -24,20 +25,20 @@ class _LoginPageState extends State<LoginPage> {
   final supabase = Supabase.instance.client;
   bool _isEmailRed = false;
   bool _isPasswordRed = false;
-  late BuildContext _context;
+  final FocusNode _campoPasswordFocus = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-    _context = context;
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _campoPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -51,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             S.of(context).loginTitle,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer, // Aquí puedes poner el color que desees
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
           ),
         ),
@@ -65,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Image.asset(
               'lib/images/bg_login.png',  // Asegúrate de que la imagen esté en esta ruta
               fit: BoxFit.cover,  // Esto asegura que la imagen cubra toda la pantalla
+              semanticLabel: "",
             ),
           ),
           // Contenido de la página
@@ -75,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   padding: const EdgeInsets.all(Dimensions.marginMedium),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
                   ),
                   child: Column(
@@ -87,6 +89,9 @@ class _LoginPageState extends State<LoginPage> {
                         controller: _emailController,
                         hintText: S.of(context).hintEmail,
                         isRed: _isEmailRed,
+                        onSubmited: () {
+                          FocusScope.of(context).requestFocus(_campoPasswordFocus);
+                        },
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
                       Text(S.of(context).password),
@@ -95,6 +100,10 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: S.of(context).hintPassword,
                         obscureText: true,
                         isRed: _isPasswordRed,
+                        focusNode: _campoPasswordFocus,
+                        onSubmited: () {
+                          _login();
+                        },
                       ),
                       TextButton(
                         onPressed: () async {
@@ -116,23 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       MyButton(
                         adaptableWidth: false,
                         onTap: () async {
-                          final email = _emailController.text.trim();
-                          final password = _passwordController.text.trim();
-
-                          _login(email, password);
-                          if (email.isEmpty || password.isEmpty) {
-                            setState(() {
-                              if (email.isEmpty) {
-                                _isEmailRed = true;
-                              }
-                              if (password.isEmpty) {
-                                _isPasswordRed = true;
-                              }
-                            });
-                          } else {
-                            _isEmailRed = false;
-                            _isPasswordRed = false;
-                          }
+                          _login();
                         },
                         text: S.of(context).loginButton,
                       ),
@@ -159,7 +152,35 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _login(String email, String password) async {
+  Future<void> _login() async {
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        if (email.isEmpty) {
+          _isEmailRed = true;
+        }
+        if (password.isEmpty) {
+          _isPasswordRed = true;
+        }
+      });
+
+      Fluttertoast.showToast(
+        msg: S.of(context).errorEmpty,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
+    } else {
+      setState(() {
+        _isEmailRed = false;
+        _isPasswordRed = false;
+      });
+    }
+
     try {
       final authResponse = await supabase.auth.signInWithPassword(password: password, email: email);
       final user = authResponse.user;
@@ -199,6 +220,10 @@ class _LoginPageState extends State<LoginPage> {
       case "Invalid login credentials":
         message = S.of(context).errorAuthenticationCredentials;
         _showErrorDialog(message);
+        setState(() {
+          _isEmailRed = true;
+          _isPasswordRed = true;
+        });
         break;
       case "Email not confirmed":
         message = S.of(context).errorAuthenticationNotConfirmed;

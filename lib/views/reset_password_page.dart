@@ -1,5 +1,6 @@
 import 'package:evaluacionmaquinas/theme/dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
@@ -23,6 +24,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final supabase = Supabase.instance.client;
   bool _isNewPasswordRed = false;
   bool _isConfirmPasswordRed = false;
+  final FocusNode _campoRepeatPasswordFocus = FocusNode();
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    _campoRepeatPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -48,6 +51,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     });
 
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
+      Fluttertoast.showToast(
+        msg: S.of(context).errorEmpty,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
+
       return;
     }
 
@@ -121,7 +132,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             child: Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onPrimary,
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Column(
@@ -132,12 +143,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     controller: _newPasswordController,
                     hintText: S.of(context).hintPassword,
                     isRed: _isNewPasswordRed,
+                    onSubmited: () {
+                      FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
+                    },
                   ),
                   Text(S.of(context).confirmNewPassword),
                   MyLoginTextField(
                     controller: _confirmPasswordController,
                     hintText: S.of(context).hintPassword,
                     isRed: _isConfirmPasswordRed,
+                    focusNode: _campoRepeatPasswordFocus,
+                    onSubmited: _resetPassword,
                   ),
                   const SizedBox(height: 16.0),
                   MyButton(

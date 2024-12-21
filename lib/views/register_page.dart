@@ -28,6 +28,11 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController _passwordController;
   late TextEditingController _repeatPasswordController;
 
+
+  final FocusNode _campoEmailFocus = FocusNode();
+  final FocusNode _campoPasswordFocus = FocusNode();
+  final FocusNode _campoRepeatPasswordFocus = FocusNode();
+
   final supabase = Supabase.instance.client;
   bool _isEmailRed = false;
   bool _isPasswordRed = false;
@@ -48,6 +53,9 @@ class _RegisterPageState extends State<RegisterPage> {
     _nameController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
+    _campoEmailFocus.dispose();
+    _campoPasswordFocus.dispose();
+    _campoRepeatPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -70,7 +78,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Container(
                   padding: const EdgeInsets.all(Dimensions.marginMedium),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
                   ),
                   child: Column(
@@ -80,12 +88,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       MyLoginTextField(
                         controller: _nameController,
                         hintText: S.of(context).hintName,
+                        onSubmited: () {
+                          FocusScope.of(context).requestFocus(_campoEmailFocus);
+                        },
                       ),
                       Text(S.of(context).email),
+                      const SizedBox(height: Dimensions.marginMedium),
                       MyLoginTextField(
                         controller: _emailController,
                         hintText: S.of(context).hintEmail,
                         isRed: _isEmailRed,
+                        focusNode: _campoEmailFocus,
+                        onSubmited: () {
+                          FocusScope.of(context).requestFocus(_campoPasswordFocus);
+                        },
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
                       Text(S.of(context).password),
@@ -94,24 +110,28 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintText: S.of(context).hintPassword,
                         obscureText: true,
                         isRed: _isPasswordRed,
+                        focusNode: _campoPasswordFocus,
+                        onSubmited: () {
+                          FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
+                        },
                       ),
                       Text(S.of(context).repeatPassword),
+                      const SizedBox(height: Dimensions.marginMedium),
                       MyLoginTextField(
                         controller: _repeatPasswordController,
                         hintText: S.of(context).hintPassword,
                         obscureText: true,
+                        focusNode: _campoRepeatPasswordFocus,
                         isRed: _isRepeatPasswordRed,
+                        onSubmited: () {
+                          _register();
+                        },
                       ),
                       const SizedBox(height: Dimensions.marginMedium),
                       MyButton(
                         adaptableWidth: false,
                         onTap: () async {
-                          // Aquí puedes manejar la lógica de inicio de sesión
-                          final email = _emailController.text.trim();
-                          final password = _passwordController.text.trim();
-                          final repeatPassword = _repeatPasswordController.text.trim();
-                          final name = _nameController.text.trim();
-                          _register(name, email, password, repeatPassword);
+                          _register();
                         },
                         text:S.of(context).registerAndLoginButton,
                       ),
@@ -124,8 +144,22 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future<void> _register(String name, String email, String password, String repeatPassword) async {
+  Future<void> _register() async {
+
+    // Aquí puedes manejar la lógica de inicio de sesión
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final repeatPassword = _repeatPasswordController.text.trim();
+    final name = _nameController.text.trim();
     if (email.isEmpty || password.isEmpty || repeatPassword.isEmpty) {
+
+      Fluttertoast.showToast(
+        msg: S.of(context).errorEmpty,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
       setState(() {
         if (email.isEmpty) {
           _isEmailRed = true;
@@ -152,9 +186,11 @@ class _RegisterPageState extends State<RegisterPage> {
         textColor: Colors.white,
       );
     } else {
-      _isEmailRed = false;
-      _isPasswordRed = false;
-      _isRepeatPasswordRed = false;
+      setState(() {
+        _isEmailRed = false;
+        _isPasswordRed = false;
+        _isRepeatPasswordRed = false;
+      });
 
       try {
         // Proceder con el registro
@@ -209,7 +245,14 @@ class _RegisterPageState extends State<RegisterPage> {
           Utils.showMyOkDialog(context, S.of(context).error,"$error ${S.of(context).errorRegisterPasswordMin}" , () {
             Navigator.of(context).pop();
           });
-        }else{
+        } else if (error.statusCode == "400") {
+          Utils.showMyOkDialog(context, S.of(context).error, "$error ${S.of(context).errorEmailNotValid}", () {
+            Navigator.of(context).pop();
+          });
+          setState(() {
+            _isEmailRed = true;
+          });
+        }else {
           Utils.showMyOkDialog(context, S.of(context).error,"$error ${S.of(context).errorRegister}" , () {
             Navigator.of(context).pop();
           });

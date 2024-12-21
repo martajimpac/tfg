@@ -43,7 +43,7 @@ class TabEvaluacion extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(Dimensions.marginMedium),
@@ -101,7 +101,7 @@ class TabEvaluacion extends StatelessWidget {
                       const SizedBox(height: Dimensions.marginMedium),
 
                       Divider(
-                        color: Theme.of(context).colorScheme.background,  // Color de la línea
+                        color: Theme.of(context).colorScheme.surface,  // Color de la línea
                         thickness: 1,        // Grosor de la línea
                       ),
 
@@ -216,7 +216,7 @@ class TabEvaluacion extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
+          Icon(icon, color: Theme.of(context).colorScheme.onSecondary, semanticLabel: ''),
           const SizedBox(width: Dimensions.marginMedium),
           Expanded( // Para que la columna ocupe toodo el espacio disponible
             child: Column(

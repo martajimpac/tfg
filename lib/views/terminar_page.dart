@@ -72,7 +72,7 @@ class _TerminarPageState extends State<TerminarPage> {
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white, semanticLabel: "Atrás"),
             onPressed: () {
               Navigator.of(context).pop();
             },

@@ -115,7 +115,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
         centerTitle: true,

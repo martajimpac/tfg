@@ -58,7 +58,7 @@ class _PdfPageState extends State<PdfPage> {
             ),
             if (errorMessage.isNotEmpty)
               Container(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onPrimary,
                 child: Center(
                   child: Text(S.of(context).errorChargingPdf),
                 ),
@@ -76,7 +76,7 @@ class _PdfPageState extends State<PdfPage> {
                   Navigator.of(context).pop();
                 },
                 tooltip: 'Cerrar PDF',
-                child: const Icon(Icons.close),
+                child: const Icon(Icons.close, semanticLabel: "Cerrar"),
               ),
             ),
           ],

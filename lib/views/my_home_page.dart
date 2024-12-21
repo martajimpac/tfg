@@ -40,21 +40,24 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: _selectedIndex != 1 // Si el índice seleccionado es 0, muestra el menú de navegación
           ? CurvedNavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         color: Theme.of(context).colorScheme.primaryContainer,
         animationDuration: const Duration(milliseconds: 300),
         items: [
           Icon(
             Icons.home,
             color: Theme.of(context).colorScheme.onPrimaryContainer,
+            semanticLabel: "Página principal"
           ),
           Icon(
             Icons.add,
             color: Theme.of(context).colorScheme.onPrimaryContainer,
+            semanticLabel: "Nueva evaluación"
           ),
           Icon(
             Icons.person,
             color: Theme.of(context).colorScheme.onPrimaryContainer,
+            semanticLabel: "Perfil"
           ),
         ],
         onTap: _onItemTapped,

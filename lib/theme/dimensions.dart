@@ -9,7 +9,7 @@ class Dimensions {
   static const double marginDropDown = 7.0;
 
   //Button
-  static const double marginButtonVertical = 10.0;
+  static const double marginButtonVertical = 15.0;
   static const double marginButton = 25.0;
   static const double cornerRadiusButton = 10.0;
 

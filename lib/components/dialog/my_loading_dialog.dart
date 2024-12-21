@@ -9,7 +9,7 @@ class MyLoadingAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.onBackground,
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       title: Center( // Envolvemos el texto con Center
         child: Text(
           message,

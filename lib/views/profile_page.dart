@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: FutureBuilder<String>(
         future: _getUserName(),
         builder: (context, snapshot) {
@@ -97,6 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Image.asset(
                             'lib/images/bg_profile.png',
                             fit: BoxFit.fitHeight,
+                            semanticLabel: "Foto de perfil",
                           ),
                         ),
                       ),
@@ -104,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         bottom: -40,
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundColor: Theme.of(context).colorScheme.onBackground,
+                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
                           backgroundImage: const AssetImage('lib/images/default_user.png'),
                         ),
                       ),
@@ -147,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                     text: S.of(context).changePasswordButton,
-                    icon: const Icon(Icons.lock, color: Colors.white),
+                    icon: const Icon(Icons.lock, color: Colors.white, semanticLabel: "Cambiar contraseña"),
                   ),
                   MyButtonCard(
                     onTap: () async {
@@ -172,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                     text: S.of(context).logout,
-                    icon: const Icon(Icons.logout, color: Colors.white),
+                    icon: const Icon(Icons.logout, color: Colors.white, semanticLabel: "Cerrar sesión"),
                   ),
                   const SizedBox(height: Dimensions.marginBig),
                   BlocBuilder<SettingsCubit, SettingsState>(

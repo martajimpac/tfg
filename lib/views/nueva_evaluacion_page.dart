@@ -77,6 +77,10 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   bool _isNombreMaquinaRed = false;
   bool _isNumeroSerieRed = false;
 
+  final FocusNode _campoDenominacionFocus = FocusNode();
+  final FocusNode _campoFabricanteFocus = FocusNode();
+  final FocusNode _campoNumeroSerieFocus = FocusNode();
+
   void _checkImageLimit() {
     if(_imageList.length >= 3){
       showDialog(
@@ -362,7 +366,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     _numeroSerieController.dispose();
     _fechaFabricacionNotifier.dispose();
     _fechaPuestaServicioNotifier.dispose();
-
+    _campoDenominacionFocus.dispose();
+    _campoFabricanteFocus.dispose();
+    _campoNumeroSerieFocus.dispose();
     super.dispose();
   }
 
@@ -444,7 +450,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           _showExitDialog(context);
           //GoRouter.of(context).go('/home');
         }, child: Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -466,7 +472,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.close, color: Colors.white), // Icono de cruz
+              icon: const Icon(Icons.close, color: Colors.white, semanticLabel: "Cerrar"), // Icono de cruz
               onPressed: () {
                 _showExitDialog(context);
               },
@@ -548,15 +554,38 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).denominationAsterisk),
-                  MyTextField(controller: _denominacionController, hintText: S.of(context).hintDenomination, isRed: _isNombreMaquinaRed),
+                  MyTextField(
+                      controller: _denominacionController,
+                      hintText: S.of(context).hintDenomination,
+                      isRed: _isNombreMaquinaRed,
+                      focusNode: _campoDenominacionFocus,
+                      onSubmited: () {
+                        FocusScope.of(context).requestFocus(_campoFabricanteFocus);
+                      },
+                  ),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).manufacturer),
-                  MyTextField(controller: _fabricanteController, hintText: S.of(context).hintManufacturer),
+                  MyTextField(
+                      controller: _fabricanteController,
+                      hintText: S.of(context).hintManufacturer,
+                      focusNode: _campoFabricanteFocus,
+                      onSubmited: () {
+                        FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
+                      },
+                  ),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).serialNumberAsterisk),
-                  MyTextField(controller: _numeroSerieController, hintText: S.of(context).hintSerialNumber, isRed: _isNumeroSerieRed),
+                  MyTextField(
+                      controller: _numeroSerieController,
+                      hintText: S.of(context).hintSerialNumber,
+                      isRed: _isNumeroSerieRed,
+                      focusNode: _campoNumeroSerieFocus,
+                      onSubmited: () {
+                        //FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
+                      },
+                  ),
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Text(S.of(context).manufacturedDateAsterisk),
@@ -586,14 +615,14 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                     child: Container(
                       height: 200,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.add_a_photo),
+                            icon: const Icon(Icons.add_a_photo, semanticLabel: "Añadir imagen"),
                             onPressed: _checkImageLimit,
                             color: Colors.grey,
                           ),
@@ -644,7 +673,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                               child: Icon(
                                 Icons.add,
                                 color: Colors.grey[600],
-                                size: 48.0,
+                                size: 48.0, semanticLabel: "Añadir nueva imagen"
                               ),
                             ),
                           );
@@ -681,6 +710,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                                     'lib/images/ic_close.png',
                                     height: 25,
                                     width: 25,
+                                    semanticLabel: "Eliminar imagen",
                                   ),
                                 ),
                               ),
@@ -695,10 +725,12 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   MyButton(
                     adaptableWidth: false,
                     onTap: () {
-                      _isNumeroSerieRed = false;
-                      _isCentroRed = false;
-                      _isFechasRed = false;
-                      _isNombreMaquinaRed = false;
+                      setState(() {
+                        _isNumeroSerieRed = false;
+                        _isCentroRed = false;
+                        _isFechasRed = false;
+                        _isNombreMaquinaRed = false;
+                      });
                       _showDialogCheck(context);
                     },
                     text: S.of(context).continuee,

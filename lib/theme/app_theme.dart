@@ -6,7 +6,7 @@ class MyAppTheme {
     brightness: Brightness.light,
 
     colorScheme: ColorScheme.light(
-      background: const Color(0xFFEFEFEF), //Fondo
+      surface: const Color(0xFFEFEFEF), //Fondo
 
 
       primaryContainer: const Color(0xFF1C438E), //color que cojen los botones por defecto, tambien lo he usado para el fondo de text view
@@ -17,11 +17,11 @@ class MyAppTheme {
 
       //Text view
       primary: Colors.grey.shade400, // Color primario, text indicator...
-      onBackground: Colors.white, //color para el fondo de text view
+      onPrimary: Colors.white, //color para los contenedores
 
-      onSecondary: Colors.grey.shade700, //color de texto claro
+      onSecondary: Colors.grey.shade800, //color de texto claro
 
-      onSurface: Colors.black //texto text field
+      onSurface: Colors.black, //texto text field
     ),
 
     appBarTheme: const AppBarTheme(
@@ -64,7 +64,7 @@ class MyAppTheme {
   static final darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
-      background: const Color(0xFF131313), //Fondo
+      surface: const Color(0xFF131313), //Fondo
 
       primaryContainer: const Color(0xFF7898CE),
       secondaryContainer: const Color(0xFFFCC707),
@@ -73,10 +73,10 @@ class MyAppTheme {
       onPrimaryContainer: Colors.white, //texto sobre botones
 
       primary: Colors.grey.shade400,
-      onBackground: Colors.grey.shade900,
+      onPrimary: Colors.grey.shade800, //color de fondo de los container
 
       onSecondary: Colors.grey.shade200, //color de texto claro
-      onSurface: Colors.white//texto text field
+      onSurface: Colors.white //texto text field
     ),
 
     appBarTheme: const AppBarTheme(

@@ -23,7 +23,7 @@ class MyButtonCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
-        color: Theme.of(context).colorScheme.onBackground,
+        color: Theme.of(context).colorScheme.onPrimary,
         elevation: 0, // Establecer la elevación a 0 para eliminar la sombra
         child: InkWell(
           onTap: onTap,

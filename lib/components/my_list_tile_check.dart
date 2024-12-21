@@ -64,7 +64,7 @@ class _MyListTileState extends State<MyListTile> {
                 ? Theme.of(context).colorScheme.secondaryContainer
                 : Colors.white,
           ),
-          color: Theme.of(context).colorScheme.onBackground,
+          color: Theme.of(context).colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
         ),
         child: Column(
@@ -88,7 +88,10 @@ class _MyListTileState extends State<MyListTile> {
                     S.of(context).observationsTitle,
                     style: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: Dimensions.smallTextSize),
                   ),
-                  trailing: const Icon(Icons.keyboard_arrow_down_rounded),
+                  trailing: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      semanticLabel: 'Mostrar observaciones'
+                  ),
                   children: [
                     MyLoginTextField(
                       controller: _observacionesController,
@@ -111,7 +114,7 @@ class _MyListTileState extends State<MyListTile> {
       children: [
         Checkbox(
           activeColor: _isAnswered ? Theme.of(context).appBarTheme.iconTheme?.color : Colors.grey,
-          checkColor: Theme.of(context).colorScheme.background,
+          checkColor: Theme.of(context).colorScheme.surface,
           value: _isAnswered ? answer == selectedAnswer : answer == defaultAnswer,
           onChanged: (value) {
             setState(() {

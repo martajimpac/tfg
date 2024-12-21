@@ -7,14 +7,20 @@ class MyLoginTextField extends StatefulWidget {
   final bool obscureText;
   final bool isRed;
   final Function(String)? onTextChanged;
+  final VoidCallback? onSubmited;
+  final FocusNode? focusNode;
 
-  const MyLoginTextField({super.key,
+  const MyLoginTextField({
+    super.key,
     required this.controller,
     required this.hintText,
+    this.onSubmited,
+    this.focusNode,
     this.obscureText = false,
     this.isRed = false,
     this.onTextChanged,
   });
+
 
   @override
   _MyLoginTextFieldState createState() => _MyLoginTextFieldState();
@@ -40,6 +46,10 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
         Dimensions.marginTextField, // Abajo (añadiendo un espacio extra)
       ),
       child: TextField(
+        style: TextStyle(
+          fontWeight: FontWeight.bold,  // Fuente en cursiva
+        ),
+        focusNode: widget.focusNode,
         controller: widget.controller,
         obscureText: _obscureTextIsOn, // Corregir el operador ternario
         onChanged: (text) {
@@ -52,28 +62,34 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
             widget.onTextChanged!(text);
           }
         },
+        onSubmitted: (_){
+          if (widget.onSubmited != null) {
+            widget.onSubmited!();
+          }
+        },
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: widget.isRed ? Colors.red : Colors.transparent),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+            borderSide: BorderSide(color:  widget.isRed ? Colors.red : Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
-          fillColor: Theme.of(context).colorScheme.background,
+          fillColor: Theme.of(context).colorScheme.surface,
           filled: true,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(
-            color: Colors.grey,
+          hintStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSecondary,
             fontSize: Dimensions.defaultTextSize,
-            fontWeight: FontWeight.w100
+            fontWeight: FontWeight.normal
           ),
           suffixIcon: widget.obscureText ?
           IconButton(
             icon: Icon(
               _obscureTextIsOn ? Icons.visibility_off : Icons.visibility,
-              color: _obscureTextIsOn ? Colors.grey : Theme.of(context).colorScheme.primaryContainer,
+              color: _obscureTextIsOn ? Colors.grey : Theme.of(context).colorScheme.onSecondary,
+              semanticLabel: 'Mostrar contraseña',
             ),
             onPressed: () {
               setState(() {
@@ -84,7 +100,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
 
           : _isTyping
               ? IconButton(
-            icon: const Icon(Icons.clear),
+            icon: const Icon(Icons.clear, semanticLabel: "Borrar texto"),
             onPressed: () {
               setState(() {
                 widget.controller.clear();

@@ -27,6 +27,7 @@ class EmptyView extends StatelessWidget {
             'lib/images/ic_empty_view.png',
             width: 100,
             height: 100,
+            semanticLabel: "No hay datos",
           ),
           Text(
             customText ?? S.of(context).noEvaluations, // Usa texto personalizado si está disponible

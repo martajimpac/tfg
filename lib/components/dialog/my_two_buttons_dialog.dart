@@ -34,7 +34,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-          color: Theme.of(context).colorScheme.onBackground,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
         padding: const EdgeInsets.all(Dimensions.marginMedium),
         child: Column(

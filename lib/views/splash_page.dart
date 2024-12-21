@@ -49,6 +49,7 @@ class _SplashPageState extends State<SplashPage> {
           Image.asset(
             'lib/images/splash.png',
             fit: BoxFit.cover,
+            semanticLabel: "Pantalla de bienvenida",
           ),
         ],
       ),

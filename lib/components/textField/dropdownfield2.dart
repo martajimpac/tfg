@@ -58,7 +58,10 @@ class DropDownField extends FormField<String> {
           icon: icon,
           suffixIcon: IconButton(
               icon: Icon(Icons.arrow_drop_down,
-                  size: 30.0, color: Theme.of(context).colorScheme.onSurface),
+                  size: 30.0,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  semanticLabel: 'Mostrar centros'
+              ),
               onPressed: () {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
                 state.setState(() {
@@ -80,7 +83,7 @@ class DropDownField extends FormField<String> {
                   controller: state._effectiveController,
                   decoration: effectiveDecoration.copyWith(
                     errorText: field.errorText,
-                    fillColor: Theme.of(context).colorScheme.onBackground,
+                    fillColor: Theme.of(context).colorScheme.onPrimary,
                     filled: true,
                   ),
                   style: textStyle,
@@ -105,7 +108,7 @@ class DropDownField extends FormField<String> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close),
+                icon: Icon(Icons.close, semanticLabel: "Cerrar"),
                 onPressed: () {
                   if (!enabled) return;
                   state.clearValue();

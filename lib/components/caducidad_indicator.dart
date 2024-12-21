@@ -16,7 +16,7 @@ class CaducidadIndicator extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           border: Border.all(color:  Theme.of(context).colorScheme.secondaryContainer),
-          color: Utils.haCaducado(context, fechaCaducidad) ?  Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.onBackground,
+          color: Utils.haCaducado(context, fechaCaducidad) ?  Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.onPrimary,
         ),
         child: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -27,6 +27,7 @@ class CaducidadIndicator extends StatelessWidget {
                 'lib/images/ic_danger.png',
                 height: Dimensions.iconSize, // Ajusta el tamaño de la imagen según sea necesario
                 width: Dimensions.iconSize,
+                semanticLabel: "Aviso caducidad",
                 color: Utils.haCaducado(context, fechaCaducidad) ? Colors.black :  Theme.of(context).colorScheme.secondaryContainer,
               ),
               const SizedBox(width: 8),

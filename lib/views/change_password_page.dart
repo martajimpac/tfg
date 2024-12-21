@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
@@ -22,6 +23,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   bool _isCurrentPasswordRed = false;
   bool _isNewPasswordRed = false;
   bool _isConfirmPasswordRed = false;
+  final FocusNode _campoPasswordFocus = FocusNode();
+  final FocusNode _campoRepeatPasswordFocus = FocusNode();
 
   @override
   void initState() {
@@ -36,6 +39,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    _campoPasswordFocus.dispose();
+    _campoRepeatPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -51,6 +56,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     });
 
     if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      Fluttertoast.showToast(
+        msg: S.of(context).errorEmpty,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
+
       return;
     }
 
@@ -59,6 +72,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         Navigator.of(context).pop();
       });
       setState(() {
+        _isCurrentPasswordRed = false;
         _isNewPasswordRed = true;
         _isConfirmPasswordRed = true;
       });
@@ -69,6 +83,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         Navigator.of(context).pop();
       });
       setState(() {
+        _isCurrentPasswordRed = false;
         _isNewPasswordRed = true;
         _isConfirmPasswordRed = true;
       });
@@ -81,11 +96,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         email: supabase.auth.currentUser!.email!,
         password: currentPassword,
       );
+      setState(() {
+        _isConfirmPasswordRed = false;
+      });
 
 
     } catch (error) {
       Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorChangePasswordIncorrect, () {
         Navigator.of(context).pop();
+      });
+      setState(() {
+        _isCurrentPasswordRed = true;
       });
       return;
     }
@@ -129,7 +150,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onPrimary,
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Column(
@@ -140,18 +161,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     controller: _currentPasswordController,
                     hintText: S.of(context).hintPassword,
                     isRed: _isCurrentPasswordRed,
+                    onSubmited: () {
+                      FocusScope.of(context).requestFocus(_campoPasswordFocus);
+                    },
                   ),
                   Text(S.of(context).newPassword),
                   MyLoginTextField(
                     controller: _newPasswordController,
                     hintText: S.of(context).hintPassword,
                     isRed: _isNewPasswordRed,
+                    focusNode: _campoPasswordFocus,
+                    onSubmited: () {
+                      FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
+                    },
                   ),
                   Text(S.of(context).confirmNewPassword),
                   MyLoginTextField(
                     controller: _confirmPasswordController,
                     hintText: S.of(context).hintPassword,
                     isRed: _isConfirmPasswordRed,
+                    focusNode: _campoRepeatPasswordFocus,
+                    onSubmited: _changePassword
                   ),
                   const SizedBox(height: 16.0),
                   MyButton(

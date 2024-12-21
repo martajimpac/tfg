@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:evaluacionmaquinas/modelos/evaluacion_details_dm.dart';
 import 'package:evaluacionmaquinas/modelos/opcion_respuesta_dm.dart';
+import 'package:evaluacionmaquinas/utils/Constants.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:evaluacionmaquinas/modelos/categoria_pregunta_dm.dart';
@@ -291,6 +292,25 @@ class RepositorioDBSupabase extends RepositorioDB {
     try {
       List<ImagenDataModel> listaImagenesIds  = [];
       for (var imagen in imagenes) {
+
+
+        //Obtener el ide del usuario
+        final userId = _supabase.client.auth.currentUser!.id;
+
+        //Obtener el filePath del usario
+        final filePath = '/$userId/profile';
+        //subir la imagen a subase storage
+        await _supabase.client.storage
+            .from(bucketName)
+            .uploadBinary(filePath, imagen);
+
+        // Obtener URL pública
+        final publicUrlResponse = _supabase.client.storage
+            .from(bucketName)
+            .getPublicUrl(filePath);
+
+        //TODO AHORA PODEMOS GUARDAR LA URL PUBLICA... EN VEZ DE LA IMAGEN
+
         var idImagen = await _supabase.client.rpc('insert_imagen', params: {
           'ideval': idEvaluacion,
           'imagen': imagen
@@ -303,8 +323,6 @@ class RepositorioDBSupabase extends RepositorioDB {
       rethrow;
     }
   }
-
-
 
   @override
   Future<void> insertarRespuestas(List<PreguntaDataModel> preguntas, int idEvaluacion) async {

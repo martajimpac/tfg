@@ -18,7 +18,7 @@ class MyImageDialog extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-          color: Theme.of(context).colorScheme.onBackground,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
         padding: const EdgeInsets.all(Dimensions.marginMedium),
         child: Column(
@@ -29,7 +29,7 @@ class MyImageDialog extends StatelessWidget {
             Align(
               alignment: Alignment.topRight,
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: Icon(Icons.close,semanticLabel: 'Cerrar'),
                 color: Theme.of(context).colorScheme.onSurface,
                 onPressed: () => Navigator.of(context).pop(),
                 iconSize: 36,

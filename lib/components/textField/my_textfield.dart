@@ -6,11 +6,15 @@ class MyTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool isRed;
+  final VoidCallback? onSubmited;
+  final FocusNode? focusNode;
 
   const MyTextField({super.key,
     required this.controller,
     required this.hintText,
     this.isRed = false,
+    this.onSubmited,
+    this.focusNode,
   });
 
   @override
@@ -30,11 +34,20 @@ class _MyTextFieldState extends State<MyTextField> {
         Dimensions.marginTextField, // Abajo (añadiendo un espacio extra)
       ),
       child: TextField(
+        style: TextStyle(
+          fontWeight: FontWeight.bold,  // Fuente en cursiva
+        ),
+        focusNode: widget.focusNode,
         controller: widget.controller,
         onChanged: (text) {
           setState(() {
             _isTyping = text.isNotEmpty;
           });
+        },
+        onSubmitted: (_){
+          if (widget.onSubmited != null) {
+            widget.onSubmited!();
+          }
         },
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
@@ -42,20 +55,20 @@ class _MyTextFieldState extends State<MyTextField> {
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+            borderSide: BorderSide(color: widget.isRed ? Colors.red : Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
-          fillColor: Theme.of(context).colorScheme.onBackground,
+          fillColor: Theme.of(context).colorScheme.onPrimary,
           filled: true,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(
-              color: Colors.grey,
+          hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
               fontSize: Dimensions.smallTextSize,
               fontWeight: FontWeight.normal
           ),
           suffixIcon: _isTyping
               ? IconButton(
-            icon: const Icon(Icons.clear),
+            icon: const Icon(Icons.clear, semanticLabel: "Borrar texto"),
             onPressed: () {
               setState(() {
                 widget.controller.clear();

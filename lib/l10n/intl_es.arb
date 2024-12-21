@@ -50,6 +50,7 @@
   "recoverPasswordTitle": "Recuperar contraseña",
   "errorRecoverPasswordLimit": "Se ha excedido el límite de intentos con este correo electrónico.",
   "errorRecoverPasswordEmail": "Ha ocurrido un error.\nComprueba que el correo sea correcto.",
+  "errorRecoverPassword": "Ha ocurrido un error al enviar el correo de recuperación.",
   "sendEmail": "Enviar correo electrónico",
   "emailSent": "Correo enviado",
   "emailSentDesc": "El correo de recuperación se ha enviado correctamente.\nConsulte su bandeja de correo electrónico.",
@@ -59,6 +60,8 @@
   "hintName": "nombre",
   "repeatPassword": "Repite la contraseña",
   "errorPasswordsDontMatch": "Las contraseñas no coinciden",
+  "errorEmailNotValid": "El correo no es válido",
+  "errorEmpty": "Completa todos los campos antes de continuar",
   "registerSuccessTitle": "¡Registrado!",
   "registerSuccessDesc": "Usuario registrado con éxito. Revise su bandeja de entrada para validar su subscripcion.",
   "errorRegister": "Ha habido un error al tratar de realizar el registro.",
@@ -166,5 +169,5 @@
   "cubitEvaluationsError": "Error al obtener las evaluaciónes",
   "cubitInsertEvaluationsError": "Error al insertar la evaluación",
   "cubitInsertEvaluationsModifyError": "Error al modificar la evaluación",
-  "cubitQuestionsError": "Error al obtener las preguntas",
+  "cubitQuestionsError": "Error al obtener las preguntas"
 }

@@ -43,7 +43,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
       decoration: BoxDecoration(
         border: Border.all(color: widget.isRed? Colors.red : isFocused ? Theme.of(context).colorScheme.primary : Colors.transparent), // Cambia el color del borde cuando se enfoca
         borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-        color: Theme.of(context).colorScheme.onBackground,
+        color: Theme.of(context).colorScheme.onPrimary,
       ),
       child: Focus(
         onFocusChange: (hasFocus) {

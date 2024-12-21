@@ -31,6 +31,55 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.dispose();
   }
 
+
+  Future<void> _sendEmail() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      Fluttertoast.showToast(
+        msg: S.of(context).errorEmpty,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+      );
+      setState(() {
+        _isEmailRed = true;
+      });
+    } else {
+      setState(() {
+        _isEmailRed = false;
+      });
+      try {
+        final authResponse = await supabase.auth.resetPasswordForEmail(_emailController.text);
+        Utils.showMyOkDialog(context,
+            S.of(context).emailSent,
+            S.of(context).emailSentDesc,
+                () {Navigator.of(context).pop();}
+        );
+      } on AuthException catch (error) {
+        // Manejar errores de autenticación
+        if (error.statusCode == "429") {
+          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordLimit, () {
+            Navigator.of(context).pop();
+          });
+        } else { //Email rate limit exceeded
+          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
+            Navigator.of(context).pop();
+          });
+          setState(() {
+            _isEmailRed = true;
+          });
+        }
+      } catch (error) {
+        Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPassword, () {
+          Navigator.of(context).pop();
+        });
+      }
+
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +97,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             child: Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onPrimary,
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Column(
@@ -73,7 +122,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
 
-
                   const SizedBox(height: Dimensions.marginBig),
 
                   Text(S.of(context).email),
@@ -81,44 +129,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     controller: _emailController,
                     hintText: S.of(context).hintEmail,
                     isRed: _isEmailRed,
+                    onSubmited: _sendEmail,
                   ),
                   const SizedBox(height: 16.0),
                   MyButton(
                     adaptableWidth: false,
                     onTap: () async {
-                      final email = _emailController.text.trim();
-                      if (email.isEmpty) {
-                        setState(() {
-                          _isEmailRed = true;
-                        });
-                      } else {
-                        _isEmailRed = false;
-                        try {
-                          final authResponse = await supabase.auth.resetPasswordForEmail(_emailController.text);
-                          Utils.showMyOkDialog(context,
-                              S.of(context).emailSent,
-                              S.of(context).emailSentDesc,
-                                  () {Navigator.of(context).pop();}
-                          );
-                        } on AuthException catch (error) {
-                          // Manejar errores de autenticación
-                          if (error.statusCode == "429") {
-                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordLimit, () {
-                              Navigator.of(context).pop();
-                            });
-                          } else { //Email rate limit exceeded
-                            Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
-                              Navigator.of(context).pop();
-                            });
-                          }
-                        } catch (error) {
-                          Utils.showMyOkDialog(context, S.of(context).error, S.of(context).errorRecoverPasswordEmail, () {
-                            Navigator.of(context).pop();
-                          });
-                        }
-
-
-                      }
+                      _sendEmail();
                     },
                     text: S.of(context).sendEmail,
                   ),

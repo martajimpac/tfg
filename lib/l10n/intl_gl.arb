@@ -1,5 +1,6 @@
 {
   "@@locale": "gl",
+
   "appTitle": "A miña Aplicación",
   "next": "Seguinte",
   "close": "Pechar",
@@ -27,6 +28,7 @@
   "observationsTitle": "Observacións",
   "observationsDesc": "Escriba aquí as súas observacións...",
   "unknownError": "Erro descoñecido.",
+
   "loginTitle": "Inicio de sesión",
   "email": "Correo electrónico",
   "hintEmail": "usuario@gmail.com",
@@ -43,23 +45,29 @@
   "emailResent": "Correo reenviado",
   "emailResentDesc": "O correo foi reenviado con éxito.\nRevisa a túa caixa de entrada.",
   "errorEmailResent": "Produciuse un erro ao reenviar o correo.",
+
   "recoverPasswordTitle": "Recuperar contrasinal",
   "errorRecoverPasswordLimit": "Superouse o límite de intentos con este correo electrónico.",
   "errorRecoverPasswordEmail": "Produciuse un erro.\nComproba que o correo sexa correcto.",
+  "errorRecoverPassword": "Produciuse un erro ao enviar o correo de recuperación.",
   "sendEmail": "Enviar correo electrónico",
   "emailSent": "Correo enviado",
   "emailSentDesc": "O correo de recuperación foi enviado correctamente.\nConsulta a túa caixa de correo electrónico.",
+
   "registerTitle": "Rexistro",
   "name": "Nome",
   "hintName": "nome",
   "repeatPassword": "Repite o contrasinal",
   "errorPasswordsDontMatch": "Os contrasinais non coinciden",
+  "errorEmailNotValid": "O correo non é válido",
+  "errorEmpty": "Completa todos os campos antes de continuar",
   "registerSuccessTitle": "Rexistrado!",
   "registerSuccessDesc": "Usuario rexistrado con éxito. Revisa a túa caixa de entrada para validar a túa subscrición.",
   "errorRegister": "Houbo un erro ao intentar realizar o rexistro.",
   "errorRegisterLimit": "Superouse o límite de intentos de rexistro con este correo electrónico.",
   "errorRegisterPasswordMin": "O contrasinal debe ter polo menos 6 caracteres.",
   "registerAndLoginButton": "Rexistrarse e iniciar sesión",
+
   "changePasswordTitle": "Cambio de contrasinal",
   "currentPassword": "Contrasinal actual",
   "newPassword": "Novo contrasinal",
@@ -75,6 +83,7 @@
   "resetPasswordTtile": "Restablecer contrasinal",
   "resetPasswordButton": "Cambiar contrasinal",
   "passwordReseted": "O contrasinal foi modificado con éxito. Xa podes iniciar sesión.",
+
   "myEvaluationsTitle": "As miñas avaliacións",
   "evaluationsSortedName": "Avaliacións ordenadas polo nome da máquina",
   "evaluationsSortedNameDescendant": "Avaliacións ordenadas polo nome da máquina en orde descendente",
@@ -87,9 +96,11 @@
   "evaluationDeleted": "Avaliación eliminada!",
   "evaluationDeletedDesc": "A avaliación foi eliminada con éxito",
   "deletingEvaluation": "Eliminando avaliación...",
+
   "newEvaluationTitle": "Crear nova avaliación",
   "exitEvaluation": "Estás seguro de que queres saír?\nOs datos da avaliación non se gardarán.",
   "exitEvaluationChanges": "Estás seguro de que queres saír?\nOs cambios non se gardarán.",
+
   "modifyEvaluationTitle": "Modificar avaliación",
   "evaluationData": "Datos da avaliación",
   "center": "Centro",
@@ -121,8 +132,10 @@
   "uploadingImage": "Subindo a imaxe...",
   "errorUploadingImage": "Erro ao subir a imaxe",
   "savingEvaluation": "Gardando datos da avaliación...",
+
   "checklistTitle": "Checklist",
   "errorPdf": "Houbo un erro ao xerar o pdf",
+
   "evaluationsDetailsTitle": "Detalles da avaliación",
   "unknownDate": "Data descoñecida",
   "unknownManufacterer": "Fabricante descoñecido",

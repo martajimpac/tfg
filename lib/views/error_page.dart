@@ -23,6 +23,7 @@ class ErrorPage extends StatelessWidget {
               Icons.error_outline,
               size: 50,
               color: Colors.red,
+              semanticLabel: "Aviso"
             ),
             const SizedBox(height: 20),
             Text(

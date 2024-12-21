@@ -82,7 +82,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           Visibility(
               visible: _showDeleteIcons,
               child: IconButton(
-              icon: const Icon(Icons.close), // Icono de cruz
+              icon: const Icon(Icons.close, semanticLabel: "Cerrar"), // Icono de cruz
               onPressed: () {
                 setState(() {
                   _showDeleteIcons = false;
@@ -94,7 +94,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           automaticallyImplyLeading: false,
             centerTitle: true
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -109,7 +109,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     color: Theme.of(context).colorScheme.primaryContainer,
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.filter_alt),
+                    icon: const Icon(Icons.filter_alt, semanticLabel: "Filtros"),
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()),);
@@ -124,8 +124,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   ),
                   child: IconButton(
                     icon: (_sortNameDescendent)
-                        ? Image.asset('lib/images/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize)
-                        : Image.asset('lib/images/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize),
+                        ? Image.asset('lib/images/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize, semanticLabel: "Ordear alfabeticamente en orden descendente",)
+                        : Image.asset('lib/images/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize, semanticLabel: "Ordear alfabeticamente en orden ascendente"),
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                     onPressed: () {
                         setState(() {
@@ -157,8 +157,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                   ),
                   child: IconButton(
                     icon: (_sortDateDescendent)
-                        ? Image.asset('lib/images/ic_calendar_down.png', height: 27, width: 27)
-                        : Image.asset('lib/images/ic_calendar_up.png', height: 27, width: 27),
+                        ? Image.asset('lib/images/ic_calendar_down.png', height: 27, width: 27, semanticLabel: "Ordear por fecha de creación en orden descendente")
+                        : Image.asset('lib/images/ic_calendar_up.png', height: 27, width: 27, semanticLabel: "Ordear por fecha de creación en orden ascendente"),
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                     onPressed: () {
 
@@ -226,6 +226,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                   Icons.close,
                                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   size: 20.0,
+                                  semanticLabel: "Cerrar"
                                 ),
                               ),
                             ],
@@ -382,7 +383,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                           Card(
                               margin: const EdgeInsets.all(Dimensions.marginSmall),
                               elevation: 0,
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               child: Padding(
                                 padding: const EdgeInsets.all(Dimensions.marginSmall),
                                 child: Column(
@@ -394,7 +395,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Divider(
-                                      color: Theme.of(context).colorScheme.background,
+                                      color: Theme.of(context).colorScheme.surface,
                                       thickness: 1,
                                     ),
                                     Row(
@@ -419,7 +420,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                           ),
                           Positioned.fill(
                             child: Container(
-                              color: _showDeleteIcons? Theme.of(context).colorScheme.background.withOpacity(0.5) : Colors.transparent,
+                              color: _showDeleteIcons? Theme.of(context).colorScheme.surface.withOpacity(0.5) : Colors.transparent,
                             ),
                           ),
                           Positioned(
@@ -432,6 +433,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                                 height: 40, // Ajusta el tamaño de la imagen según sea necesario
                                 width: 40,
                                 color: Colors.red,
+                                semanticLabel: "Eliminar",
                               ),
                               onPressed: () {
                                 _indexToDelete = index;

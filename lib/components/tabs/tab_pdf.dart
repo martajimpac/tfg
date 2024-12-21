@@ -33,7 +33,7 @@ class _TabPdfState extends State<TabPdf> {
           // Container para el PDFView con bordes redondeados
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onPrimary,
               borderRadius: BorderRadius.circular(Dimensions.cornerRadius), // Ajusta el radio según tus necesidades
             ),
             clipBehavior: Clip.hardEdge, // Asegura que el contenido se recorte en los bordes redondeados
@@ -71,7 +71,7 @@ class _TabPdfState extends State<TabPdf> {
           ),
           if (errorMessage.isNotEmpty)
             Container(
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onPrimary,
               child: const Center(
                 child: Text("Ha ocurrido un error al cargar el PDF"),
               ),
@@ -94,7 +94,7 @@ class _TabPdfState extends State<TabPdf> {
                 );
               },
               tooltip: 'Ampliar PDF',
-              child: const Icon(Icons.zoom_in),
+              child: const Icon(Icons.zoom_in, semanticLabel: 'Ampliar'),
             ),
           ),
         ],

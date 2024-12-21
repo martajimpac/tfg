@@ -88,7 +88,7 @@ class _CheckListPageState extends State<CheckListPage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white, semanticLabel: "Atrás"),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -170,7 +170,7 @@ class _CheckListPageState extends State<CheckListPage> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
             }else if(state is PdfError){
               //Navigator.pop(context);
-              Utils.showMyOkDialog(context, S.of(context).errorPdf, state.errorMessage, () => null); //TODO SI ESTO OCURRE....
+              Utils.showMyOkDialog(context, S.of(context).errorPdf, state.errorMessage, () => null);
             }else if(state is PreguntasError){
               Utils.showMyOkDialog(context, S.of(context).errorPdf, state.errorMessage, () => null);
             }
