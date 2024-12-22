@@ -1,34 +1,30 @@
 
-import 'dart:async';
-import 'dart:io';
-import 'package:evaluacionmaquinas/cubit/detalles_evaluacion_cubit.dart';
-import 'package:evaluacionmaquinas/cubit/eliminar_evaluacion_cubit.dart';
-import 'package:evaluacionmaquinas/utils/Constants.dart';
-import 'package:evaluacionmaquinas/views/detalle_evaluacion_page.dart';
-import 'package:evaluacionmaquinas/views/login_page.dart';
-import 'package:evaluacionmaquinas/views/reset_password_page.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/centros_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/detalles_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/eliminar_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/evaluaciones_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/insertar_evaluacion_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/preguntas_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/settings_cubit.dart';
+import 'package:evaluacionmaquinas/presentation/cubit/simple_bloc_observer.dart';
+import 'package:evaluacionmaquinas/presentation/views/detalle_evaluacion_page.dart';
+import 'package:evaluacionmaquinas/presentation/views/error_page.dart';
+import 'package:evaluacionmaquinas/presentation/views/login_page.dart';
+import 'package:evaluacionmaquinas/presentation/views/reset_password_page.dart';
+import 'package:evaluacionmaquinas/presentation/views/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:evaluacionmaquinas/cubit/insertar_evaluacion_cubit.dart';
-import 'package:evaluacionmaquinas/cubit/preguntas_cubit.dart';
-import 'package:evaluacionmaquinas/cubit/settings_cubit.dart';
-import 'package:evaluacionmaquinas/repository/repositorio_autenticacion.dart';
-import 'package:evaluacionmaquinas/repository/repositorio_db_supabase.dart';
-import 'package:evaluacionmaquinas/views/my_home_page.dart';
-import 'package:uni_links/uni_links.dart';
-import 'cubit/centros_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'cubit/evaluaciones_cubit.dart';
-import 'cubit/simple_bloc_observer.dart';
-import 'generated/l10n.dart';
-import 'utils/Utils.dart';
 import 'package:go_router/go_router.dart';
-import '../views/error_page.dart';
-import '../views/splash_page.dart';
 
-part 'enrutamiento/rutas.dart';
+import 'core/generated/l10n.dart';
+import 'core/utils/Constants.dart';
+import 'data/repository/repositorio_db_supabase.dart';
+
+
+part 'core/enrutamiento/rutas.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -36,36 +32,15 @@ void main() async {
   ///Se inicializa el splash screen
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  /// Inicializo HIVE para el almacenamiento local de datos
-  //await RepositorioLocalHive.inicializarHive();
-
   /// Se obtienen las variables de entorno del fichero .env mediante la librería envied
-
   Supabase supabase = await Supabase.initialize(
     url: 'https://mhxryaquargzfumndwgq.supabase.co',
     anonKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oeHJ5YXF1YXJnemZ1bW5kd2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2NTc0NjgsImV4cCI6MjAxNTIzMzQ2OH0.zuNF8ECVgZPasigxX0cxT1bph-NueCGaJA9kDTPmdZ8',
   );
-/*  Supabase supabase;
-
-  switch (entornoVersion) {
-    case EntornoVersion.produccion:
-      supabase = await Supabase.initialize(
-          url: Env.urlSupaPro, anonKey: Env.keySupaPro, debug: false);
-      break;
-    case EntornoVersion.desarrollo:
-      supabase = await Supabase.initialize(
-          url: Env.urlSupa, anonKey: Env.keySupa, debug: true);
-      break;
-  // Por defecto genero versión para desarrollo
-    default:
-      supabase = await Supabase.initialize(
-          url: Env.urlSupa, anonKey: Env.keySupa, debug: true);
-  }*/
 
   /// Se inicializa el bloc observer para que muestre los eventos de los blocs
   Bloc.observer = SimpleBlocObserver();
-
 
 
   runApp(MyApp(supabase: supabase));
@@ -144,9 +119,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => SupabaseAuthRepository(widget.supabase),
-        ),
         RepositoryProvider(
           create: (context) => RepositorioDBSupabase(widget.supabase),
         ),
