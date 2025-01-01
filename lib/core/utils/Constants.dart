@@ -19,3 +19,4 @@ enum AccionesPdfChecklist { guardar, compartir }
 enum TiposFicheros { word, excel, pdf }
 
 const bucketName = "images";
+

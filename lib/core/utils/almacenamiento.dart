@@ -14,13 +14,30 @@ import 'Constants.dart';
 
 
 
-///Funcionaes relacionadas con la escriture/lectura en almacenamiento local
-
+///Funcion que sirve para obtener el path en el que esta almacenado el pdf
 Future<String> getNameFicheroAlmacenamientoLocal(int ideval) async {
   final directory = await getApplicationDocumentsDirectory();
   String pathFicheroAlmacenado = '${directory.path}/$ideval.pdf';
   return pathFicheroAlmacenado;
 }
+
+
+///Obtener todos los ficheros pdf almacenados en el almacenamiento interno
+Future<List<File>> getPdfFiles() async {
+  final directory = await getApplicationDocumentsDirectory();
+  final pdfDirectory = Directory(directory.path);
+  final files = pdfDirectory.listSync(); // Lista de todos los archivos y directorios
+
+  // Filtra solo los archivos PDF
+  final pdfFilesList = files
+      .where((file) =>
+  file is File && file.path.toLowerCase().endsWith('.pdf'))
+      .cast<File>()
+      .toList();
+
+  return pdfFilesList;
+}
+
 
 ///Método encargado de obtener path y permisoso para almacenar el fichero de forma extrerna a la aplicación
 
@@ -108,7 +125,7 @@ Future<void> deleteFile(File file) async {
 
 
 
-///Almacena el fichero en un destino elegido por el usuario:
+///Descargar el pdf: Almacena el fichero en un destino elegido por el usuario:
 Future<String?> almacenaEnDestinoElegido(String internalFilePath, String fileName) async {
   String? pathFicheroAlmacenado;
 
@@ -179,46 +196,6 @@ Future<File?> checkIfFileExistAndReturnFile(int idEval) async {
 
 
 
-//Método que recibe un path de un direcctory y devuelev la lista de archivos que forman parte de ese directorio todo usar para ver si pdf está o no
-/*Future<bool> checkIfFileExist(int idEval) async {
-
-  try {
-    String filePath = await getNameFicheroAlmacenamientoLocal(idEval);
-    File file = File(filePath);
-
-    // Verifica si el archivo existe
-    if (await file.exists()) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (e) {
-    return false;
-  }
-}
-
-Future<bool> checkIfFileExist2(int idEval) async {
-  Logger log = Logger();
-  try {
-    // Obtiene el directorio de almacenamiento de documentos de la aplicación
-    final directory = await getApplicationDocumentsDirectory();
-
-    // Lista todos los archivos del directorio
-    List<FileSystemEntity> listaArchivos = directory.listSync();
-
-    // Comprueba si existe un archivo cuyo nombre contenga el idEval
-    for (var archivo in listaArchivos) {
-      if (archivo is File && archivo.path.endsWith('$idEval.pdf')) {
-        return true; // El archivo con idEval fue encontrado
-      }
-    }
-
-    return false; // No se encontró el archivo
-  } catch (e) {
-    log.e('Error al obtener la lista de archivos del directorio: $e');
-    return false; // Si ocurre un error, regresa false
-  }
-}*/
 
 
 

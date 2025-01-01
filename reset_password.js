@@ -21,7 +21,7 @@
         const token = params.get('token');
 
         if (email && token) {
-                    /* TODO SOLO QUEDA ENCODE URI COMPONENT
+                    /*
                      encodeURIComponent() codifica los parámetros de la URL, garantizando que todos los caracteres especiales se
                      conviertan en su forma segura de escape y evitando que la URL sea interpretada incorrectamente o cause errores.
                      */

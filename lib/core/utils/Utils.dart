@@ -1,12 +1,20 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:evaluacionmaquinas/features/data/models/imagen_dm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../presentation/components/dialog/my_loading_dialog.dart';
-import '../../presentation/components/dialog/my_ok_dialog.dart';
+import '../../features/presentation/components/dialog/my_loading_dialog.dart';
+import '../../features/presentation/components/dialog/my_ok_dialog.dart';
 
+import 'package:image/image.dart' as img;
+
+import '../../features/presentation/components/dialog/my_two_buttons_dialog.dart';
+import '../../features/presentation/views/offline_page.dart';
+import '../../generated/l10n.dart';
 
 
 class Utils {
@@ -167,4 +175,86 @@ class Utils {
     }
     return null;
   }
+
+
+  static Future<bool> hayConexion() async {
+    // Verificar tipo de conectividad (WiFi, móvil o ninguna)
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      return false; // No hay conexión a ninguna red
+    }
+
+    // Verificar si realmente hay acceso a Internet
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false; // Sin acceso a Internet
+    }
+  }
+
+  ///Función para mostrar la imagen
+  static Image showImage(ImagenDataModel imagen) {
+    if (imagen.imagen != null) {
+      return Image.memory(imagen.imagen!, fit: BoxFit.contain); // Si es Uint8List
+    } else if (imagen.image_url != null) {
+      return Image.network(imagen.image_url!, fit: BoxFit.contain); // Si es una URL
+    } else {
+      // Retornar una imagen por defecto
+      return Image.asset(
+        'assets/images/default_image.png', // Ruta de la imagen por defecto
+        fit: BoxFit.contain,
+      );
+    }
+  }
+
+  /// Función para comprimir imágenes
+  static Future<Uint8List> compressImage(Uint8List imageBytes, BuildContext context) async {
+
+    // Decodificar la imagen
+    final image = img.decodeImage(imageBytes);
+    if (image == null) {
+      throw Exception(S.of(context).errorUploadingImage);
+    }
+
+    // Redimensionar la imagen (opcional)
+    final resizedImage = img.copyResize( //TODO REVISAR
+      image,
+      width: 800,
+    );
+
+    Uint8List finalImage = Uint8List.fromList(img.encodeJpg(resizedImage, quality: 70)); // Cambia el `quality` (0-100) según tus necesidades
+
+    // Codificar la imagen comprimida a JPEG
+    return finalImage;
+  }
+
+
+  static void showNoConnectionDialog(BuildContext context){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return  MyTwoButtonsDialog(
+            title: S.of(context).error,
+            desc: S.of(context).noInternetConexion,
+            primaryButtonText: S.of(context).continuee,
+            secondaryButtonText: S.of(context).cancel,
+            onPrimaryButtonTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OfflinePage())
+              );
+            },
+            onSecondaryButtonTap: () {
+              Navigator.of(context).pop();
+            },
+          );
+        }
+    );
+  }
+
+
+
 }

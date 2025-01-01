@@ -13,10 +13,10 @@ import 'package:pdf/widgets.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import '../../data/models/categoria_pregunta_dm.dart';
-import '../../data/models/evaluacion_details_dm.dart';
-import '../../data/models/opcion_respuesta_dm.dart';
-import '../../data/models/pregunta_dm.dart';
+import '../../features/data/models/categoria_pregunta_dm.dart';
+import '../../features/data/models/evaluacion_details_dm.dart';
+import '../../features/data/models/opcion_respuesta_dm.dart';
+import '../../features/data/models/pregunta_dm.dart';
 import '../theme/dimensions.dart';
 import 'Constants.dart';
 import 'almacenamiento.dart'  as almacenamiento;
@@ -33,6 +33,7 @@ class PdfHelper {
   static const double padding = 5;
   static PdfColor yellowColor = PdfColor.fromHex('EEE2BC');
 
+  /*** Función que genera informe **/
   static Future<String?> generarInformePDF(
       EvaluacionDetailsDataModel evaluacion,
       List<PreguntaDataModel> preguntas,
@@ -41,20 +42,11 @@ class PdfHelper {
       ) async
   {
 
-    final log = Logger();
-
-    late final String? pathFicheroAlmacenado;
-
-    log.i('MARTA Se va a generar el informe pdf de la evaluacion ${evaluacion.ideval}');
-
     try {
       final imagenLogo = MemoryImage(
-          (await rootBundle.load('lib/images/gob.jpg'))
-              .buffer
-              .asUint8List());
+          (await rootBundle.load('assets/images/gob.jpg')).buffer.asUint8List());
 
       final pdf = pw.Document();
-
       pdf.addPage(pw.MultiPage(
         maxPages: 100,
         pageFormat: PdfPageFormat.a4,
@@ -66,19 +58,15 @@ class PdfHelper {
         footer: (context) => _buildPiePaginaChecklist(context),
       )); // Page*/
 
-      log.e('MARTA HEMOS GENERADO EL PDF SIN ERRORES');
-
       final bitsPDF = await pdf.save();
 
       // Guardar el archivo en el almacenamiento interno
-
       final pathFicheroAlmacenado = await almacenamiento.getNameFicheroAlmacenamientoLocal(evaluacion.ideval);
       final file = File(pathFicheroAlmacenado);
       await file.writeAsBytes(bitsPDF);
 
       return pathFicheroAlmacenado;
     } catch (e) {
-      log.e('MARTA Error al generar el informe PDF: $e');
       return null;
     }
   }
@@ -168,10 +156,7 @@ class PdfHelper {
       //pw.SizedBox(height: 20),
 
       // Invocar la función para construir la tabla de la evaluación
-      // Invocar la función para construir la tabla de la evaluación
       ..._dameTablaDatos(evaluacion, preguntas, respuestas),
-
-
 
       // Aquí se construyen las filas del checklist
       ..._dameTablaPreguntas(preguntas, respuestas, categorias),
@@ -210,7 +195,7 @@ class PdfHelper {
         children: [
           pw.TableRow(
             children: [
-              _buildTableCellTitle("IDENTIFICACIÓN DEL EQUIPO DE TRABAJO/MÁQUINA:", TextAlign.center) //TODO CATEGORIA 1
+              _buildTableCellTitle("IDENTIFICACIÓN DEL EQUIPO DE TRABAJO/MÁQUINA:", TextAlign.center)
             ],
             decoration: pw.BoxDecoration(color: yellowColor),
           ),
@@ -412,7 +397,7 @@ class PdfHelper {
         children: [
           pw.TableRow(
             children: [
-              _buildTableCellTitle("REQUISITOS MÍNIMOS DE SEGURIDAD", TextAlign.center) //TODO CATEGORIA 1
+              _buildTableCellTitle("REQUISITOS MÍNIMOS DE SEGURIDAD", TextAlign.center)
             ],
             decoration: pw.BoxDecoration(color: yellowColor),
           ),
@@ -465,8 +450,8 @@ class PdfHelper {
       }).toList(),
     ];
   }
-  
-  //TODO OBSERVACIONES DEBERIA SER UNA CELDA EDITABLE??
+
+  //TODO OBSERVACIONES DEBERIA SER UNA CELDA EDITABLE?
   static Widget _dameCeldaEditableTabla(
       String idTextField,
       String texto,
