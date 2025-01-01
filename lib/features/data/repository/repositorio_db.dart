@@ -49,7 +49,8 @@ abstract class RepositorioDB {
       DateTime? fechaFabricacion,
       DateTime? fechaPuestaServicio
       );
-  Future<List<ImagenDataModel>> insertarImagenes(List<Uint8List> imagenes, int idEvaluacion);
+  Future<List<ImagenDataModel>> insertarImagenes(List<Uint8List> imagenes, int idEvaluacion); //TODO USAR CUADNO SE ACABE ESPACIO
+  Future<List<ImagenDataModel>> insertarImagenesUrl(List<Uint8List> imagenes, int idEvaluacion);
   Future<void> insertarRespuestas(List<PreguntaDataModel> preguntas, int idEvaluacion);
 
   /**************  MODIFICAR ******************/

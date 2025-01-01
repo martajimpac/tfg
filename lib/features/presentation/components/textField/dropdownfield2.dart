@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../generated/l10n.dart';
+
 class DropDownField extends FormField<String> {
   final String? value;
   final Widget? icon;
@@ -60,7 +62,7 @@ class DropDownField extends FormField<String> {
               icon: Icon(Icons.arrow_drop_down,
                   size: 30.0,
                   color: Theme.of(context).colorScheme.onSurface,
-                  semanticLabel: 'Mostrar centros'
+                  semanticLabel: S.of(context).semanticlabelShowCenters
               ),
               onPressed: () {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -108,7 +110,7 @@ class DropDownField extends FormField<String> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close, semanticLabel: "Cerrar"),
+                icon: Icon(Icons.close, semanticLabel:  S.of(context).semanticlabelClose),
                 onPressed: () {
                   if (!enabled) return;
                   state.clearValue();

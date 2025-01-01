@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../../../../generated/l10n.dart';
+
 class FloatingButtons extends StatelessWidget {
   final VoidCallback onSharePressed;
   final VoidCallback onDownloadPressed;
@@ -30,8 +32,8 @@ class FloatingButtons extends StatelessWidget {
               shape: const CircleBorder(),
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
               foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: const Icon(Icons.share,
-                  semanticLabel: 'Compartir'),
+              child:  Icon(Icons.share,
+                  semanticLabel: S.of(context).semanticlabelShare),
             ),
             const SizedBox(height: 10),
             FloatingActionButton(
@@ -40,8 +42,8 @@ class FloatingButtons extends StatelessWidget {
               shape: const CircleBorder(),
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
               foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: const Icon(Icons.download,
-                  semanticLabel: 'Descargar'),
+              child: Icon(Icons.download,
+                  semanticLabel: S.of(context).semanticlabelDownload),
             ),
             const SizedBox(height: 10),
             FloatingActionButton(
@@ -50,8 +52,8 @@ class FloatingButtons extends StatelessWidget {
               shape: const CircleBorder(),
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
               foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: const Icon(Icons.qr_code,
-                  semanticLabel: 'Generar QR'),
+              child: Icon(Icons.qr_code,
+                  semanticLabel: S.of(context).semanticlabelGenerateQR),
             ),
             const SizedBox(height: 80),
           ],
