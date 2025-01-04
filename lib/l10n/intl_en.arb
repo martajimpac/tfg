@@ -173,6 +173,10 @@
   "cubitQuestionsError": "Error fetching questions",
   "cubitQuestionsLoading": "Loading the questions...",
 
+  "editProfile": "Edit Profile",
+  "errorUpdatingUser": "An error occurred while updating user data",
+  "successUpdatingUser": "User data updated successfully",
+  
   "semanticlabelExpiryWarning": "Expiry warning",
   "semanticlabelNoData": "No data",
   "semanticlabelShowObservations": "Show observations",

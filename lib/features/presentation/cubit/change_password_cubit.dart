@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/utils/Utils.dart';
+import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 
@@ -40,9 +41,9 @@ class ChangePasswordError extends ChangePasswordState {
 }
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
-  final SupabaseClient supabase;
+  final SupabaseAuthRepository repositorio;
 
-  ChangePasswordCubit(this.supabase) : super(ChangePasswordInitial(true, true));
+  ChangePasswordCubit(this.repositorio) : super(ChangePasswordInitial(true, true));
 
   Future<void> changePassword(String currentPassword, String newPassword, String confirmPassword, BuildContext context) async {
 
@@ -77,36 +78,14 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    try {
-      // Autenticar al usuario con la contraseña actual
-      await supabase.auth.signInWithPassword(
-        email: supabase.auth.currentUser!.email!,
-        password: currentPassword,
-      );
-      isConfirmPasswordRed = false;
+    final errorMessage = await repositorio.changePassword(currentPassword, newPassword, context);
 
-    } catch (error) {
-      isCurrentPasswordRed = true;
-      var message = S.of(context).errorChangePasswordIncorrect;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
-      return;
-    }
-
-    try {
-      // Si la autenticación es exitosa, cambiar la contraseña
-      await supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-
+    if(errorMessage == null){
       emit(ChangePasswordSuccess());
-
-    } on AuthException catch (error) {
-      var message = S.of(context).errorChangePasswordNoChange;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
-
-    } catch (error) {
-      var message = S.of(context).errorChangePassword;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
+    }else if(errorMessage == S.of(context).errorChangePasswordIncorrect){
+      emit(ChangePasswordError(errorMessage, true, false, false));
+    }else{
+      emit(ChangePasswordError(errorMessage, false, false, false));
     }
   }
 
@@ -139,27 +118,11 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    try {
-      // Usamos el método resetPassword de Supabase para resetear la contraseña usando el token
-      final userRes = await Supabase.instance.client.auth.updateUser(
-        UserAttributes(
-          password: newPassword,
-        ),
-      );
-
-      if(userRes.user != null){
-        emit(ChangePasswordSuccess());
-      }else{
-        var message = S.of(context).errorChangePassword;
-        emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed));
-        return;
-      }
-
-
-    } catch (error) {
-      var message = S.of(context).errorChangePassword;
-      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed));
-      return;
+    final errorMessage = await repositorio.resetPassword(newPassword, context);
+    if(errorMessage == null){
+      emit(ChangePasswordSuccess());
+    }else{
+      emit(ChangePasswordError(errorMessage, false, false, false));
     }
   }
 }

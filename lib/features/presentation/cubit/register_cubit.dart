@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/utils/Utils.dart';
+import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 
@@ -40,9 +41,9 @@ class RegisterError extends RegisterState {
 }
 
 class RegisterCubit extends Cubit<RegisterState> {
-  final SupabaseClient supabase;
+  final SupabaseAuthRepository repositorio;
 
-  RegisterCubit(this.supabase) : super(RegisterInitial(true, true));
+  RegisterCubit(this.repositorio) : super(RegisterInitial(true, true));
 
 
   Future<void> register(String name, String email, String password, String repeatPassword, BuildContext context) async {
@@ -74,49 +75,16 @@ class RegisterCubit extends Cubit<RegisterState> {
     isPasswordRed = false;
     isRepeatPasswordRed = false;
 
-    try {
-      // Proceder con el registro
-      final authResponse = await supabase.auth.signUp(
-        password: password,
-        email: email,
-        data: {'username': name},
-      );
+    final errorMessage = await repositorio.signUp(name, email, password, context);
 
-      // Verificar si el usuario existe, pero no tiene identidades (usuario "falso")
-      if (authResponse.user != null &&
-          authResponse.user!.identities != null &&
-          authResponse.user!.identities!.isEmpty)
-      {
-
-        emit(RegisterError(S.of(context).errorEmpty, isEmailRed, isPasswordRed, isRepeatPasswordRed));
-      }else{
-
-        //si el usuario no existe procedemos a crear la cuenta
-
-        final user = authResponse.user;
-        if (user != null && user.userMetadata != null) {
-          await SharedPrefs.saveUserPreferences(user, password);
-
-          emit(RegisterSuccess());
-        } else {
-          emit(RegisterError(S.of(context).errorEmpty, isEmailRed, isPasswordRed, isRepeatPasswordRed));
-        }
-
-      }
-
-
-    } on AuthException catch (error) {
-      if (error.statusCode == "429") {
-        emit(RegisterError(S.of(context).errorRegisterLimit, isEmailRed, isPasswordRed, isRepeatPasswordRed));
-      } else if (error.statusCode == "422") {
-        emit(RegisterError(S.of(context).errorRegisterPasswordMin, isEmailRed, true, true));
-      } else if (error.statusCode == "400") {
-        emit(RegisterError(S.of(context).errorEmailNotValid, true, isPasswordRed, isRepeatPasswordRed));
-      }else {
-        emit(RegisterError(S.of(context).errorRegister, isEmailRed, isPasswordRed, isRepeatPasswordRed));
-      }
-    } catch (error) {
-      emit(RegisterError("$error", true, isPasswordRed, isRepeatPasswordRed));
+    if(errorMessage == null){
+      emit(RegisterSuccess());
+    }else if(errorMessage == S.of(context).errorRegisterPasswordMin){
+      emit(RegisterError(errorMessage, isEmailRed, true, true));
+    }else if(errorMessage == S.of(context).errorEmailNotValid){
+      emit(RegisterError(errorMessage, true, isPasswordRed, isRepeatPasswordRed));
+    }else{
+      emit(RegisterError(errorMessage, isEmailRed, isPasswordRed, isRepeatPasswordRed));
     }
   }
 }

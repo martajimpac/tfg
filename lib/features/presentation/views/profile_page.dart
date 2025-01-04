@@ -164,6 +164,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     text: S.of(context).logout,
                     icon: Icon(Icons.logout, color: Colors.white, semanticLabel: S.of(context).semanticlabelLogout),
                   ),
+                  MyButtonCard(
+                    onTap: () async {
+
+                    },
+                    text: S.of(context).editProfile,
+                    icon: Icon(Icons.person_outline, color: Colors.white, semanticLabel: S.of(context).editProfile),
+                  ),
                   const SizedBox(height: Dimensions.marginBig),
                   BlocBuilder<SettingsCubit, SettingsState>(
                     builder: (context, state) {

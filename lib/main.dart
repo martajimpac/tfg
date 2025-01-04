@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/utils/Constants.dart';
+import 'features/data/repository/repositorio_autenticacion.dart';
 import 'features/data/repository/repositorio_db_supabase.dart';
 import 'features/presentation/cubit/centros_cubit.dart';
 import 'features/presentation/cubit/change_password_cubit.dart';
@@ -16,6 +17,7 @@ import 'features/presentation/cubit/eliminar_evaluacion_cubit.dart';
 import 'features/presentation/cubit/evaluaciones_cubit.dart';
 import 'features/presentation/cubit/insertar_evaluacion_cubit.dart';
 import 'features/presentation/cubit/login_cubit.dart';
+import 'features/presentation/cubit/edit_profile_cubit.dart';
 import 'features/presentation/cubit/preguntas_cubit.dart';
 import 'features/presentation/cubit/register_cubit.dart';
 import 'features/presentation/cubit/settings_cubit.dart';
@@ -104,14 +106,18 @@ class _MyAppState extends State<MyApp> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
+          create: (context) => SupabaseAuthRepository(widget.supabase),
+        ),
+        RepositoryProvider(
           create: (context) => RepositorioDBSupabase(widget.supabase),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => LoginCubit(widget.supabase.client)),
-          BlocProvider(create: (context) => RegisterCubit(widget.supabase.client)),
-          BlocProvider(create: (context) => ChangePasswordCubit(widget.supabase.client)),
+          BlocProvider(create: (context) => LoginCubit(SupabaseAuthRepository(widget.supabase))),
+          BlocProvider(create: (context) => RegisterCubit(SupabaseAuthRepository(widget.supabase))),
+          BlocProvider(create: (context) => ChangePasswordCubit(SupabaseAuthRepository(widget.supabase))),
+          BlocProvider(create: (context) => EditProfileCubit(SupabaseAuthRepository(widget.supabase))),
           BlocProvider(create: (context) => CentrosCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => SettingsCubit()),

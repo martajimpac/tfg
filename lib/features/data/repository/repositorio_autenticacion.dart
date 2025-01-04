@@ -12,5 +12,15 @@ import '../../../generated/l10n.dart';
 part 'repositorio_autenticacion_supabase.dart';
 
 abstract class RepositorioAutenticacion {
-  Future<String?> signInEmailAndPassword(String email, String password, BuildContext context);
+  Future<String?> signInWithEmailAndPassword(String email, String password, BuildContext context);
+
+  Future<String?> resendConfirmationEmail(String email, String password, BuildContext context);
+
+  Future<String?> signUp(String name, String email, String password, BuildContext context);
+
+  Future<String?> changePassword(String currentPassword, String newPassword, BuildContext context);
+
+  Future<String?> resetPassword(String newPassword, BuildContext context);
+
+  Future<String?> editProfile(String newName, BuildContext context);
 }

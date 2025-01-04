@@ -84,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "denominationAsterisk":
             MessageLookupByLibrary.simpleMessage("*Denomination"),
         "discard": MessageLookupByLibrary.simpleMessage("Discard"),
+        "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "emailAlredyRegistered": MessageLookupByLibrary.simpleMessage(
             "There was an error during registration.\nA user with this email already exists."),
@@ -146,6 +147,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The password must have at least 6 characters."),
         "errorSharingPdf": MessageLookupByLibrary.simpleMessage(
             "An error occurred while sharing the PDF"),
+        "errorUpdatingUser": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while updating user data"),
         "errorUploadingImage":
             MessageLookupByLibrary.simpleMessage("Error uploading image"),
         "evaluationData":
@@ -331,6 +334,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "An error occurred while closing the session."),
         "sessionClosedSuccess": MessageLookupByLibrary.simpleMessage(
             "Session successfully closed."),
+        "successUpdatingUser": MessageLookupByLibrary.simpleMessage(
+            "User data updated successfully"),
         "summary": MessageLookupByLibrary.simpleMessage("Summary"),
         "unknownDate": MessageLookupByLibrary.simpleMessage("Unknown date"),
         "unknownError": MessageLookupByLibrary.simpleMessage("Unknown error."),

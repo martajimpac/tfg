@@ -173,6 +173,10 @@
   "cubitQuestionsError": "Errore bat gertatu da galderak lortzerakoan",
   "cubitQuestionsLoading": "Galderak kargatzen...",
 
+  "editProfile": "Profila aldatzea",
+  "errorUpdatingUser": "Erabiltzailearen datuak aldatzean errore bat gertatu da",
+  "successUpdatingUser": "Erabiltzailearen datuak ondo aldatu dira",
+
   "semanticlabelExpiryWarning": "Iraungitze-oharra",
   "semanticlabelNoData": "Ez dago daturik",
   "semanticlabelShowObservations": "Behatutakoak erakutsi",

@@ -175,6 +175,10 @@
   "cubitQuestionsError": "Error al obtener las preguntas",
   "cubitQuestionsLoading": "Cargando las preguntas...",
 
+  "editProfile": "Modificar perfil",
+  "errorUpdatingUser": "Ha ocurrido un error al modificar los datos del usuario",
+  "successUpdatingUser": "Datos del usuario modificados correctamente",
+
   "semanticlabelExpiryWarning": "Aviso caducidad",
   "semanticlabelNoData": "No hay datos",
   "semanticlabelShowObservations": "Mostrar observaciones",

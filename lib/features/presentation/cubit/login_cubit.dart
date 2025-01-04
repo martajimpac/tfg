@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/utils/Utils.dart';
+import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 
@@ -39,9 +40,9 @@ class LoginError extends LoginState {
 class ConfirmationEmailSent extends LoginState {}
 
 class LoginCubit extends Cubit<LoginState> {
-  final SupabaseClient supabase;
+  final SupabaseAuthRepository repositorio;
 
-  LoginCubit(this.supabase) : super(LoginInitial(true, true));
+  LoginCubit(this.repositorio) : super(LoginInitial(true, true));
 
   Future<void> login(String email, String password, BuildContext context) async {
     var isEmailRed = false;
@@ -58,42 +59,14 @@ class LoginCubit extends Cubit<LoginState> {
     }
 
 
-    try {
-      final response = await supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+    final errorMessage = await repositorio.signInWithEmailAndPassword(email, password, context);
 
-      final user = response.user;
-
-      if (user != null) {
-        await SharedPrefs.saveUserPreferences(user, password);
-        emit(LoginSuccess());
-      } else {
-        var message = S.of(context).errorAuthentication;
-        emit(LoginError(message, false, false));
-      }
-    } on AuthException catch (error) {
-      var message = "";
-      switch (error.message) {
-        case "Invalid login credentials":
-          message = S.of(context).errorAuthenticationCredentials;
-          emit(LoginError(message, true, true));
-          break;
-        case "Email not confirmed":
-          message = S.of(context).errorAuthenticationNotConfirmed;
-          emit(LoginError(message, false, false));
-          break;
-        default:
-          message = S.of(context).errorAuthentication;
-          emit(LoginError(message, false, false));
-          break;
-      }
-
-
-    } catch (error) {
-      var message = S.of(context).unknownError;
-      emit(LoginError(message, false, false));
+    if(errorMessage == null){
+      emit(LoginSuccess());
+    }else if(errorMessage == S.of(context).errorAuthenticationCredentials){
+      emit(LoginError(errorMessage, true, true));
+    }else{
+      emit(LoginError(errorMessage, false, false));
     }
   }
 
@@ -113,14 +86,11 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> resendConfirmationEmail(String email, String password, BuildContext context) async {
-    try {
-      final authResponse = await supabase.auth.signUp(password: password, email: email);
-      if (authResponse.user != null) {
-        emit(ConfirmationEmailSent());
-      }
-    } catch (error) {
-      var message = S.of(context).errorEmailResent;
-      emit(LoginError(message, false, false));
+    final errorMesage = await repositorio.resendConfirmationEmail(email, password, context);
+    if(errorMesage == null){
+      emit(ConfirmationEmailSent());
+    }else{
+      emit(LoginError(errorMesage, false, false));
     }
   }
 }

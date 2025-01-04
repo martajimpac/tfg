@@ -1620,6 +1620,36 @@ class S {
     );
   }
 
+  /// `Edit Profile`
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while updating user data`
+  String get errorUpdatingUser {
+    return Intl.message(
+      'An error occurred while updating user data',
+      name: 'errorUpdatingUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User data updated successfully`
+  String get successUpdatingUser {
+    return Intl.message(
+      'User data updated successfully',
+      name: 'successUpdatingUser',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Expiry warning`
   String get semanticlabelExpiryWarning {
     return Intl.message(
