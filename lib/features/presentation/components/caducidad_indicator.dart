@@ -7,7 +7,7 @@ import '../../../generated/l10n.dart';
 class CaducidadIndicator extends StatelessWidget {
   final DateTime fechaCaducidad;
 
-  const CaducidadIndicator({Key? key, required this.fechaCaducidad}) : super(key: key);
+  const CaducidadIndicator({super.key, required this.fechaCaducidad});
 
   @override
   Widget build(BuildContext context) {

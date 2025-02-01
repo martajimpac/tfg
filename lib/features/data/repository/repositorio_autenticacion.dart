@@ -1,10 +1,7 @@
+import 'package:evaluacionmaquinas/core/utils/Constants.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:logger/logger.dart';
 
 import '../shared_prefs.dart';
 import '../../../generated/l10n.dart';
@@ -23,4 +20,6 @@ abstract class RepositorioAutenticacion {
   Future<String?> resetPassword(String newPassword, BuildContext context);
 
   Future<String?> editProfile(String newName, BuildContext context);
+
+  Future<String?> sendResetPasswordEmail(String email, BuildContext context);
 }

@@ -1,6 +1,4 @@
-import 'dart:math';
 
-import 'package:evaluacionmaquinas/features/presentation/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,41 +6,41 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Utils.dart';
 import '../../../generated/l10n.dart';
+import '../../data/shared_prefs.dart';
 import '../components/buttons/my_button.dart';
 import '../components/textField/my_login_textfield.dart';
-import '../cubit/change_password_cubit.dart';
 import '../cubit/edit_profile_cubit.dart';
 
-class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({Key? key}) : super(key: key);
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  _ChangePasswordPageState createState() => _ChangePasswordPageState();
+  _EditProfilePageState createState() => _EditProfilePageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _userNameController;
 
   final supabase = Supabase.instance.client;
-
+  late EditProfileCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     _userNameController = TextEditingController();
+    _cubit = BlocProvider.of<EditProfileCubit>(context);
+    _cubit.loadUserData();
   }
 
   @override
   void dispose() {
     _userNameController.dispose();
-
-
     super.dispose();
   }
 
   Future<void> _updateUser(BuildContext context) async {
     final userName = _userNameController.text.trim();
-    context.read<EditProfileCubit>().editProfile(userName, context);
+    _cubit.editProfile(userName, context);
   }
 
   @override
@@ -54,17 +52,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           S.of(context).editProfile,
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, semanticLabel: S.of(context).semanticlabelBack),
+          onPressed: () {
+            //FocusScope.of(context).unfocus();
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: BlocConsumer<EditProfileCubit, EditProfileState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           switch (state.runtimeType) {
             case EditProfileSuccess:
 
+              await SharedPrefs.updateUserName((state as EditProfileSuccess).newUserName);
+
               //Datos del usuario modificados con éxito
               Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).successUpdatingUser, () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Navega hacia atrás
+                Navigator.of(context).pop(); // Navega hacia atrás
               });
+
               break;
 
             case EditProfileError:
@@ -92,6 +100,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         },
         builder: (context, state) {
           final isUserNameRed = state is EditProfileError ? state.isNameRed : false;
+          final userName = state is EditProfileLoaded ? state.userName : "";
+          _userNameController.text = userName;
 
           return SingleChildScrollView(
             child: Center(

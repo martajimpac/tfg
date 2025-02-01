@@ -2,6 +2,7 @@
   "@@locale": "en",
   "appTitle": "My Application",
 
+  "pressAgainToExit": "Press again to exit",
   "next": "Next",
   "close": "Close",
   "error": "Error",
@@ -26,6 +27,7 @@
   "retryText": "Would you like to try again?",
   "retryTitle": "Retry",
   "observationsTitle": "Observations",
+  "observationsCateogoryTitle": "Category Observations",
   "observationsDesc": "Write your observations here...",
   "unknownError": "Unknown error.",
   "noInternetConexion": "No internet connection, you will only be able to access the application to view the PDFs stored on your device.",
@@ -48,6 +50,11 @@
   "emailResent": "Email resent",
   "emailResentDesc": "The email has been resent successfully.\nCheck your inbox.",
   "errorEmailResent": "There was an error resending the email.",
+  "saveSessionTitle": "Save session",
+  "saveSessionDesc": "Do you want to log in automatically with this user?",
+  "yes": "Yes",
+  "no": "No",
+
 
   "recoverPasswordTitle": "Recover password",
   "errorRecoverPasswordLimit": "The attempt limit for this email has been exceeded.",
@@ -65,7 +72,7 @@
   "errorEmailNotValid": "The email is not valid",
   "errorEmpty": "Fill in all the fields to continue",
   "registerSuccessTitle": "Registered!",
-  "registerSuccessDesc": "User registered successfully. Check your inbox to validate your subscription.",
+  "registerSuccessDesc": "User registered successfully. Check your inbox to validate your registration.",
   "errorRegister": "There was an error during registration.",
   "errorRegisterLimit": "The registration attempt limit for this email has been exceeded.",
   "errorRegisterPasswordMin": "The password must have at least 6 characters.",
@@ -82,6 +89,8 @@
   "errorChangePasswordNoChange": "The new password cannot be the same as the current password.",
   "changePasswordSuccess": "Password changed successfully",
   "changePasswordButton": "Change password",
+
+  "errorChangeUserData": "An error occurred while changing the user data.",
 
   "forgotPasswordDesc": "Enter your email address, and we will send you a link to reset your password",
   "resetPasswordTitle": "Reset password",

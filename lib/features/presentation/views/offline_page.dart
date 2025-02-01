@@ -6,7 +6,7 @@ import '../../../generated/l10n.dart';
 import '../../../core/utils/almacenamiento.dart' as almacenamiento;
 
 class OfflinePage extends StatefulWidget {
-  const OfflinePage({Key? key}) : super(key: key);
+  const OfflinePage({super.key});
 
   @override
   _OfflinePageState createState() => _OfflinePageState();
@@ -50,18 +50,17 @@ class _OfflinePageState extends State<OfflinePage> {
         itemCount: _pdfFiles.length,
         itemBuilder: (BuildContext context, int index) {
           final pdf = _pdfFiles[index];
-          final fileName = pdf.path.split('/').last; // Nombre del archivo
           return Card(
             margin: const EdgeInsets.all(Dimensions.marginSmall),
             elevation: 2,
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.onPrimary,
             child: ListTile(
               leading: Icon(
                 Icons.picture_as_pdf,
                 color: Theme.of(context).colorScheme.primary,
               ),
               title: Text(
-                fileName,
+                "evaluacion $index",
                 style: const TextStyle(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
               ),

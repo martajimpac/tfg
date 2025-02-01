@@ -1,12 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/utils/Utils.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
-import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 
 
@@ -67,7 +63,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       isPasswordRed = true;
       isEmailRed = false;
 
-      emit(RegisterError(S.of(context).errorEmpty, isEmailRed, isPasswordRed, isRepeatPasswordRed));
+      emit(RegisterError(S.of(context).errorPasswordsDontMatch, isEmailRed, isPasswordRed, isRepeatPasswordRed));
       return;
     }
 

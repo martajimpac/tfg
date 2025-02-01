@@ -95,8 +95,11 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fabricante: fabricante,
           numeroSerie: numeroSerie
         );
+      //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenes, idEvaluacion); //TODO IMAGENES
       final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
       emit(EvaluacionInsertada(evaluacion, listImagenesIds));
+
+      emit(InsertarEvaluacionInicial());
     } catch (e) {
       emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsError));
     }
@@ -147,8 +150,8 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       ///AÑADIR NUEVAS
       //si las imagenes no tienen id las insertamos porque significa que no estan insertadas aún
       List<ImagenDataModel> imagenesInsertar = imagenes.where((imagen) => imagen.idimg == null).toList();
-      //final listImagenesIds = await repositorio.insertarImagenes(imagenesInsertar.map((imageModel) => imageModel.imagen).toList(), idEvaluacion); //TODO IMAGENES
-      final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion);
+      final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion); //TODO IMAGENES
+      //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion);
 
       // Actualizar los ids de las imagenes que acabamos de eliminar
       imagenes.removeWhere((imagen) => imagen.idimg == null);
@@ -156,7 +159,6 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       // Añadir los ids correctos
       imagenes.addAll(listImagenesIds);
 
-      debugPrint("MARTA IMAGENES ${imagenes} ");
       //creamos el objeto evaluación
       EvaluacionDetailsDataModel evaluacion =
       EvaluacionDetailsDataModel(
@@ -175,10 +177,8 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fabricante: fabricante,
           numeroSerie: numeroSerie
       );
-      debugPrint("MARTA imágenes antes de emitir el estado: ${imagenes}");
       emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {
-      debugPrint("MARTA ERROR");
       emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
     }
   }

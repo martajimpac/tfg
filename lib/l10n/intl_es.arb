@@ -2,6 +2,7 @@
   "@@locale": "es",
   "appTitle": "Mi Aplicación",
 
+  "pressAgainToExit": "Pulsa otra vez para salir",
   "next": "Siguiente",
   "close": "Cerrar",
   "error": "Error",
@@ -26,6 +27,7 @@
   "retryText": "¿Desea volver a intentarlo?",
   "retryTitle": "Reintentar",
   "observationsTitle": "Observaciones",
+  "observationsCateogoryTitle": "Observaciones de la categoría",
   "observationsDesc": "Escriba sus observaciones aqui...",
   "unknownError": "Error desconocido.",
   "noInternetConexion": "No hay conexión a internet, podrá acceder a la aplicación únicamente para visualizar los pdf almacenados en su dispositivo.",
@@ -48,7 +50,10 @@
   "emailResent": "Correo reenviado",
   "emailResentDesc": "El correo se ha reenviado con éxito.\nRevise su bandeja de entrada.",
   "errorEmailResent": "Ha ocurrido un error al reenviar el correo..",
-
+  "saveSessionTitle": "Guardar sesión",
+  "saveSessionDesc": "¿Desea iniciar sesión automáticamente con este usuario?",
+  "yes": "Sí",
+  "no": "No",
 
   "recoverPasswordTitle": "Recuperar contraseña",
   "errorRecoverPasswordLimit": "Se ha excedido el límite de intentos con este correo electrónico.",
@@ -66,7 +71,7 @@
   "errorEmailNotValid": "El correo no es válido",
   "errorEmpty": "Completa todos los campos antes de continuar",
   "registerSuccessTitle": "¡Registrado!",
-  "registerSuccessDesc": "Usuario registrado con éxito. Revise su bandeja de entrada para validar su subscripcion.",
+  "registerSuccessDesc": "Usuario registrado con éxito. Revise su bandeja de entrada para validar su registro.",
   "errorRegister": "Ha habido un error al tratar de realizar el registro.",
   "errorRegisterLimit": "Se ha excedido el límite de intentos de registro con este correo electrónico.",
   "errorRegisterPasswordMin": "La contraseña tiene que tener por lo menos 6 caracteres.",
@@ -83,6 +88,8 @@
   "errorChangePasswordNoChange": "La contraseña nueva no puede ser igual que la actual.",
   "changePasswordSuccess": "Contraseña cambiada con éxito",
   "changePasswordButton": "Cambiar contraseña",
+
+  "errorChangeUserData": "Ha ocurrido un error al cambiar los datos del usuario.",
 
   "forgotPasswordDesc": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
   "resetPasswordTitle": "Resetear contraseña",

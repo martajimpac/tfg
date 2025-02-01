@@ -74,8 +74,8 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
     Future<void> generatePdf(BuildContext context, EvaluacionDetailsDataModel evaluacion) async {
     emit(DetallesEvaluacionLoading());
     try {
-      final preguntas = await repositorio.getPreguntasRespuesta(evaluacion.ideval);
-      final categorias = await repositorio.getCategorias();
+      final preguntas = await repositorio.getPreguntas(evaluacion.ideval);
+      final categorias = await repositorio.getCategorias(evaluacion.ideval);
       final respuestas = await repositorio.getRespuestas();
 
       String? pathFichero = await PdfHelper.generarInformePDF(

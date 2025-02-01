@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
@@ -10,7 +9,7 @@ class MyButtonCard extends StatelessWidget {
   final Icon icon;
   final Color? iconContainerColor; // Parámetro opcional para el color del contenedor
 
-  MyButtonCard({
+  const MyButtonCard({super.key, 
     required this.onTap,
     required this.text,
     required this.icon,
@@ -48,7 +47,7 @@ class MyButtonCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 16.0),
                 Text(
-                  text.toUpperCase(),
+                  text,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

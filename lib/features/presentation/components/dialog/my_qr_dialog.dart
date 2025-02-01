@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,10 +17,10 @@ class MyQrDialog extends StatelessWidget {
   final ScreenshotController _screenshotController = ScreenshotController();
 
   MyQrDialog({
-    Key? key,
+    super.key,
     required this.nombreMaquina,
     required this.qrData,
-  }) : super(key: key);
+  });
 
   Future<void> _shareQrCode(BuildContext context) async {
     Utils.showLoadingDialog(context, text: "");
@@ -38,7 +37,6 @@ class MyQrDialog extends StatelessWidget {
       }
     } catch (e) {
       _showErrorDialogQR(context, "Ha habido un error al compartir el QR.");
-      debugPrint('Error al compartir el QR: $e');
     }finally{
       // Cierra el diálogo de carga al finalizar
       Navigator.of(context).pop();

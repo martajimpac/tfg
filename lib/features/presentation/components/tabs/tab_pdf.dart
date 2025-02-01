@@ -46,9 +46,9 @@ class _TabPdfState extends State<TabPdf> {
               swipeHorizontal: false,
               autoSpacing: true,
               pageFling: true,
-              onRender: (_pages) {
+              onRender: (pages) {
                 setState(() {
-                  pages = _pages!;
+                  pages = pages!;
                   isReady = true;
                 });
               },
@@ -75,8 +75,8 @@ class _TabPdfState extends State<TabPdf> {
           if (errorMessage.isNotEmpty)
             Container(
               color: Theme.of(context).colorScheme.onPrimary,
-              child: const Center(
-                child: Text("Ha ocurrido un error al cargar el PDF"),
+              child: Center(
+                child: Text(S.of(context).errorChargingPdf),
               ),
             ),
           if (!isReady && errorMessage.isEmpty)

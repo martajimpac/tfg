@@ -1,5 +1,5 @@
 
-import 'package:evaluacionmaquinas/features/presentation/components/textField/my_login_textfield.dart';
+import 'package:evaluacionmaquinas/features/presentation/components/textField/my_textform_field.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../generated/l10n.dart';
@@ -33,14 +33,15 @@ class MyListTile extends StatefulWidget {
 }
 
 class _MyListTileState extends State<MyListTile> {
-  OpcionRespuestaDataModel? selectedAnswer;
+  OpcionRespuestaDataModel? _answerSelected;
   bool _isAnswered = false;
   final _observacionesController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    selectedAnswer = widget.answerSelected;
+    debugPrint("MARTA INIT");
+    _answerSelected = widget.answerSelected;
     _isAnswered = widget.isAnswered;
     _observacionesController.text = widget.observaciones;
   }
@@ -52,7 +53,31 @@ class _MyListTileState extends State<MyListTile> {
   }
 
   @override
+  void didUpdateWidget(covariant MyListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    debugPrint("MARTA UPDATE");
+    // Solo sincroniza si las propiedades cambian
+    _answerSelected = widget.answerSelected;
+    _isAnswered = widget.isAnswered;
+    _observacionesController.text = widget.observaciones;
+
+  }
+
+  @override
   Widget build(BuildContext context) {
+    debugPrint("MARTA build");
+    // Actualizar estado según las propiedades del widget
+    /*if (_answerSelected != widget.answerSelected) {
+      _answerSelected = widget.answerSelected;
+    }
+    if (_isAnswered != widget.isAnswered) {
+      _isAnswered = widget.isAnswered;
+    }
+    if (_observacionesController.text != widget.observaciones) {
+      _observacionesController.text = widget.observaciones;
+    }*/
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: Dimensions.marginSmall,
@@ -85,6 +110,7 @@ class _MyListTileState extends State<MyListTile> {
               Theme(
                 data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
+                  initiallyExpanded: widget.observaciones != "",
                   tilePadding: EdgeInsets.zero,
                   title: Text(
                     S.of(context).observationsTitle,
@@ -95,10 +121,14 @@ class _MyListTileState extends State<MyListTile> {
                       semanticLabel: S.of(context).semanticlabelShowObservations
                   ),
                   children: [
-                    MyLoginTextField(
+                    MyTextFormField(
                       controller: _observacionesController,
                       hintText: S.of(context).observationsDesc,
-                      onTextChanged: widget.onObservationsChanged,
+                      onTextChanged: (observaciones) {
+                        widget.onObservationsChanged(observaciones);
+                      },
+                      numLines: 2,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                     ),
                   ],
                 ),
@@ -117,11 +147,11 @@ class _MyListTileState extends State<MyListTile> {
         Checkbox(
           activeColor: _isAnswered ? Theme.of(context).appBarTheme.iconTheme?.color : Colors.grey,
           checkColor: Theme.of(context).colorScheme.surface,
-          value: _isAnswered ? answer == selectedAnswer : answer == defaultAnswer,
+          value: _isAnswered ? answer == _answerSelected : answer == defaultAnswer,
           onChanged: (value) {
             setState(() {
               _isAnswered = true;
-              selectedAnswer = answer;
+              _answerSelected = answer;
             });
             widget.onAnswerSelected(answer);
           },

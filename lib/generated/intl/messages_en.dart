@@ -113,6 +113,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The new password cannot be the same as the current password."),
         "errorChangePasswordNoMatch":
             MessageLookupByLibrary.simpleMessage("Passwords do not match."),
+        "errorChangeUserData": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while changing the user data."),
         "errorChargingPdf": MessageLookupByLibrary.simpleMessage(
             "There was an error loading the PDF"),
         "errorComissioningDate": MessageLookupByLibrary.simpleMessage(
@@ -224,6 +226,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Create new evaluation"),
         "newPassword": MessageLookupByLibrary.simpleMessage("New password"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
         "noEvaluations": MessageLookupByLibrary.simpleMessage("No evaluations"),
         "noInternetConexion": MessageLookupByLibrary.simpleMessage(
             "No internet connection, you will only be able to access the application to view the PDFs stored on your device."),
@@ -233,6 +236,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The PDF has not yet been generated on this device."),
         "numEvaluations":
             MessageLookupByLibrary.simpleMessage("Number of evaluations:"),
+        "observationsCateogoryTitle":
+            MessageLookupByLibrary.simpleMessage("Category Observations"),
         "observationsDesc": MessageLookupByLibrary.simpleMessage(
             "Write your observations here..."),
         "observationsTitle":
@@ -243,13 +248,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "pdf": MessageLookupByLibrary.simpleMessage("PDF"),
         "photoDesc": MessageLookupByLibrary.simpleMessage(
             "How would you like to complete the action?"),
+        "pressAgainToExit":
+            MessageLookupByLibrary.simpleMessage("Press again to exit"),
         "recoverPasswordTitle":
             MessageLookupByLibrary.simpleMessage("Recover password"),
         "registerAndLoginButton":
             MessageLookupByLibrary.simpleMessage("Register"),
         "registerButton": MessageLookupByLibrary.simpleMessage("Register"),
         "registerSuccessDesc": MessageLookupByLibrary.simpleMessage(
-            "User registered successfully. Check your inbox to validate your subscription."),
+            "User registered successfully. Check your inbox to validate your registration."),
         "registerSuccessTitle":
             MessageLookupByLibrary.simpleMessage("Registered!"),
         "registerTitle": MessageLookupByLibrary.simpleMessage("Register"),
@@ -265,6 +272,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Would you like to try again?"),
         "retryTitle": MessageLookupByLibrary.simpleMessage("Retry"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
+        "saveSessionDesc": MessageLookupByLibrary.simpleMessage(
+            "Do you want to log in automatically with this user?"),
+        "saveSessionTitle":
+            MessageLookupByLibrary.simpleMessage("Save session"),
         "savingEvaluation":
             MessageLookupByLibrary.simpleMessage("Saving evaluation data..."),
         "search": MessageLookupByLibrary.simpleMessage("Search"),
@@ -343,6 +354,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unknown manufacturer"),
         "unknownName": MessageLookupByLibrary.simpleMessage("Unknown name"),
         "uploadingImage":
-            MessageLookupByLibrary.simpleMessage("Uploading image...")
+            MessageLookupByLibrary.simpleMessage("Uploading image..."),
+        "yes": MessageLookupByLibrary.simpleMessage("Yes")
       };
 }

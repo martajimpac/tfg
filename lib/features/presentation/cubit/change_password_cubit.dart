@@ -1,12 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/utils/Utils.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
-import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 
 
@@ -39,6 +35,15 @@ class ChangePasswordError extends ChangePasswordState {
 
   const ChangePasswordError(this.message, this.isCurrentPasswordRed, this.isNewPasswordRed, this.isConfirmPasswordRed);
 }
+
+class SendPasswordResetEmailError extends ChangePasswordState {
+  final String message;
+  final bool isEmailRed;
+
+  const SendPasswordResetEmailError(this.message, this.isEmailRed);
+}
+
+class SendPasswordResetEmailSuccess extends ChangePasswordState {}
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   final SupabaseAuthRepository repositorio;
@@ -123,6 +128,22 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       emit(ChangePasswordSuccess());
     }else{
       emit(ChangePasswordError(errorMessage, false, false, false));
+    }
+  }
+
+  Future<void> sendResetPasswordEmail(String email, BuildContext context) async {
+
+    emit(ChangePasswordLoading());
+    if (email.isEmpty) {
+      emit(SendPasswordResetEmailError(S.of(context).errorEmpty, true));
+      return;
+    }
+
+    final errorMessage = await repositorio.sendResetPasswordEmail(email, context);
+    if(errorMessage == null){
+      emit(SendPasswordResetEmailSuccess());
+    }else{
+      emit(SendPasswordResetEmailError(errorMessage, false));
     }
   }
 }

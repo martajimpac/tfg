@@ -4,7 +4,7 @@ class TipoEvaluacionDataModel extends Equatable {
   final int idtipo;
   final String tipo;
 
-  TipoEvaluacionDataModel({
+  const TipoEvaluacionDataModel({
     required this.idtipo,
     required this.tipo,
   });

@@ -2,6 +2,7 @@
   "@@locale": "ca",
   "appTitle": "La Meva Aplicació",
 
+  "pressAgainToExit": "Prem una altra vegada per sortir",
   "next": "Següent",
   "close": "Tancar",
   "error": "Error",
@@ -26,6 +27,7 @@
   "retryText": "Voleu tornar-ho a intentar?",
   "retryTitle": "Reintentar",
   "observationsTitle": "Observacions",
+  "observationsCateogoryTitle": "Observacions de la categoria",
   "observationsDesc": "Escriviu les vostres observacions aquí...",
   "unknownError": "Error desconegut.",
   "noInternetConexion": "No hi ha connexió a internet, podrà accedir a l'aplicació únicament per visualitzar els PDF emmagatzemats al seu dispositiu.",
@@ -48,6 +50,11 @@
   "emailResent": "Correu reenviat",
   "emailResentDesc": "El correu s'ha reenviat correctament.\nReviseu la vostra safata d'entrada.",
   "errorEmailResent": "S'ha produït un error en reenviar el correu.",
+  "saveSessionTitle": "Desar sessió",
+  "saveSessionDesc": "Vol iniciar sessió automàticament amb aquest usuari?",
+  "yes": "Sí",
+  "no": "No",
+
 
   "recoverPasswordTitle": "Recuperar contrasenya",
   "errorRecoverPasswordLimit": "S'ha excedit el límit d'intents amb aquest correu electrònic.",
@@ -65,7 +72,7 @@
   "errorEmailNotValid": "El correu no és vàlid",
   "errorEmpty": "Completa tots els camps abans de continuar",
   "registerSuccessTitle": "Registrat!",
-  "registerSuccessDesc": "Usuari registrat amb èxit. Reviseu la vostra safata d'entrada per validar la vostra subscripció.",
+  "registerSuccessDesc": "Usuari registrat amb èxit. Reviseu la vostra safata d'entrada per validar la vostra registre.",
   "errorRegister": "Hi ha hagut un error en registrar-se.",
   "errorRegisterLimit": "S'ha excedit el límit d'intents de registre amb aquest correu electrònic.",
   "errorRegisterPasswordMin": "La contrasenya ha de tenir almenys 6 caràcters.",
@@ -82,6 +89,8 @@
   "errorChangePasswordNoChange": "La nova contrasenya no pot ser igual a l'actual.",
   "changePasswordSuccess": "Contrasenya canviada amb èxit",
   "changePasswordButton": "Canviar contrasenya",
+
+  "errorChangeUserData": "S'ha produït un error en canviar les dades de l'usuari.",
 
   "forgotPasswordDesc": "Introdueix la teva adreça de correu electrònic i t'enviarem un enllaç per restablir la teva contrasenya",
   "resetPasswordTitle": "Restablir contrasenya",

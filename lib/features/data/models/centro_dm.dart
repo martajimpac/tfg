@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
 
 class CentroDataModel {
   final int idCentro;

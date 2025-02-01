@@ -2,12 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../core/utils/pdf.dart';
 import '../../../generated/l10n.dart';
-import '../../data/models/evaluacion_details_dm.dart';
-import '../../data/models/imagen_dm.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
-import '../../data/repository/repositorio_db_supabase.dart';
+import '../../data/shared_prefs.dart';
 
 // Define el estado del cubit
 abstract class EditProfileState extends Equatable {
@@ -19,8 +16,14 @@ abstract class EditProfileState extends Equatable {
 
 class EditProfileLoading extends EditProfileState {}
 
+class EditProfileLoaded extends EditProfileState {
+  final String userName;
+  const EditProfileLoaded(this.userName);
+}
+
 class EditProfileSuccess extends EditProfileState {
-  const EditProfileSuccess();
+  final String newUserName;
+  const EditProfileSuccess(this.newUserName);
 }
 
 class EditProfileError extends EditProfileState {
@@ -28,9 +31,6 @@ class EditProfileError extends EditProfileState {
   final bool isNameRed;
 
   const EditProfileError(this.errorMessage, this.isNameRed);
-
-  @override
-  List<Object> get props => [errorMessage];
 }
 
 
@@ -40,20 +40,32 @@ class EditProfileCubit extends Cubit<EditProfileState> {
 
   EditProfileCubit(this.repositorio) : super(EditProfileLoading());
 
-  Future<void> editProfile(String nombre, BuildContext context) async {
+  Future<void> editProfile(String newUserName, BuildContext context) async {
     emit(EditProfileLoading());
 
-    if (nombre.isEmpty) {
+    if (newUserName.isEmpty) {
       var message = S.of(context).errorEmpty;
       emit(EditProfileError(message, true));
       return;
     }
 
-    final errorMessage = await repositorio.editProfile(nombre, context);
+    final errorMessage = await repositorio.editProfile(newUserName, context);
     if(errorMessage == null){
-      emit(EditProfileSuccess());
+      emit(EditProfileSuccess(newUserName));
     }else{
       emit(EditProfileError(errorMessage, false));
+    }
+  }
+
+  Future<void> loadUserData() async {
+    emit(EditProfileLoading());
+    try {
+      final userData = await SharedPrefs.getUserData();
+      final name = userData['name'] ?? '';
+      emit(EditProfileLoaded(name));
+    } catch (e) {
+      // Maneja errores si es necesario
+      debugPrint('Error al cargar datos del usuario: $e');
     }
   }
 

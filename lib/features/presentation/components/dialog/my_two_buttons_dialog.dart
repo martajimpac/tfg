@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
@@ -15,7 +14,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
   final bool isVertical; // Nuevo parámetro para determinar la orientación de los botones
 
   const MyTwoButtonsDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.desc,
     required this.primaryButtonText,
@@ -23,7 +22,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
     this.onPrimaryButtonTap,
     this.onSecondaryButtonTap,
     this.isVertical = false, // Por defecto los botones serán horizontales
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

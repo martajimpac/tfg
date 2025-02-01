@@ -6,7 +6,7 @@ class MaquinaDataModel extends Equatable {
   final String? fabricante;
   final String? numeroSerie;
 
-  MaquinaDataModel({
+  const MaquinaDataModel({
     required this.idmaq,
     required this.maquina,
     this.fabricante,

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:evaluacionmaquinas/features/presentation/cubit/preguntas_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
 import '../../../core/utils/Utils.dart';
@@ -120,9 +122,15 @@ class _TerminarPageState extends State<TerminarPage> {
               child: MyButton(
                 adaptableWidth: false,
                 onTap: () {
+
+                  //Limpiar los datos del cubit de preguntas
+                  final preguntasCubit = context.read<PreguntasCubit>();
+                  preguntasCubit.clearCache();
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
+
                       builder: (context) => const MyHomePage(),
                     ),
                   );

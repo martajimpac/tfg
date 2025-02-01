@@ -8,7 +8,6 @@ class MyLoginTextField extends StatefulWidget {
   final String hintText;
   final bool obscureText;
   final bool isRed;
-  final Function(String)? onTextChanged;
   final VoidCallback? onSubmited;
   final FocusNode? focusNode;
 
@@ -20,22 +19,39 @@ class MyLoginTextField extends StatefulWidget {
     this.focusNode,
     this.obscureText = false,
     this.isRed = false,
-    this.onTextChanged,
   });
-
 
   @override
   _MyLoginTextFieldState createState() => _MyLoginTextFieldState();
 }
 
 class _MyLoginTextFieldState extends State<MyLoginTextField> {
-  bool _isTyping = false;
-  bool _obscureTextIsOn = true;
+  late bool _isEmpty;
+  late bool _obscureTextIsOn;
 
   @override
   void initState() {
     super.initState();
+    // Inicializar _isEmpty basado en el contenido inicial del controlador.
+    _isEmpty = widget.controller.text.isEmpty;
+    // Inicializar el estado de _obscureTextIsOn.
     _obscureTextIsOn = widget.obscureText;
+
+    // Agregar un listener al controlador para monitorear cambios.
+    widget.controller.addListener(_updateIsEmpty);
+  }
+
+  @override
+  void dispose() {
+    // Eliminar el listener para evitar fugas de memoria.
+    widget.controller.removeListener(_updateIsEmpty);
+    super.dispose();
+  }
+
+  void _updateIsEmpty() {
+    setState(() {
+      _isEmpty = widget.controller.text.isEmpty;
+    });
   }
 
   @override
@@ -45,26 +61,16 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
         0, // Izquierda
         Dimensions.marginTextField, // Arriba
         0, // Derecha
-        Dimensions.marginTextField, // Abajo (añadiendo un espacio extra)
+        Dimensions.marginTextField, // Abajo
       ),
       child: TextField(
-        style: TextStyle(
-          fontWeight: FontWeight.bold,  // Fuente en cursiva
+        style: const TextStyle(
+          fontWeight: FontWeight.bold, // Fuente en negrita
         ),
         focusNode: widget.focusNode,
         controller: widget.controller,
-        obscureText: _obscureTextIsOn, // Corregir el operador ternario
-        onChanged: (text) {
-          setState(() {
-            _isTyping = text.isNotEmpty;
-          });
-
-          // Llama a la función onTextChanged si no es nula
-          if (widget.onTextChanged != null) {
-            widget.onTextChanged!(text);
-          }
-        },
-        onSubmitted: (_){
+        obscureText: _obscureTextIsOn,
+        onSubmitted: (_) {
           if (widget.onSubmited != null) {
             widget.onSubmited!();
           }
@@ -75,7 +81,7 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color:  widget.isRed ? Colors.red : Theme.of(context).colorScheme.primary),
+            borderSide: BorderSide(color: widget.isRed ? Colors.red : Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
           fillColor: Theme.of(context).colorScheme.surface,
@@ -84,10 +90,10 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
           hintStyle: TextStyle(
             color: Theme.of(context).colorScheme.onSecondary,
             fontSize: Dimensions.defaultTextSize,
-            fontWeight: FontWeight.normal
+            fontWeight: FontWeight.normal,
           ),
-          suffixIcon: widget.obscureText ?
-          IconButton(
+          suffixIcon: widget.obscureText
+              ? IconButton(
             icon: Icon(
               _obscureTextIsOn ? Icons.visibility_off : Icons.visibility,
               color: _obscureTextIsOn ? Colors.grey : Theme.of(context).colorScheme.onSecondary,
@@ -99,15 +105,11 @@ class _MyLoginTextFieldState extends State<MyLoginTextField> {
               });
             },
           )
-
-          : _isTyping
+              : !_isEmpty
               ? IconButton(
             icon: Icon(Icons.clear, semanticLabel: S.of(context).semanticlabelClearText),
             onPressed: () {
-              setState(() {
-                widget.controller.clear();
-                _isTyping = false; // Cambia el estado para ocultar la cruz después de borrar el texto
-              });
+              widget.controller.clear();
             },
           )
               : null,

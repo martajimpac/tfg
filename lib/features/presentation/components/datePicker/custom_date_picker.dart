@@ -14,12 +14,12 @@ class CustomDatePicker extends StatefulWidget {
   final bool isRed;
 
   const CustomDatePicker({
-    Key? key,
+    super.key,
     required this.onDateChanged,
     required this.selectedDateNotifier,
     this.hasLimitDay = true,
     this.isRed = false
-  }) : super(key: key);
+  });
 
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
@@ -98,17 +98,19 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                 ),
               ],
             ),
-            GestureDetector(
-              onTap: () {
-                _clearDate();
-              },
-              child: const Icon(
-                Icons.clear,
+            if (_selectedDate != null) // Mostrar la cruz solo si _selectedDate no es null
+              GestureDetector(
+                onTap: () {
+                  _clearDate();
+                },
+                child: const Icon(
+                  Icons.clear,
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
 }

@@ -1,11 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/utils/Utils.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
@@ -72,7 +68,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> autologin(BuildContext context) async {
     // Obtener los datos del usuario
-    Map<String, String> userData = await SharedPrefs.getUserData(); //TODO AQUI LO SUYO ES HACERLO CON EL ID
+    Map<String, String> userData = await SharedPrefs.getUserData();
 
     // Obtener el email y la contraseña del mapa de datos
     String email = userData['email'] ?? '';

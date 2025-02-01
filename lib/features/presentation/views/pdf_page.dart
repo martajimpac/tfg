@@ -32,9 +32,9 @@ class _PdfPageState extends State<PdfPage> {
               swipeHorizontal: false,
               autoSpacing: true,
               pageFling: true,
-              onRender: (_pages) {
+              onRender: (pages) {
                 setState(() {
-                  pages = _pages!;
+                  pages = pages!;
                   isReady = true;
                 });
               },

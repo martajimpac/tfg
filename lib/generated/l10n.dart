@@ -60,6 +60,16 @@ class S {
     );
   }
 
+  /// `Press again to exit`
+  String get pressAgainToExit {
+    return Intl.message(
+      'Press again to exit',
+      name: 'pressAgainToExit',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Next`
   String get next {
     return Intl.message(
@@ -300,6 +310,16 @@ class S {
     );
   }
 
+  /// `Category Observations`
+  String get observationsCateogoryTitle {
+    return Intl.message(
+      'Category Observations',
+      name: 'observationsCateogoryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Write your observations here...`
   String get observationsDesc {
     return Intl.message(
@@ -500,6 +520,46 @@ class S {
     );
   }
 
+  /// `Save session`
+  String get saveSessionTitle {
+    return Intl.message(
+      'Save session',
+      name: 'saveSessionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want to log in automatically with this user?`
+  String get saveSessionDesc {
+    return Intl.message(
+      'Do you want to log in automatically with this user?',
+      name: 'saveSessionDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes`
+  String get yes {
+    return Intl.message(
+      'Yes',
+      name: 'yes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message(
+      'No',
+      name: 'no',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Recover password`
   String get recoverPasswordTitle {
     return Intl.message(
@@ -650,10 +710,10 @@ class S {
     );
   }
 
-  /// `User registered successfully. Check your inbox to validate your subscription.`
+  /// `User registered successfully. Check your inbox to validate your registration.`
   String get registerSuccessDesc {
     return Intl.message(
-      'User registered successfully. Check your inbox to validate your subscription.',
+      'User registered successfully. Check your inbox to validate your registration.',
       name: 'registerSuccessDesc',
       desc: '',
       args: [],
@@ -805,6 +865,16 @@ class S {
     return Intl.message(
       'Change password',
       name: 'changePasswordButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while changing the user data.`
+  String get errorChangeUserData {
+    return Intl.message(
+      'An error occurred while changing the user data.',
+      name: 'errorChangeUserData',
       desc: '',
       args: [],
     );

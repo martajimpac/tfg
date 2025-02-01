@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:evaluacionmaquinas/features/data/repository/repositorio_db.dart';
@@ -40,7 +39,7 @@ class RepositorioDBSupabase extends RepositorioDB {
     }
   }
 
- /*********************** ELIMINAR ****************************/
+ /// ********************* ELIMINAR ***************************
 
   @override
   Future<void> eliminarEvaluacion(int idEvaluacion) async {
@@ -84,7 +83,7 @@ class RepositorioDBSupabase extends RepositorioDB {
       rethrow;
     }
   }
-  /***************** GET EVALUACIONES *************************/
+  /// *************** GET EVALUACIONES ************************
 
   @override
   Future<List<EvaluacionDataModel>> getListaEvaluaciones(String idInspector) async {
@@ -110,7 +109,6 @@ class RepositorioDBSupabase extends RepositorioDB {
       );
       return EvaluacionDetailsDataModel.fromMap(resConsulta[0]); // Suponiendo que solo se espera un resultado
     } catch (e) {
-      log.e('Se ha producido un error al obtener los datos de la evaluación: $e');
       rethrow;
     }
   }
@@ -125,7 +123,6 @@ class RepositorioDBSupabase extends RepositorioDB {
       return resConsulta.then((value) => List<ImagenDataModel>.from(
           value.map((e) => ImagenDataModel.fromMap(e)).toList()));
     } catch (e) {
-      log.e('Se ha producido un error al obtener las imagenes de la evaluación: $e');
       rethrow;
     }
   }
@@ -149,33 +146,14 @@ class RepositorioDBSupabase extends RepositorioDB {
     }
   }
 
-  /************** GET PREGUNTAS *******************/
+  /// ************ GET PREGUNTAS ******************
+
 
   @override
-  Future<List<PreguntaDataModel>> getPreguntas() async { //NO SE USA AHORA MISMO todo
+  Future<List<PreguntaDataModel>> getPreguntas(int idEvaluacion) async {
     try {
       dynamic resConsulta;
-
-      resConsulta = await _supabase.client.rpc('get_preguntas');
-
-
-      if (resConsulta == null) {
-        return [];
-      }
-
-      return List<PreguntaDataModel>.from(resConsulta.map((e) => PreguntaDataModel.fromMap(e)).toList());
-    } catch (e) {
-      log.e('Se ha producido un error al intentar obtener las preguntas de la base de datos: $e');
-      rethrow;
-    }
-  }
-
-  @override
-  Future<List<PreguntaDataModel>> getPreguntasRespuesta(int idEvaluacion) async {
-    try {
-      dynamic resConsulta;
-
-      resConsulta = await _supabase.client.rpc('get_preguntas_respuestas', params: {'ideval': idEvaluacion});
+      resConsulta = await _supabase.client.rpc('get_preguntas_completo', params: {'ideval': idEvaluacion});
 
       if (resConsulta == null) {
         return [];
@@ -208,10 +186,10 @@ class RepositorioDBSupabase extends RepositorioDB {
 
 
   @override
-  Future<List<CategoriaPreguntaDataModel>> getCategorias() async {
+  Future<List<CategoriaPreguntaDataModel>> getCategorias(int idEvaluacion) async {
     try {
       var resConsulta = _supabase.client.rpc(
-          'get_categorias'
+          'get_categorias_con_observaciones', params: {'ideval': idEvaluacion}
       );
 
       return resConsulta.then((value) => List<CategoriaPreguntaDataModel>.from(
@@ -223,7 +201,7 @@ class RepositorioDBSupabase extends RepositorioDB {
   }
 
 
-  /************** INSERTAR ******************/
+  /// ************ INSERTAR *****************
 
   @override
   Future<int> insertarMaquina(String nombreMaquina, String? fabricante, String numeroSerie) async {
@@ -302,8 +280,9 @@ class RepositorioDBSupabase extends RepositorioDB {
         //Obtener el ide del usuario
         final userId = _supabase.client.auth.currentUser!.id;
 
-        //Obtener el filePath del usario
-        final filePath = '/$userId/profile';
+        // Generar un filePath único
+        final filePath = '$userId/${DateTime.now().millisecondsSinceEpoch}.png';
+
         //subir la imagen a subase storage
         await _supabase.client.storage
             .from(bucketName)
@@ -317,7 +296,7 @@ class RepositorioDBSupabase extends RepositorioDB {
 
         var idImagen = await _supabase.client.rpc('insert_image_url', params: {
           'ideval': idEvaluacion,
-          'image_url': imagen
+          'image_url': publicUrlResponse
         });
         listaImagenesIds.add(ImagenDataModel(idimg: idImagen, imagen: imagen));
       }
@@ -329,9 +308,13 @@ class RepositorioDBSupabase extends RepositorioDB {
   }
 
   @override
-  Future<void> insertarRespuestas(List<PreguntaDataModel> preguntas, int idEvaluacion) async {
+  Future<void> insertarRespuestas(List<PreguntaDataModel> preguntas, int idEvaluacion, List<CategoriaPreguntaDataModel> categorias) async {
     try {
       for (var pregunta in preguntas) {
+        if(pregunta.tieneObservaciones){
+          debugPrint("marta PREGUNTAS  ${pregunta.observaciones}");
+        }
+
         if(pregunta.idRespuestaSeleccionada != null){
           await _supabase.client.rpc('insert_respuesta', params: {
             'ideval': idEvaluacion,
@@ -341,7 +324,15 @@ class RepositorioDBSupabase extends RepositorioDB {
             'observaciones': pregunta.observaciones
           });
         }
-
+      }
+      for (var categoria in categorias) {
+        if(categoria.tieneObservaciones && categoria.observaciones != null && categoria.observaciones!.isNotEmpty){
+          await _supabase.client.rpc('insert_observaciones', params: {
+            'ideval': idEvaluacion,
+            'idcat': categoria.idcat,
+            'observaciones': categoria.observaciones,
+          });
+        }
       }
     } catch (e) {
       debugPrint('Se ha producido un error al intentar almacenar el ítem en la base de datos: $e');
@@ -350,7 +341,7 @@ class RepositorioDBSupabase extends RepositorioDB {
   }
 
 
-  /**************  MODIFICAR ******************/
+  /// ************  MODIFICAR *****************
 
   @override
   Future<void> modificarMaquina(int idMaquina, String nombreMaquina, String? fabricante, String numeroSerie) async {

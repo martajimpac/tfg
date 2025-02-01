@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/dimensions.dart';
@@ -209,12 +207,20 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                       );
                     } else {
                       return Container(
-                        color: Theme.of(context).colorScheme.background,
+                        color: Theme.of(context).colorScheme.surface,
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(S.of(context).notGenerated),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(
+                                    S.of(context).notGenerated,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: Dimensions.marginMedium),
                               MyButton(
                                 adaptableWidth: true,

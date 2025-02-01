@@ -10,9 +10,8 @@ import '../components/textField/my_login_textfield.dart';
 import '../cubit/change_password_cubit.dart';
 import 'login_page.dart';
 
-/** PÁGINA PARA RESETEAR LA CONTRASEÑA
- *  Solo se puede acceder aqui mediante un deeplink
- */
+/// PÁGINA PARA RESETEAR LA CONTRASEÑA
+///  Solo se puede acceder aqui mediante un deeplink
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
@@ -25,12 +24,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   late TextEditingController _confirmPasswordController;
   final supabase = Supabase.instance.client;
   final FocusNode _campoRepeatPasswordFocus = FocusNode();
+  late ChangePasswordCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     _newPasswordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
+    _cubit = BlocProvider.of<ChangePasswordCubit>(context);
   }
 
   @override
@@ -42,9 +43,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   }
 
   Future<void> _resetPassword(context) async {
+
     final newPassword = _newPasswordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
-    context.read<ChangePasswordCubit>().resetPassword(newPassword, confirmPassword, context);
+
+    _cubit.resetPassword(newPassword, confirmPassword, context);
   }
 
   @override
@@ -86,7 +89,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     textColor: Colors.white,
                   );
                 } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, (state as ChangePasswordError).message, () {
+                  Utils.showMyOkDialog(context, S.of(context).error, (state).message, () {
                     Navigator.of(context).pop();
                   });
                 }

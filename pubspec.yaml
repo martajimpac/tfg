@@ -82,6 +82,6 @@ flutter:
     - assets/images/
     - assets/icons/
   fonts:
-     - family: Gill-Sans
+     - family: Manrope
        fonts:
          - asset: assets/fonts/Gill-Sans.otf

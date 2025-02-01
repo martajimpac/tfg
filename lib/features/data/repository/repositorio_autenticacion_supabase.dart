@@ -1,6 +1,6 @@
 part of 'repositorio_autenticacion.dart';
 
-///Clase encargada de geestionar todo lo relativo a al autenticación mediante Supabase
+///Clase encargada de geestionar toodo lo relativo a al autenticación mediante Supabase
 
 class SupabaseAuthRepository implements RepositorioAutenticacion {
 
@@ -48,48 +48,14 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
     }
   }
 
-/*  @override
-  Future<String?> signInWithToken(String userToken, BuildContext context) async {
-    try {
-      final response = await supabase.client.auth.signInWithIdToken(
-        provider: null, idToken: userToken
-      );
-
-      final user = response.user;
-
-      if (user != null) {
-        await SharedPrefs.saveUserPreferences(user, password);
-        return null;
-      } else {
-        var message = S.of(context).errorAuthentication;
-        return message;
-      }
-    } on AuthException catch (error) {
-      var message = "";
-      switch (error.message) {
-        case "Invalid login credentials":
-          message = S.of(context).errorAuthenticationCredentials;
-          return message;
-          break;
-        case "Email not confirmed":
-          message = S.of(context).errorAuthenticationNotConfirmed;
-          return message;
-          break;
-        default:
-          message = S.of(context).errorAuthentication;
-          return message;
-          break;
-      }
-    } catch (error) {
-      var message = S.of(context).unknownError;
-      return message;
-    }
-  }*/
-
   @override
   Future<String?> resendConfirmationEmail(String email, String password, BuildContext context) async {
     try {
-      final authResponse = await supabase.client.auth.signUp(password: password, email: email);
+      final authResponse = await supabase.client.auth.signUp(
+          password: password,
+          email: email,
+          emailRedirectTo: emailConfirmationPage,
+      );
       if (authResponse.user != null) {
         return null;
       }else{
@@ -108,6 +74,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         password: password,
         email: email,
         data: {'username': name},
+        emailRedirectTo: emailConfirmationPage,
       );
 
       // Verificar si el usuario existe, pero no tiene identidades (usuario "falso")
@@ -122,7 +89,6 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
 
         final user = authResponse.user;
         if (user != null && user.userMetadata != null) {
-          await SharedPrefs.saveUserPreferences(user, password);
           return null;
         } else {
           return S.of(context).errorRegister;
@@ -141,7 +107,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         return S.of(context).errorRegister;
       }
     } catch (error) {
-      return error.toString(); //todo poner errorRegister
+      return S.of(context).errorRegister;
     }
   }
 
@@ -166,7 +132,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
 
       return null;
 
-    } on AuthException catch (error) {
+    } on AuthException {
       return S.of(context).errorChangePasswordNoChange;
     } catch (error) {
       return S.of(context).errorChangePassword;
@@ -197,15 +163,35 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
   Future<String?> editProfile(String newName, BuildContext context) async {
     try {
       // Usamos el método resetPassword de Supabase para resetear la contraseña usando el token
-      final response = await Supabase.instance.client.auth.updateUser(
+      await Supabase.instance.client.auth.updateUser(
         UserAttributes(
-          data: {'name': newName},
+          data: {'username': newName},
         ),
       );
 
       return null;
     } catch (error) {
-      return  "ERROR CHANGE USER DATA";
+      return  S.of(context).errorChangeUserData;
+    }
+  }
+
+  @override
+  @override
+  Future<String?> sendResetPasswordEmail(String email, BuildContext context) async {
+    try {
+      await supabase.client.auth.resetPasswordForEmail(email);
+      return null;
+
+    } on AuthException catch (error) {
+      // Manejar errores de autenticación
+      if (error.statusCode == "429") {
+        return S.of(context).errorRecoverPasswordLimit;
+
+      } else { //Email rate limit exceeded
+        return S.of(context).errorRecoverPasswordEmail;
+      }
+    } catch (error) {
+      return S.of(context).errorRecoverPassword;
     }
   }
 }

@@ -1,9 +1,6 @@
-import 'dart:ffi';
 import 'dart:io';
 
 
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:logger/logger.dart';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +14,7 @@ import '../../features/data/models/categoria_pregunta_dm.dart';
 import '../../features/data/models/evaluacion_details_dm.dart';
 import '../../features/data/models/opcion_respuesta_dm.dart';
 import '../../features/data/models/pregunta_dm.dart';
+import '../../features/data/shared_prefs.dart';
 import '../theme/dimensions.dart';
 import 'Constants.dart';
 import 'almacenamiento.dart'  as almacenamiento;
@@ -33,7 +31,7 @@ class PdfHelper {
   static const double padding = 5;
   static PdfColor yellowColor = PdfColor.fromHex('EEE2BC');
 
-  /*** Función que genera informe **/
+  /// * Función que genera informe *
   static Future<String?> generarInformePDF(
       EvaluacionDetailsDataModel evaluacion,
       List<PreguntaDataModel> preguntas,
@@ -43,6 +41,8 @@ class PdfHelper {
   {
 
     try {
+      final userName = await SharedPrefs.getUserName();
+
       final imagenLogo = MemoryImage(
           (await rootBundle.load('assets/images/gob.jpg')).buffer.asUint8List());
 
@@ -53,7 +53,7 @@ class PdfHelper {
         header: (pw.Context context) =>
             _buildCabeceraPaginaChecklist(context, imagenLogo),
         build: (pw.Context context) =>
-            _buildCuerpoPaginaChecklist(context, preguntas, respuestas, categorias, evaluacion), // Content
+            _buildCuerpoPaginaChecklist(userName, context, preguntas, respuestas, categorias, evaluacion), // Content
         // Center
         footer: (context) => _buildPiePaginaChecklist(context),
       )); // Page*/
@@ -144,6 +144,7 @@ class PdfHelper {
 
 
   static List<Widget> _buildCuerpoPaginaChecklist(
+      String userName,
       Context context,
       List<PreguntaDataModel> preguntas,
       List<OpcionRespuestaDataModel> respuestas,
@@ -159,11 +160,11 @@ class PdfHelper {
       ..._dameTablaDatos(evaluacion, preguntas, respuestas),
 
       // Aquí se construyen las filas del checklist
-      ..._dameTablaPreguntas(preguntas, respuestas, categorias),
+      ..._dameTablaPreguntas(userName, preguntas, respuestas, categorias),
     ];
   }
 
-  /******************************** GENERAR TABLA *******************************************************/
+  /// ****************************** GENERAR TABLA ******************************************************
 
   static List<pw.Widget> _dameTablaDatos(EvaluacionDetailsDataModel evaluacion, List<PreguntaDataModel> preguntas, List<OpcionRespuestaDataModel> respuestas) {
     // Agrupar las preguntas por idCategoria
@@ -305,7 +306,36 @@ class PdfHelper {
     );
   }
 
-
+  static pw.Widget _buildTableCellEditable(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(padding),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start, // Alinea el contenido en la parte superior
+        children: [
+          // Usamos un Column para mantener el label en la parte superior
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start, // Alinea el texto del label a la izquierda
+            children: [
+              pw.Text(
+                label,
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: tamanoFuente),
+              ),
+            ],
+          ),
+          // Espaciado entre el label y el value
+          pw.SizedBox(width: Dimensions.marginMedium),
+          // El texto del value ocupará el espacio restante
+          pw.Expanded(
+            child: pw.TextField(
+              name: "Observaciones",
+                value: value,
+                textStyle: pw.TextStyle(fontSize: tamanoFuente),
+              ),
+          ),
+        ],
+      ),
+    );
+  }
 
   static pw.Widget _buildTableCellQuestion(List<OpcionRespuestaDataModel> respuestas, PreguntaDataModel pregunta) {
     return pw.Padding(
@@ -366,7 +396,8 @@ class PdfHelper {
     );
   }
 
-  static List<pw.Widget> _dameTablaPreguntas(
+  static List<Widget> _dameTablaPreguntas(
+      String userName,
       List<PreguntaDataModel> preguntas,
       List<OpcionRespuestaDataModel> respuestas,
       List<CategoriaPreguntaDataModel> todasLasCategorias,
@@ -445,28 +476,35 @@ class PdfHelper {
                 ],
               ),
             ];
-          }).toList(),
+          }),
+
+          //Observaciones
+          pw.Table(
+            border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+            columnWidths: {
+              0: pw.FlexColumnWidth(1), // Ancho flexible para la primera columna
+              1: pw.FlexColumnWidth(2), // Ancho flexible para la segunda columna
+            },
+            children: [
+              pw.TableRow(children: [
+                _buildTableCellWithValue("Observaciones:", categoria.observaciones ?? ""),
+              ]),
+            ],
+          ),
+
+
         ];
-      }).toList(),
+      }),
+
+      // Agregar el nombre del inspector que ha realizado la evaluación
+      pw.SizedBox(height: 10),
+      pw.Text(
+          'Realizado por: $userName',
+          style: pw.TextStyle(fontSize: tamanoFuente, fontWeight: FontWeight.bold)
+      ),
     ];
   }
 
-  //TODO OBSERVACIONES DEBERIA SER UNA CELDA EDITABLE?
-  static Widget _dameCeldaEditableTabla(
-      String idTextField,
-      String texto,
-      {int? maxLong = 200, double altura = 30, double anchura = 110}
-      ) {
-    return Padding(
-      padding: const EdgeInsets.all(padding),
-      child: pw.TextField(
-          name: idTextField,
-          value: texto,
-          maxLength: maxLong,
-          height: altura,
-          width: anchura,
-          textStyle: const pw.TextStyle(fontSize: tamanoFuente)),
-    );
-  }
+
 
 }

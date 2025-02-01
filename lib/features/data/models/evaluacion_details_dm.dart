@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-/***
- * DETALLES DE LA EVALUACIÓN
- ***/
+/// *
+/// DETALLES DE LA EVALUACIÓN
+///*
 class EvaluacionDetailsDataModel extends Equatable {
   final int ideval;
   final String idinspector;

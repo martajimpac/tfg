@@ -2,6 +2,7 @@
   "@@locale": "gl",
   "appTitle": "A miña Aplicación",
 
+  "pressAgainToExit": "Pulsa outra vez para saír",
   "next": "Seguinte",
   "close": "Pechar",
   "error": "Erro",
@@ -26,6 +27,7 @@
   "retryText": "Desexa volver a tentalo?",
   "retryTitle": "Reintentar",
   "observationsTitle": "Observacións",
+  "observationsCateogoryTitle": "Observacións da categoría",
   "observationsDesc": "Escriba aquí as súas observacións...",
   "unknownError": "Erro descoñecido.",
   "noInternetConexion": "Non hai conexión a internet, poderá acceder á aplicación unicamente para visualizar os PDF almacenados no seu dispositivo.",
@@ -48,6 +50,10 @@
   "emailResent": "Correo reenviado",
   "emailResentDesc": "O correo foi reenviado con éxito.\nRevisa a túa caixa de entrada.",
   "errorEmailResent": "Produciuse un erro ao reenviar o correo.",
+  "saveSessionTitle": "Gardar sesión",
+  "saveSessionDesc": "Quere iniciar sesión automaticamente con este usuario?",
+  "yes": "Si",
+  "no": "Non",
 
   "recoverPasswordTitle": "Recuperar contrasinal",
   "errorRecoverPasswordLimit": "Superouse o límite de intentos con este correo electrónico.",
@@ -65,7 +71,7 @@
   "errorEmailNotValid": "O correo non é válido",
   "errorEmpty": "Completa todos os campos antes de continuar",
   "registerSuccessTitle": "Rexistrado!",
-  "registerSuccessDesc": "Usuario rexistrado con éxito. Revisa a túa caixa de entrada para validar a túa subscrición.",
+  "registerSuccessDesc": "Usuario rexistrado con éxito. Revisa a túa caixa de entrada para validar o seu rexistro.",
   "errorRegister": "Houbo un erro ao intentar realizar o rexistro.",
   "errorRegisterLimit": "Superouse o límite de intentos de rexistro con este correo electrónico.",
   "errorRegisterPasswordMin": "O contrasinal debe ter polo menos 6 caracteres.",
@@ -82,6 +88,9 @@
   "errorChangePasswordNoChange": "O novo contrasinal non pode ser igual ao actual.",
   "changePasswordSuccess": "Contrasinal cambiado con éxito",
   "changePasswordButton": "Cambiar contrasinal",
+
+  "errorChangeUserData": "Produciuse un erro ao cambiar os datos do usuario.",
+
   "forgotPasswordDesc": "Introduce o teu correo electrónico e enviarémosche unha ligazón para restablecer o teu contrasinal",
   "resetPasswordTtile": "Restablecer contrasinal",
   "resetPasswordButton": "Cambiar contrasinal",

@@ -122,7 +122,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => SettingsCubit()),
           BlocProvider(create: (context) => InsertarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => EvaluacionesCubit(RepositorioDBSupabase(widget.supabase), {})),
+          BlocProvider(create: (context) => EvaluacionesCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => DetallesEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
           BlocProvider(create: (context) => EliminarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),

@@ -10,11 +10,11 @@ class EmptyView extends StatelessWidget {
   final String? customText; // Variable opcional para texto personalizado
 
   const EmptyView({
-    Key? key,
+    super.key,
     this.onRetry,
     this.showRetryButton = true, // Valor por defecto true
     this.customText, // Texto personalizado opcional
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

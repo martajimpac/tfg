@@ -2,6 +2,7 @@
   "@@locale": "eu",
   "appTitle": "Nire Aplikazioa",
 
+  "pressAgainToExit": "Sakatu berriro irteteko",
   "next": "Hurrengoa",
   "close": "Itxi",
   "error": "Errore",
@@ -26,6 +27,7 @@
   "retryText": "Berriro saiatu nahi duzu?",
   "retryTitle": "Saiatu berriro",
   "observationsTitle": "Oharriak",
+  "observationsCateogoryTitle": "Kategoria behaketa",
   "observationsDesc": "Idatzi zure oharrak hemen...",
   "unknownError": "Errore ezezaguna.",
   "noInternetConexion": "Ez dago internetik, aplikaziora sartzeko aukera izango duzu soilik zure gailuan gordetako PDFak ikusteko.",
@@ -56,6 +58,11 @@
   "sendEmail": "Posta bidali",
   "emailSent": "Posta bidali da",
   "emailSentDesc": "Berreskuratzeko posta arrakastaz bidali da.\nKontsultatu zure posta elektronikoa.",
+  "saveSessionTitle": "Saioa gorde",
+  "saveSessionDesc": "Erabiltzaile honekin automatikoki saioa hasi nahi duzu?",
+  "yes": "Bai",
+  "no": "Ez",
+
 
   "registerTitle": "Erregistroa",
   "name": "Izena",
@@ -65,7 +72,7 @@
   "errorEmailNotValid": "Posta elektronikoa ez da baliozkoa",
   "errorEmpty": "Bete eremu guztiak jarraitu aurretik",
   "registerSuccessTitle": "Erregistratuta!",
-  "registerSuccessDesc": "Erabiltzailea arrakastaz erregistratu da. Begiratu zure postontzia harpidetza baieztatzeko.",
+  "registerSuccessDesc": "Erabiltzailea arrakastaz erregistratu da. Egiaztatu zure sarrera-ontzia zure erregistroa balioztatzeko.",
   "errorRegister": "Errore bat egon da erregistroa egiteko.",
   "errorRegisterLimit": "Posta elektroniko honekin erregistro saiakera kopurua gainditu da.",
   "errorRegisterPasswordMin": "Pasahitzak gutxienez 6 karaktere izan behar ditu.",
@@ -82,6 +89,8 @@
   "errorChangePasswordNoChange": "Pasahitz berria ezin da egon egokiarekin berdina.",
   "changePasswordSuccess": "Pasahitza arrakastaz aldatu da",
   "changePasswordButton": "Aldatu pasahitza",
+
+  "errorChangeUserData": "Errore bat gertatu da erabiltzailearen datuak aldatzean.",
 
   "forgotPasswordDesc": "Sartu zure helbide elektronikoa, eta pasahitza berrezartzeko esteka bidaliko dizugu",
   "resetPasswordTitle": "Pasahitza berrezarri",

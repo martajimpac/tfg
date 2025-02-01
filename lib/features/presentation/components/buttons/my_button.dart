@@ -11,13 +11,13 @@ class MyButton extends StatelessWidget {
   final bool roundBorders;
 
   const MyButton({
-    Key? key,
+    super.key,
     required this.adaptableWidth,
     required this.onTap,
     required this.text,
     this.color,
     this.roundBorders = true
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -25,8 +25,8 @@ class ImagenDataModel extends Equatable {
 
     return ImagenDataModel(
       idimg: json['idimg'] as int,
-      imagen: listaBytes!,
-      image_url: json['image_url'] as String,
+      imagen: listaBytes,
+      image_url: json['image_url'] as String?,
     );
   }
 

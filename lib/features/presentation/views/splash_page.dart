@@ -1,20 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';  // Asegúrate de importar Flutter Bloc
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/utils/Utils.dart';
-import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
 import '../cubit/login_cubit.dart';
-import 'login_page.dart';
 import 'my_home_page.dart';
 import 'offline_page.dart';
 
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   _SplashPageState createState() => _SplashPageState();
@@ -22,14 +19,13 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   final supabase = Supabase.instance.client;
-
+  late LoginCubit _cubit;
   @override
   void initState() {
     super.initState();
-    // Usamos addPostFrameCallback para postergar la ejecución de autologin
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LoginCubit>().autologin(context);
-    });
+    _cubit = BlocProvider.of<LoginCubit>(context);
+    _cubit.autologin(context);
+
   }
 
 
@@ -44,14 +40,12 @@ class _SplashPageState extends State<SplashPage> {
             break;
 
           case LoginError:
-
             if (state is LoginError) {
-              _navigateToLoginPage();
+              _loginError();
             }
             break;
 
           default:
-            _navigateToLoginPage();
             break;
         }
       },
@@ -71,7 +65,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _navigateToHomePage() {
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MyHomePage()),
     );
@@ -83,14 +77,36 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
-  Future<void> _showErrorDialog(String message) async {
+  Future<void> _loginError() async {
     if(await Utils.hayConexion()){
-      Utils.showMyOkDialog(context, S.of(context).error, message, () {
-        Navigator.of(context).pop();
-      });
+      _navigateToLoginPage();
     }else{
-      Utils.showNoConnectionDialog(context);
+      showNoConnectionDialog(context);
     }
+  }
+
+  void showNoConnectionDialog(BuildContext context){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return  MyTwoButtonsDialog(
+            title: S.of(context).error,
+            desc: S.of(context).noInternetConexion,
+            primaryButtonText: S.of(context).continuee,
+            secondaryButtonText: S.of(context).cancel,
+            onPrimaryButtonTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OfflinePage())
+              );
+            },
+            onSecondaryButtonTap: () {
+              _navigateToLoginPage();
+            },
+          );
+        }
+    );
   }
 
 }

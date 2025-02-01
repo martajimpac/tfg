@@ -9,7 +9,7 @@ import 'login_page.dart';
 class ErrorPage extends StatelessWidget {
   final String mensajeError;
 
-  const ErrorPage({Key? key, required this.mensajeError}) : super(key: key);
+  const ErrorPage({super.key, required this.mensajeError});
 
   @override
   Widget build(BuildContext context) {

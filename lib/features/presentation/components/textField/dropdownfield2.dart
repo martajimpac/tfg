@@ -1,7 +1,6 @@
 library dropdownfield;
 
 import 'package:diacritic/diacritic.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,6 +15,7 @@ class DropDownField extends FormField<String> {
   final TextStyle labelStyle;
   final TextStyle textStyle;
   final bool required;
+  @override
   final bool enabled;
   final List<String>? items;
   final List<TextInputFormatter>? inputFormatters;
@@ -53,7 +53,7 @@ class DropDownField extends FormField<String> {
     onSaved: setter,
     builder: (FormFieldState<String> field) {
       final DropDownFieldState state = field as DropDownFieldState;
-      final ScrollController _scrollController = ScrollController();
+      final ScrollController scrollController = ScrollController();
       final InputDecoration effectiveDecoration = InputDecoration(
           border: InputBorder.none,
           filled: true,
@@ -87,6 +87,7 @@ class DropDownField extends FormField<String> {
                     errorText: field.errorText,
                     fillColor: Theme.of(context).colorScheme.onPrimary,
                     filled: true,
+                    contentPadding: EdgeInsets.all(14)
                   ),
                   style: textStyle,
                   textAlign: TextAlign.start,
@@ -126,7 +127,7 @@ class DropDownField extends FormField<String> {
               child: ListView(
                 cacheExtent: 0.0,
                 scrollDirection: Axis.vertical,
-                controller: _scrollController,
+                controller: scrollController,
                 padding: EdgeInsets.only(left: 40.0),
                 children: items?.isNotEmpty ?? false
                     ? ListTile.divideTiles(
@@ -154,7 +155,7 @@ class DropDownFieldState extends FormFieldState<String> {
   DropDownField get widget => super.widget as DropDownField;
   TextEditingController? get _effectiveController => widget.controller ?? _controller;
 
-  List<String>? get _items => widget.items as List<String>?;
+  List<String>? get _items => widget.items;
 
   void clearValue() {
     setState(() {

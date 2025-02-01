@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Utils.dart';
@@ -14,7 +13,7 @@ import 'login_page.dart';
 
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -102,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     textColor: Colors.white,
                   );
                 } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, (state as RegisterError).message, () {
+                  Utils.showMyOkDialog(context, S.of(context).error, state.message, () {
                     Navigator.of(context).pop();
                   });
                 }

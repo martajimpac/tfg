@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
 import '../../../core/utils/Utils.dart';
@@ -26,7 +24,6 @@ import '../components/textField/my_textfield.dart';
 import '../cubit/centros_cubit.dart';
 import '../cubit/eliminar_evaluacion_cubit.dart';
 import '../cubit/insertar_evaluacion_cubit.dart';
-import 'package:image/image.dart' as img;
 
 import '../cubit/preguntas_cubit.dart';
 import 'checklist_page.dart';
@@ -110,7 +107,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     } else {
       _idCentro = null;
     }
-    debugPrint("$_idCentro");
+
 
     if (_idCentro == null  || _nombreCentro == "" || _denominacionController.text.trim() == "" || _numeroSerieController.text.trim() == "") {
       // Lista para almacenar los nombres de los campos que son null
@@ -196,8 +193,6 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
           primaryButtonText: S.of(context).continuee,
           secondaryButtonText: S.of(context).modify,
           onPrimaryButtonTap: () {
-            //Navigator.of(context).pop(); //TODO DA ERROR RARO
-
             //Pulsamos en el botón "Continuar"
             if(_idEvaluacion != null){
               _modificarEvaluacion();
@@ -244,7 +239,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             onPrimaryButtonTap: () {
               _cubitPreguntas.deletePreguntas();
               if(_idEvaluacion != null && _idMaquina != null){
-                //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos TODO REVISA ESTO
+                //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
                 _exit = true;
 
                 Navigator.of(context).pop();
@@ -721,18 +716,17 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                           // Crea una copia para evitar problemas con la mutabilidad
                           List<ImagenDataModel> imagenesCopy = List.from(state.imagenes);
 
-                          Navigator.of(context).pop(); //cerrar cargando
-
+                          Navigator.of(context).pop();
                           _idEvaluacion = state.evaluacion.ideval;
                           _idMaquina = state.evaluacion.idmaquina;
                           _imageList.clear();
                           _imageList.addAll(imagenesCopy);
 
 
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList,)),);
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList)));
 
                         }else if(state is InsertarEvaluacionError){
-                          Navigator.of(context).pop(); //cerrar cargando
+                          Navigator.of(context).pop();
                           Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
                             Navigator.of(context).pop();
                           });
@@ -762,6 +756,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     )
     );
   }
+
+
 }
 
 

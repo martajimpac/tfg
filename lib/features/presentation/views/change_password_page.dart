@@ -1,6 +1,4 @@
-import 'dart:math';
 
-import 'package:evaluacionmaquinas/features/presentation/cubit/eliminar_evaluacion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,7 +10,7 @@ import '../components/textField/my_login_textfield.dart';
 import '../cubit/change_password_cubit.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({Key? key}) : super(key: key);
+  const ChangePasswordPage({super.key});
 
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
@@ -86,7 +84,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     textColor: Colors.white,
                   );
                 } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, (state as ChangePasswordError).message, () {
+                  Utils.showMyOkDialog(context, S.of(context).error, state.message, () {
                     Navigator.of(context).pop();
                   });
                 }
@@ -122,6 +120,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         onSubmited: () {
                           FocusScope.of(context).requestFocus(_campoPasswordFocus);
                         },
+                        obscureText: true,
                       ),
                       Text(S.of(context).newPassword),
                       MyLoginTextField(
@@ -132,6 +131,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         onSubmited: () {
                           FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
                         },
+                        obscureText: true,
                       ),
                       Text(S.of(context).confirmNewPassword),
                       MyLoginTextField(
@@ -141,7 +141,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           focusNode: _campoRepeatPasswordFocus,
                           onSubmited: () {
                               _changePassword(context);
-                          }
+                          },
+                          obscureText: true,
                       ),
                       const SizedBox(height: 16.0),
                       MyButton(

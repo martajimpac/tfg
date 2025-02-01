@@ -1,9 +1,8 @@
-import 'dart:math';
+import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import '../../../core/utils/Constants.dart';
 import '../../../core/utils/pdf.dart';
 import '../../../generated/l10n.dart';
@@ -32,17 +31,14 @@ class PreguntasLoading extends PreguntasState {
 }
 
 class PreguntasLoaded extends PreguntasState {
-  final List<PreguntaDataModel> preguntas;
-  final List<CategoriaPreguntaDataModel> categorias;
-  final List<OpcionRespuestaDataModel> respuestas;
+  final List<PreguntaDataModel> preguntasPorPagina;
+  final CategoriaPreguntaDataModel categoria;
   final int idEval;
+  final int pageIndex;
 
-  const PreguntasLoaded(this.preguntas, this.categorias, this.respuestas, this.idEval);
+  const PreguntasLoaded(this.preguntasPorPagina, this.categoria, this.idEval, this.pageIndex);
 
-  @override
-  List<Object> get props => [preguntas, categorias, respuestas, idEval];
 }
-
 
 class PreguntasError extends PreguntasState {
   final String errorMessage;
@@ -74,44 +70,94 @@ class PdfError extends PreguntasState {
 class PreguntasCubit extends Cubit<PreguntasState> {
   final RepositorioDBSupabase repositorio;
 
+  // Cache para almacenar las preguntas, categorías y respuestas cargadas por evaluación.
+  List<PreguntaDataModel>? preguntas;
+  List<CategoriaPreguntaDataModel>? categorias;
+  List<OpcionRespuestaDataModel>? respuestas;
+  int? _idEvalacionActual;
+
   PreguntasCubit(this.repositorio) : super(const PreguntasLoading(""));
 
-  Future<void> getPreguntas(BuildContext context, int idEvaluacion) async {
-    if (state is PreguntasLoaded && (state as PreguntasLoaded).idEval == idEvaluacion) {
-      // Si las preguntas de la evaluacion actual ya están cargadas, no hacemos nada
-      return;
+  Future<List<PreguntaDataModel>> _getPreguntas(int idEvaluacion) async {
+    // Si las preguntas ya están en el caché, se devuelven directamente.
+    if (preguntas != null && _idEvalacionActual == idEvaluacion) {
+      return preguntas ?? [];
     }
 
     try {
-      emit(PreguntasLoading(S.of(context).cubitQuestionsLoading)); // Emitir estado de carga
-      List<PreguntaDataModel> preguntas;
+      preguntas = await repositorio.getPreguntas(idEvaluacion);
+      return preguntas ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
 
-      preguntas = await repositorio.getPreguntasRespuesta(idEvaluacion);
+  Future<List<CategoriaPreguntaDataModel>> _getCategorias(int idEvaluacion) async {
+    // Si las categorías ya están en el caché, se devuelven directamente.
+    if (categorias != null && _idEvalacionActual == idEvaluacion) {
+      return categorias ?? [];
+    }
 
-      final categorias = await repositorio.getCategorias();
-      final respuestas = await repositorio.getRespuestas();
+    try {
+      categorias = await repositorio.getCategorias(idEvaluacion);
+      return categorias ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
 
-      emit(PreguntasLoaded(preguntas, categorias, respuestas, idEvaluacion));
+  Future<List<OpcionRespuestaDataModel>> _getRespuestas(int idEvaluacion) async {
+    // Si las respuestas ya están en el caché, se devuelven directamente.
+    if (respuestas != null && _idEvalacionActual == idEvaluacion) {
+      return respuestas ?? [];
+    }
+
+    try {
+      respuestas =  await repositorio.getRespuestas(); // Guardar en el caché
+      return respuestas ?? [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> getPreguntas(BuildContext context, int idEvaluacion, int pageIndex) async { //TOO SOLO EN EL INIT, LUEGO YA...
+    _idEvalacionActual = idEvaluacion;
+    try {
+      emit(PreguntasLoading(""));
+      final preguntas = await _getPreguntas(idEvaluacion);
+      final categorias = await _getCategorias(idEvaluacion);
+      await _getRespuestas(idEvaluacion);
+
+      if (categorias.isEmpty || pageIndex < 0 || pageIndex >= categorias.length) {
+        debugPrint("MARTA: Índice de página fuera de rango o categorías vacías.");
+      }
+
+
+      final categoria = categorias[pageIndex];
+      final preguntasPagina = preguntas.where(
+            (pregunta) => pregunta.idCategoria == categoria.idcat,
+      ).toList();
+
+
+
+
+      emit(PreguntasLoaded(preguntasPagina,categoria, idEvaluacion, pageIndex));
+
     } catch (e) {
       emit(PreguntasError(S.of(context).cubitQuestionsError));
     }
   }
-  void updatePreguntas(PreguntaDataModel updatedPregunta) {
-    if (state is PreguntasLoaded) {
-      final loadedState = state as PreguntasLoaded;
-      final updatedPreguntas = loadedState.preguntas.map((pregunta) {
-        return pregunta.idpregunta == updatedPregunta.idpregunta ? updatedPregunta : pregunta;
-      }).toList();
 
-      emit(PreguntasLoaded(updatedPreguntas, loadedState.categorias, loadedState.respuestas, loadedState.idEval));
-    }
+
+
+
+  void clearCache() {
+    preguntas = null;
+    categorias = null;
+    respuestas = null;
   }
 
-  Future<void> insertarRespuestasAndGeneratePdf(
-      BuildContext context,
-      EvaluacionDetailsDataModel evaluacion,
-      AccionesPdfChecklist accion
-  )async {
+  Future<void> insertarRespuestasAndGeneratePdf(BuildContext context, EvaluacionDetailsDataModel evaluacion, AccionesPdfChecklist accion)async {
 
     if (state is PreguntasLoaded) {
 
@@ -119,11 +165,12 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
       emit(PreguntasLoading(S.of(context).generatingPdf));
 
-      await repositorio.insertarRespuestas(loadedState.preguntas, evaluacion.ideval);
+
+      await repositorio.insertarRespuestas(preguntas ?? [], evaluacion.ideval, categorias ?? []);
       try {
 
         String? pathFichero = await PdfHelper.generarInformePDF(
-            evaluacion, loadedState.preguntas, loadedState.respuestas, loadedState.categorias
+            evaluacion, preguntas ?? [], respuestas ?? [], categorias ?? []
         );
 
         if (pathFichero == null) {
@@ -131,17 +178,18 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         } else {
           emit(PdfGenerated(pathFichero));
 
-          //RESTAURAR EL ESTADO DEL CUBIT
-          emit(PreguntasLoaded(loadedState.preguntas, loadedState.categorias, loadedState.respuestas, loadedState.idEval));
+          emit(PreguntasLoaded(loadedState.preguntasPorPagina, loadedState.categoria, _idEvalacionActual!, loadedState.pageIndex));
+
         }
       } catch (e) {
-        debugPrint('MARTA Excepcion PDF: $e');
         emit(PdfError(S.of(context).errorPdf));
       }
     }
   }
 
+
   void deletePreguntas() {
-    emit(const PreguntasLoading("")); // Restablece el estado a PreguntasLoading
+    emit(const PreguntasLoading(""));
   }
 }
+

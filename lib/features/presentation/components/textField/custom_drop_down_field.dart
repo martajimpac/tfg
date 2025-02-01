@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
 import '../../../data/models/centro_dm.dart';
@@ -14,13 +13,13 @@ class CustomDropdownField extends StatefulWidget {
   final bool isRed;
 
   const CustomDropdownField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     required this.items,
     required this.numItems,
     this.isRed = false
-  }) : super(key: key);
+  });
 
   @override
   _CustomDropdownFieldState createState() => _CustomDropdownFieldState();

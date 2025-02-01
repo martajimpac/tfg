@@ -3,23 +3,19 @@ import 'dart:typed_data';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:evaluacionmaquinas/features/data/models/imagen_dm.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../features/presentation/components/dialog/my_loading_dialog.dart';
 import '../../features/presentation/components/dialog/my_ok_dialog.dart';
 
 import 'package:image/image.dart' as img;
 
-import '../../features/presentation/components/dialog/my_two_buttons_dialog.dart';
-import '../../features/presentation/views/offline_page.dart';
 import '../../generated/l10n.dart';
 
 
 class Utils {
 
-  static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap, {String? buttonText = null}) {
+  static void showMyOkDialog(BuildContext context, String title, String desc, Function()? onTap, {String? buttonText}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -34,15 +30,18 @@ class Utils {
     );
   }
 
+
   static void showLoadingDialog(BuildContext context, {String text = ""}) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return MyLoadingAlertDialog(message: text);
-      },
-    );
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return MyLoadingAlertDialog(message: text);
+        },
+      );
   }
+
 
   static DateTime calculateDate(BuildContext context, int years, {bool add = true}) {
     DateTime now = DateTime.now();
@@ -219,7 +218,7 @@ class Utils {
     }
 
     // Redimensionar la imagen (opcional)
-    final resizedImage = img.copyResize( //TODO REVISAR
+    final resizedImage = img.copyResize(
       image,
       width: 800,
     );
@@ -230,30 +229,6 @@ class Utils {
     return finalImage;
   }
 
-
-  static void showNoConnectionDialog(BuildContext context){
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return  MyTwoButtonsDialog(
-            title: S.of(context).error,
-            desc: S.of(context).noInternetConexion,
-            primaryButtonText: S.of(context).continuee,
-            secondaryButtonText: S.of(context).cancel,
-            onPrimaryButtonTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OfflinePage())
-              );
-            },
-            onSecondaryButtonTap: () {
-              Navigator.of(context).pop();
-            },
-          );
-        }
-    );
-  }
 
 
 

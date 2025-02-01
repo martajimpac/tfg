@@ -4,7 +4,7 @@ class OpcionRespuestaDataModel extends Equatable {
   final int idopcion;
   final String opcion;
 
-  OpcionRespuestaDataModel({
+  const OpcionRespuestaDataModel({
     required this.idopcion,
     required this.opcion,
   });

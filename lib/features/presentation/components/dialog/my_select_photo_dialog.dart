@@ -9,10 +9,10 @@ class MySelectPhotoDialog extends StatelessWidget {
   final Function()? onGalleryButtonTap;
 
   const MySelectPhotoDialog({
-    Key? key,
+    super.key,
     this.onCameraButtonTap,
     this.onGalleryButtonTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

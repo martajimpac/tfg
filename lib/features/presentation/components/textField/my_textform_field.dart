@@ -3,42 +3,50 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/dimensions.dart';
 import '../../../../generated/l10n.dart';
 
-class MyTextField extends StatefulWidget {
+class MyTextFormField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool isRed;
+  final int? numLines;
+  final Function(String)? onTextChanged;
   final VoidCallback? onSubmited;
   final FocusNode? focusNode;
+  final String? Function(String?)? validator;
+  final Color? backgroundColor;
 
-  const MyTextField({
+  const MyTextFormField({
     super.key,
     required this.controller,
     required this.hintText,
     this.isRed = false,
+    this.numLines,
     this.onSubmited,
     this.focusNode,
+    this.onTextChanged,
+    this.validator,
+    this.backgroundColor,
   });
 
   @override
-  _MyTextFieldState createState() => _MyTextFieldState();
+  _MyTextFormFieldState createState() => _MyTextFormFieldState();
 }
 
-class _MyTextFieldState extends State<MyTextField> {
+class _MyTextFormFieldState extends State<MyTextFormField> {
   late bool _isEmpty;
 
   @override
   void initState() {
     super.initState();
-    // Inicializar _isEmpty basado en el contenido inicial del controlador.
+    // Inicializar el estado de _isEmpty en función del controlador.
     _isEmpty = widget.controller.text.isEmpty;
 
-    // Agregar un listener al controlador para monitorear cambios.
+    // Agregar un listener al controlador para monitorear cambios de texto.
     widget.controller.addListener(_updateIsEmpty);
   }
 
   @override
   void dispose() {
-    // Eliminar el listener para evitar fugas de memoria.
+    // Eliminar el listener del controlador.
     widget.controller.removeListener(_updateIsEmpty);
     super.dispose();
   }
@@ -58,16 +66,21 @@ class _MyTextFieldState extends State<MyTextField> {
         0, // Derecha
         Dimensions.marginTextField, // Abajo
       ),
-      child: TextField(
+      child: TextFormField(
         style: const TextStyle(
           fontWeight: FontWeight.bold, // Fuente en negrita
         ),
         focusNode: widget.focusNode,
         controller: widget.controller,
+        maxLines: widget.numLines, // Máximo de líneas
+        minLines: widget.numLines, // Mínimo de líneas
+        validator: widget.validator, // Validador opcional
         onChanged: (text) {
-          // Ya no es necesario actualizar _isEmpty aquí porque lo hace el listener.
+          if (widget.onTextChanged != null) {
+            widget.onTextChanged!(text);
+          }
         },
-        onSubmitted: (_) {
+        onFieldSubmitted: (_) {
           if (widget.onSubmited != null) {
             widget.onSubmited!();
           }
@@ -81,7 +94,7 @@ class _MyTextFieldState extends State<MyTextField> {
             borderSide: BorderSide(color: widget.isRed ? Colors.red : Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
           ),
-          fillColor: Theme.of(context).colorScheme.onPrimary,
+          fillColor: widget.backgroundColor ?? Theme.of(context).colorScheme.onPrimary,
           filled: true,
           hintText: widget.hintText,
           hintStyle: TextStyle(
@@ -94,6 +107,9 @@ class _MyTextFieldState extends State<MyTextField> {
             icon: Icon(Icons.clear, semanticLabel: S.of(context).semanticlabelClearText),
             onPressed: () {
               widget.controller.clear();
+              if (widget.onTextChanged != null) {
+                widget.onTextChanged!("");
+              }
             },
           )
               : null,

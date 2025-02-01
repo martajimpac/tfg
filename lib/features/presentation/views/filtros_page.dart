@@ -14,7 +14,7 @@ import 'my_home_page.dart';
 
 
 class FiltrosPage extends StatefulWidget {
-  const FiltrosPage({Key? key}) : super(key: key);
+  const FiltrosPage({super.key});
 
   @override
   _FiltrosPageState createState() => _FiltrosPageState();
@@ -66,7 +66,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
         ),
         centerTitle: true,
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height, // Altura total de la pantalla
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,9 +188,8 @@ class _FiltrosPageState extends State<FiltrosPage> {
                         _cubitEvaluaciones.removeFilter(context, filtroFechaRealizacion);
                       }
                       if(_centrosController.text.trim().isNotEmpty){
-
-                        final idCentro = _centros.firstWhere((it) => it.denominacion == _centrosController.text.trim()).idCentro;
-                        _cubitEvaluaciones.addFilter(context, filtroCentro, idCentro);
+                        final centro = _centros.firstWhere((it) => it.denominacion == _centrosController.text.trim());
+                        _cubitEvaluaciones.addFilter(context, filtroCentro, centro);
                       }else{
                         _cubitEvaluaciones.removeFilter(context, filtroCentro);
                       }

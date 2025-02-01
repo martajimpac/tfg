@@ -3,6 +3,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
 class SharedPrefs{
   static Future<void> saveUserPreferences(User user, String password) async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,6 +24,11 @@ class SharedPrefs{
   static Future<String> getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('name') ?? '';
+  }
+
+  static Future<void> updateUserName(String userName) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('name', userName);
   }
 
   static Future<String> getUserId() async {
