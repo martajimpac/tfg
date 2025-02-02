@@ -40,7 +40,6 @@ class _MyListTileState extends State<MyListTile> {
   @override
   void initState() {
     super.initState();
-    debugPrint("MARTA INIT");
     _answerSelected = widget.answerSelected;
     _isAnswered = widget.isAnswered;
     _observacionesController.text = widget.observaciones;
@@ -56,7 +55,6 @@ class _MyListTileState extends State<MyListTile> {
   void didUpdateWidget(covariant MyListTile oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    debugPrint("MARTA UPDATE");
     // Solo sincroniza si las propiedades cambian
     _answerSelected = widget.answerSelected;
     _isAnswered = widget.isAnswered;
@@ -66,7 +64,6 @@ class _MyListTileState extends State<MyListTile> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("MARTA build");
     // Actualizar estado según las propiedades del widget
     /*if (_answerSelected != widget.answerSelected) {
       _answerSelected = widget.answerSelected;

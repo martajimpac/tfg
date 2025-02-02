@@ -124,6 +124,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         onSubmited: () {
                           FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
                         },
+                        obscureText: true,
                       ),
                       Text(S.of(context).confirmNewPassword),
                       MyLoginTextField(
@@ -134,6 +135,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         onSubmited: () {
                           _resetPassword(context);
                         },
+                        obscureText: true,
                       ),
                       const SizedBox(height: 16.0),
                       MyButton(

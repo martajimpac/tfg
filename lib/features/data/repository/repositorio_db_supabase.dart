@@ -311,9 +311,6 @@ class RepositorioDBSupabase extends RepositorioDB {
   Future<void> insertarRespuestas(List<PreguntaDataModel> preguntas, int idEvaluacion, List<CategoriaPreguntaDataModel> categorias) async {
     try {
       for (var pregunta in preguntas) {
-        if(pregunta.tieneObservaciones){
-          debugPrint("marta PREGUNTAS  ${pregunta.observaciones}");
-        }
 
         if(pregunta.idRespuestaSeleccionada != null){
           await _supabase.client.rpc('insert_respuesta', params: {

@@ -64,7 +64,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               icon: Icon(Icons.close, semanticLabel: S.of(context).semanticlabelClose), // Icono de cruz
               onPressed: () {
                 setState(() {
-                  debugPrint("marta set state 1");
                   _showDeleteIcons = false;
                 });
               },
@@ -307,7 +306,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           // Detecta un clic largo en la lista
           onLongPress: () {
             setState(() {
-              debugPrint("marta set state 6");
               _showDeleteIcons = true;
             });
           },

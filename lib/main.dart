@@ -132,9 +132,8 @@ class _MyAppState extends State<MyApp> {
             final settingsCubit = context.watch<SettingsCubit>();
             return MaterialApp.router(
               locale: _locale,
-              // Se muestra el banner de debug en la esquina superior derecha en desarrollo
-              debugShowCheckedModeBanner: entornoVersion ==
-                  EntornoVersion.desarrollo,
+
+              debugShowCheckedModeBanner: false,
               theme: settingsCubit.state.theme,
               localizationsDelegates: const [
                   S.delegate,
