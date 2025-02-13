@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
 import '../../../core/utils/Utils.dart';
-import '../../../core/utils/almacenamiento.dart ';
+import '../../../core/utils/almacenamiento.dart';
 import '../../../core/utils/pdf.dart';
 import '../../../generated/l10n.dart';
 import '../../data/models/evaluacion_details_dm.dart';
 import '../../data/models/imagen_dm.dart';
+import '../../data/shared_prefs.dart';
 import '../components/buttons/floating_buttons.dart';
 import '../components/buttons/my_button.dart';
 import '../components/circle_tab_indicator.dart';
@@ -21,8 +23,9 @@ import 'nueva_evaluacion_page.dart';
 
 class DetalleEvaluacionPage extends StatefulWidget {
   final int idEvaluacion;
+  final bool comesFromQR;
 
-  const DetalleEvaluacionPage({super.key, required this.idEvaluacion});
+  const DetalleEvaluacionPage({super.key, required this.idEvaluacion, this.comesFromQR = false});
 
   @override
   _DetalleEvaluacionPageState createState() => _DetalleEvaluacionPageState();
@@ -34,8 +37,39 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   bool _generatingPdf = false;
   bool _isEvaluationLoaded = false;
 
+  Future<void> _checkUserPermission() async {
+    final id = await SharedPrefs.getUserId();
+    if (id != "" && _evaluacion.idinspector != id) {
+      Utils.showMyOkDialog(
+        context,
+        S.of(context).error,
+        "La evaluación no es del usuario, no se puede modificar", //TODO METER STRINGS
+            () => {},
+        buttonText: S.of(context).accept,
+      );
+    } else if (id == "") {
+      Utils.showMyOkDialog(
+        context,
+        S.of(context).error,
+        "Necesitas estar registrado para poder ver la evaluación",
+            () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NuevaEvaluacionPage(
+                    evaluacion: _evaluacion,
+                    imagenes: _imagenes,
+                  ),
+                ),
+              )
+            },
+        buttonText: "IR A LOGIN",
+      );
+    }
+  }
+
   Future<void> _sharePdf() async {
-    if(_isEvaluationLoaded){
+    if (_isEvaluationLoaded) {
       File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
       if (file != null) {
@@ -103,6 +137,8 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     BlocProvider.of<DetallesEvaluacionCubit>(context).getDetallesEvaluacion(context, widget.idEvaluacion);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,7 +174,24 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                   _isEvaluationLoaded = true;
                   _evaluacion = state.evaluacion;
                   _imagenes = state.imagenes;
-                  return _buildView();
+
+                  debugPrint("COMES FROM .. ${widget.comesFromQR}");
+                  if (widget.comesFromQR) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _checkUserPermission();
+                    });
+                  }
+
+                  return Column(
+                    children: [
+                      Text(
+                        widget.comesFromQR ? "Viene del QR" : "No viene del QR",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(child: _buildView(),)
+
+                    ],
+                  );
                 } else if (state is DetallesEvaluacionError) {
                   return Center(
                     child: Padding(

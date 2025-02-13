@@ -18,6 +18,8 @@ class EvaluacionDetailsDataModel extends Equatable {
   final DateTime? fechaPuestaServicio;
   final String? fabricante;
   final String numeroSerie;
+  final bool isMaqMovil;
+  final bool isMaqCarga;
 
   const EvaluacionDetailsDataModel({
     required this.ideval,
@@ -33,24 +35,12 @@ class EvaluacionDetailsDataModel extends Equatable {
     this.fechaFabricacion,
     this.fechaPuestaServicio,
     this.fabricante,
-    required this.numeroSerie
+    required this.numeroSerie,
+    required this.isMaqMovil,
+    required this.isMaqCarga
   });
 
 
-  /*  otra forma de interntar convertir las imagenes
-  factory ListEvaluacionDataModel.fromMap(Map<String, dynamic> json) {
-    // Suponiendo que 'json['imagen']' contiene una cadena de bytes en formato base64
-    Uint8List imagenBytes = base64.decode(json['imagen'] as String);
-
-    return ListEvaluacionDataModel(
-      ideval: json['ideval'] as int,
-      fechaRealizacion: DateTime.parse(json['fecha_realizacion'] as String),
-      fechaCaducidad: DateTime.parse(json['fecha_caducidad'] as String),
-      nombreMaquina: json['nombre_maquina'] as String,
-      imagen: imagenBytes, // Ahora asignamos los bytes decodificados
-      centro: json['nombre_centro'] as String,
-    );
-  }*/
 
 
   factory EvaluacionDetailsDataModel.fromMap(Map<String, dynamic> json) {
@@ -74,7 +64,9 @@ class EvaluacionDetailsDataModel extends Equatable {
           ? DateTime.parse(json['fecha_puesta_servicio'] as String)
           : null,
       fabricante: json['fabricante'] as String,
-      numeroSerie: json['numero_serie'] as String
+      numeroSerie: json['numero_serie'] as String,
+      isMaqMovil: json['is_maq_movil'] as bool,
+      isMaqCarga: json['is_maq_carga'] as bool
     );
   }
 
@@ -93,7 +85,9 @@ class EvaluacionDetailsDataModel extends Equatable {
       'fecha_fabricacion': fechaFabricacion,
       'fecha_puesta_servicio': fechaPuestaServicio,
       'fabricante': fabricante,
-      'numero_serie': numeroSerie
+      'numero_serie': numeroSerie,
+      'is_maq_movil': isMaqMovil,
+      'is_maq_carga': isMaqCarga
     };
   }
 
@@ -112,6 +106,8 @@ class EvaluacionDetailsDataModel extends Equatable {
     fechaFabricacion,
     fechaPuestaServicio,
     fabricante,
-    numeroSerie
+    numeroSerie,
+    isMaqMovil,
+    isMaqCarga
   ];
 }

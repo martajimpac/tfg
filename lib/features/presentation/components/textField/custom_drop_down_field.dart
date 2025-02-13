@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
@@ -11,6 +10,7 @@ class CustomDropdownField extends StatefulWidget {
   final List<CentroDataModel> items;
   final int numItems;
   final bool isRed;
+  final ValueChanged<String?>? onChanged;
 
   const CustomDropdownField({
     super.key,
@@ -18,7 +18,8 @@ class CustomDropdownField extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.numItems,
-    this.isRed = false
+    this.isRed = false,
+    this.onChanged,
   });
 
   @override
@@ -28,7 +29,6 @@ class CustomDropdownField extends StatefulWidget {
 class _CustomDropdownFieldState extends State<CustomDropdownField> {
   bool isFocused = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,7 +37,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
         0, // Izquierda
         Dimensions.marginDropDown, // Arriba
         0, // Derecha
-        Dimensions.marginDropDown, // Abajo (añadiendo un espacio extra)
+        Dimensions.marginDropDown, // Abajo
       ),
       decoration: BoxDecoration(
         border: Border.all(color: widget.isRed? Colors.red : isFocused ? Theme.of(context).colorScheme.primary : Colors.transparent), // Cambia el color del borde cuando se enfoca
@@ -59,7 +59,8 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
           enabled: true,
           itemsVisibleInDropdown: widget.numItems,
           items: widget.items.map((centro) => centro.denominacion).toList(),
-          strict: false
+          strict: false,
+          onValueChanged: widget.onChanged, // Llamamos al parámetro onChanged aquí
         ),
       ),
     );

@@ -233,6 +233,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Non hai conexión a internet, poderá acceder á aplicación unicamente para visualizar os PDF almacenados no seu dispositivo."),
         "noPdfAvaliable": MessageLookupByLibrary.simpleMessage(
             "Non hai ningún PDF dispoñible"),
+        "no_results":
+            MessageLookupByLibrary.simpleMessage("Non hai resultados"),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Aínda non se xerou o pdf neste dispositivo."),
         "numEvaluations":
@@ -348,6 +350,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Produciuse un erro ao pechar a sesión."),
         "sessionClosedSuccess":
             MessageLookupByLibrary.simpleMessage("Sesión pechada con éxito."),
+        "show_results":
+            MessageLookupByLibrary.simpleMessage("Amosar resultados"),
         "successUpdatingUser": MessageLookupByLibrary.simpleMessage(
             "Datos do usuario modificados correctamente"),
         "summary": MessageLookupByLibrary.simpleMessage("Resumo"),

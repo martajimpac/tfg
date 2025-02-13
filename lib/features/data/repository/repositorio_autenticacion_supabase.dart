@@ -80,10 +80,10 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
       // Verificar si el usuario existe, pero no tiene identidades (usuario "falso")
       if (authResponse.user != null &&
           authResponse.user!.identities != null &&
-          authResponse.user!.identities!.isEmpty)
+          authResponse.user!.identities!.isEmpty) //todo con marta@yopmail.com problema ...
       {
 
-        return S.of(context).errorRegister;
+        return "YA REGISTRADO ${authResponse.user == null} IDENTITIS ${authResponse.user?.identities}"; //S.of(context).errorRegister
       }else{
         //si el usuario no existe procedemos a crear la cuenta
 
@@ -91,7 +91,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         if (user != null && user.userMetadata != null) {
           return null;
         } else {
-          return S.of(context).errorRegister;
+          return "error raro"; //S.of(context).errorRegister TODO REVISA ESTO
         }
       }
 
@@ -107,7 +107,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         return S.of(context).errorRegister;
       }
     } catch (error) {
-      return S.of(context).errorRegister;
+      return "Excepcion"; //S.of(context).errorRegister
     }
   }
 

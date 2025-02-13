@@ -80,7 +80,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 _closeLoadingDialog(context);
                 _showDeleteSuccessDialog(context);
                 setState(() {
-                  if(_cubitEvaluaciones.evaluaciones.isEmpty){
+                  if(_cubitEvaluaciones.evaluacionesFiltered.isEmpty){
                     _showDeleteIcons = false;
                   }
                 });
@@ -96,7 +96,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
           builder: (context, state) {
 
-            List<EvaluacionDataModel> evaluaciones = _cubitEvaluaciones.evaluaciones;
+            List<EvaluacionDataModel> evaluaciones = _cubitEvaluaciones.evaluacionesFiltered;
             final filtros = _cubitEvaluaciones.filtros;
 
             return Column(
@@ -173,6 +173,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             icon: Icon(Icons.filter_alt, semanticLabel: S.of(context).semanticlabelFilters),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
+              _cubitEvaluaciones.saveCurrentFilters();
               Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()));
             },
           ),

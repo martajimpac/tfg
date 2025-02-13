@@ -22,3 +22,12 @@ enum TiposFicheros { word, excel, pdf }
 
 const bucketName = "images";
 
+enum Categorias {
+  catMaqCarga1(6),
+  catMaqCarga2(7),
+  catMaqMovil1(8),
+  catMaqMovil2(9);
+
+  final int value;
+  const Categorias(this.value);
+}

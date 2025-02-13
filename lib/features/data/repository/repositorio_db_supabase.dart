@@ -186,11 +186,12 @@ class RepositorioDBSupabase extends RepositorioDB {
 
 
   @override
-  Future<List<CategoriaPreguntaDataModel>> getCategorias(int idEvaluacion) async {
+  Future<List<CategoriaPreguntaDataModel>> getCategorias(int idEvaluacion, int idMaquina) async {
     try {
       var resConsulta = _supabase.client.rpc(
-          'get_categorias_con_observaciones', params: {'ideval': idEvaluacion}
+          'get_categorias_con_observaciones', params: {'ideval': idEvaluacion, 'idmaq': idMaquina}
       );
+
 
       return resConsulta.then((value) => List<CategoriaPreguntaDataModel>.from(
           value.map((e) => CategoriaPreguntaDataModel.fromMap(e)).toList()));
@@ -204,13 +205,15 @@ class RepositorioDBSupabase extends RepositorioDB {
   /// ************ INSERTAR *****************
 
   @override
-  Future<int> insertarMaquina(String nombreMaquina, String? fabricante, String numeroSerie) async {
+  Future<int> insertarMaquina(String nombreMaquina, String? fabricante, String numeroSerie, bool isMaqMovil, bool isMaqCarga) async {
     try {
 
       var idMaq = await _supabase.client.rpc('insert_maquina', params: {
         'maquina': nombreMaquina,
         'fabricante': fabricante,
         'numero_serie': numeroSerie,
+        'is_maq_movil': isMaqMovil,
+        'is_maq_carga': isMaqCarga
       });
 
       return idMaq as int;
@@ -341,7 +344,7 @@ class RepositorioDBSupabase extends RepositorioDB {
   /// ************  MODIFICAR *****************
 
   @override
-  Future<void> modificarMaquina(int idMaquina, String nombreMaquina, String? fabricante, String numeroSerie) async {
+  Future<void> modificarMaquina(int idMaquina, String nombreMaquina, String? fabricante, String numeroSerie, bool isMaqMovil, bool isMaqCarga) async {
     try {
 
       await _supabase.client.rpc('update_maquina', params: {
@@ -349,6 +352,8 @@ class RepositorioDBSupabase extends RepositorioDB {
         'maquina': nombreMaquina,
         'fabricante': fabricante,
         'numero_serie': numeroSerie,
+        'is_maq_movil': isMaqMovil,
+        'is_maq_carga': isMaqCarga
       });
     } catch (e) {
       debugPrint('Se ha producido un error al intentar modificar la maquina: $e');

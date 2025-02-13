@@ -62,11 +62,13 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       String nombreMaquina,
       String fabricante,
       String numeroSerie,
+      bool isMaqMovil,
+      bool isMaqCarga,
       List<Uint8List> imagenes) async {
     emit(InsertarEvaluacionLoading());
 
     try {
-      final idMaquina = await repositorio.insertarMaquina(nombreMaquina, fabricante, numeroSerie);
+      final idMaquina = await repositorio.insertarMaquina(nombreMaquina, fabricante, numeroSerie, isMaqMovil, isMaqCarga);
 
       final idEvaluacion = await repositorio.insertarEvaluacion(
           idMaquina,
@@ -93,7 +95,9 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaFabricacion: fechaFabricacion,
           fechaPuestaServicio: fechaPuestaServicio,
           fabricante: fabricante,
-          numeroSerie: numeroSerie
+          numeroSerie: numeroSerie,
+          isMaqCarga: isMaqCarga,
+          isMaqMovil: isMaqMovil
         );
       //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenes, idEvaluacion); //TODO IMAGENES
       final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
@@ -123,12 +127,14 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       String nombreMaquina,
       String fabricante,
       String numeroSerie,
+      bool isMaqMovil,
+      bool isMaqCarga,
       List<ImagenDataModel> imagenes) async {
 
     emit(InsertarEvaluacionLoading());
 
     try {
-      await repositorio.modificarMaquina(idMaquina, nombreMaquina, fabricante, numeroSerie);
+      await repositorio.modificarMaquina(idMaquina, nombreMaquina, fabricante, numeroSerie, isMaqMovil, isMaqCarga);
 
       await repositorio.modificarEvaluacion(
           idEvaluacion,
@@ -175,7 +181,9 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaFabricacion: fechaFabricacion,
           fechaPuestaServicio: fechaPuestaServicio,
           fabricante: fabricante,
-          numeroSerie: numeroSerie
+          numeroSerie: numeroSerie,
+          isMaqCarga: isMaqCarga,
+          isMaqMovil: isMaqMovil
       );
       emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {

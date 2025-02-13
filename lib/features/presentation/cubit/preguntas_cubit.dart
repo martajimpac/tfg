@@ -92,14 +92,15 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<List<CategoriaPreguntaDataModel>> _getCategorias(int idEvaluacion) async {
+  Future<List<CategoriaPreguntaDataModel>> _getCategorias(int idEvaluacion, int idMaquina) async {
     // Si las categorías ya están en el caché, se devuelven directamente.
     if (categorias != null && _idEvalacionActual == idEvaluacion) {
       return categorias ?? [];
     }
 
     try {
-      categorias = await repositorio.getCategorias(idEvaluacion);
+      categorias = await repositorio.getCategorias(idEvaluacion, idMaquina);
+      debugPrint("marta cate $categorias");
       return categorias ?? [];
     } catch (e) {
       return [];
@@ -120,12 +121,12 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<void> getPreguntas(BuildContext context, int idEvaluacion, int pageIndex) async { //TOO SOLO EN EL INIT, LUEGO YA...
+  Future<void> getPreguntas(BuildContext context, int idEvaluacion, int idMaquina, int pageIndex) async { //TOO SOLO EN EL INIT, LUEGO YA...
     _idEvalacionActual = idEvaluacion;
     try {
       emit(PreguntasLoading(""));
       final preguntas = await _getPreguntas(idEvaluacion);
-      final categorias = await _getCategorias(idEvaluacion);
+      final categorias = await _getCategorias(idEvaluacion, idMaquina);
       await _getRespuestas(idEvaluacion);
 
       if (categorias.isEmpty || pageIndex < 0 || pageIndex >= categorias.length) {
@@ -188,7 +189,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   }
 
 
-  void deletePreguntas() {
+  void resetCubit() { //todo revisa si hace falta
     emit(const PreguntasLoading(""));
   }
 }

@@ -31,14 +31,14 @@ abstract class RepositorioDB {
   /// ************ GET PREGUNTAS ******************
   Future<List<PreguntaDataModel>> getPreguntas(int idEvaluacion);
   Future<List<OpcionRespuestaDataModel>> getRespuestas();
-  Future<List<CategoriaPreguntaDataModel>> getCategorias(int idEvaluacion);
+  Future<List<CategoriaPreguntaDataModel>> getCategorias(int idEvaluacion, int idMaquina);
 
   //Future<List<OpcionPreguntaDataModel>> getRespuestasPregunta(); /** obtener las respuestas para cada pregunta **/
 
 
 
   /// ************ INSERTAR *****************
-  Future<int> insertarMaquina(String nombreMaquina, String fabricante, String numeroSerie);
+  Future<int> insertarMaquina(String nombreMaquina, String fabricante, String numeroSerie, bool isMaqMovil, bool isMaqCarga);
   Future<int> insertarEvaluacion(int idMaquina,
       String idInspector,
       int idCentro,
@@ -54,7 +54,7 @@ abstract class RepositorioDB {
 
   /// ************  MODIFICAR *****************
 
-  Future<void> modificarMaquina(int idMaquina, String nombreMaquina, String? fabricante, String numeroSerie);
+  Future<void> modificarMaquina(int idMaquina, String nombreMaquina, String? fabricante, String numeroSerie, bool isMaqMovil, bool isMaqCarga);
   Future<void> modificarEvaluacion(
       int idEvaluacion,
       int idCentro,

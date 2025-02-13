@@ -67,6 +67,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
   DateTime? _fechaPuestaServicio;
   final _fechaFabricacionNotifier = ValueNotifier<DateTime?>(null);
   final _fechaPuestaServicioNotifier = ValueNotifier<DateTime?>(null);
+  bool _isMaqCarga = false;
+  bool _isMaqMovil = false;
+
 
   bool _isFechasRed = false;
   bool _isCentroRed = false;
@@ -218,7 +221,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             desc: S.of(context).exitEvaluationChanges,
             primaryButtonText: S.of(context).exit,
             onPrimaryButtonTap: () {
-              _cubitPreguntas.deletePreguntas();
+              _cubitPreguntas.resetCubit();
+              _cubitPreguntas.clearCache();
               Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
             },
             secondaryButtonText: S.of(context).cancel,
@@ -237,7 +241,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             desc: S.of(context).exitEvaluation,
             primaryButtonText: S.of(context).exit,
             onPrimaryButtonTap: () {
-              _cubitPreguntas.deletePreguntas();
+              _cubitPreguntas.resetCubit();
+              _cubitPreguntas.clearCache();
               if(_idEvaluacion != null && _idMaquina != null){
                 //si ya habiamos insertado la evaluacion (habiamos pasado al checklist y hemos vuelto) la eliminamos
                 _exit = true;
@@ -279,6 +284,8 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _denominacionController.text.trim(),
         _fabricanteController.text.trim(),
         _numeroSerieController.text.trim(),
+        _isMaqMovil,
+        _isMaqCarga,
         _imageList.map((imageModel) => imageModel.imagen!).toList()
     );
   }
@@ -302,7 +309,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         _denominacionController.text.trim(),
         _fabricanteController.text.trim(),
         _numeroSerieController.text.trim(),
-        _imageList
+        _isMaqMovil,
+        _isMaqCarga,
+        _imageList,
     );
   }
 
@@ -327,6 +336,9 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
       }
       _fechaRealizacion = widget.evaluacion!.fechaRealizacion;
       _fechaCaducidad = widget.evaluacion!.fechaCaducidad;
+
+      _isMaqCarga = widget.evaluacion!.isMaqCarga;
+      _isMaqMovil = widget.evaluacion!.isMaqMovil;
 
       if(widget.evaluacion!.fechaFabricacion != null){
         _fechaFabricacionNotifier.value = widget.evaluacion!.fechaFabricacion;
@@ -581,6 +593,40 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                     selectedDateNotifier: _fechaPuestaServicioNotifier,
                     isRed: _isFechasRed,
                   ),
+                  const SizedBox(height: Dimensions.marginSmall),
+                  Row(
+                    children: [
+                      Expanded(child: Text("Máquina dedicada a elevación de cargas")), //TODO TEXTO
+                      Checkbox(
+                        value: _isMaqCarga,
+                        activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                        checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isMaqCarga = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: Dimensions.marginSmall),
+                  Row(
+                    children: [
+                      Expanded(child: Text("Máquina móvil")),
+                      Checkbox(
+                        activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                        checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                        value: _isMaqMovil,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isMaqMovil = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+
+
 
                   const SizedBox(height: Dimensions.marginSmall),
                   Visibility(

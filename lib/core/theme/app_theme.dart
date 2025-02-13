@@ -30,7 +30,7 @@ class MyAppTheme {
       elevation: 0,
       color: Colors.transparent,
       iconTheme: IconThemeData(
-        color: Colors.black,  //color para texto de los botones y texto sobre azul
+        color: Colors.black,
       ),
     ),
 

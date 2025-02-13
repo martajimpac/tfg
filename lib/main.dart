@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,6 +49,10 @@ void main() async {
   /// Se inicializa el bloc observer para que muestre los eventos de los blocs
   Bloc.observer = SimpleBlocObserver();
 
+  ///Forzar modo vertical
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   runApp(MyApp(supabase: supabase));
 }

@@ -64,16 +64,6 @@ class _MyListTileState extends State<MyListTile> {
 
   @override
   Widget build(BuildContext context) {
-    // Actualizar estado según las propiedades del widget
-    /*if (_answerSelected != widget.answerSelected) {
-      _answerSelected = widget.answerSelected;
-    }
-    if (_isAnswered != widget.isAnswered) {
-      _isAnswered = widget.isAnswered;
-    }
-    if (_observacionesController.text != widget.observaciones) {
-      _observacionesController.text = widget.observaciones;
-    }*/
 
     return Padding(
       padding: const EdgeInsets.symmetric(

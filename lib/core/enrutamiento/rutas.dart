@@ -41,6 +41,10 @@ final GoRouter _enrutador = GoRouter(
       builder: (context, state) {
         // Extraer el parámetro 'id' desde los query parameters
         final idEvaluacion = state.uri.queryParameters['id'];
+        final comesFromQRString = state.uri.queryParameters['comesFromQR'];
+
+        // Convertir el parámetro comesFromQR a booleano
+        final comesFromQR = comesFromQRString == 'true';
 
         // Validar si el parámetro 'id' es nulo o no es un número
         if (idEvaluacion == null || int.tryParse(idEvaluacion) == null) {
@@ -51,10 +55,12 @@ final GoRouter _enrutador = GoRouter(
 
         // Si es válido, navegar a la página de detalles
         return DetalleEvaluacionPage(
-          idEvaluacion: int.parse(idEvaluacion), // Seguro convertirlo a entero
+          idEvaluacion: int.parse(idEvaluacion), // Convertir a entero
+          comesFromQR: comesFromQR, // Pasar el valor booleano
         );
       },
     ),
+
 
     /// Página de recuperar contraseña
     GoRoute(

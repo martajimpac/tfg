@@ -233,6 +233,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "No hi ha connexió a internet, podrà accedir a l\'aplicació únicament per visualitzar els PDF emmagatzemats al seu dispositiu."),
         "noPdfAvaliable":
             MessageLookupByLibrary.simpleMessage("No hi ha cap PDF disponible"),
+        "no_results":
+            MessageLookupByLibrary.simpleMessage("No hi ha resultats"),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Encara no s\'ha generat el pdf en aquest dispositiu."),
         "numEvaluations":
@@ -349,6 +351,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "S\'ha produït un error en tancar la sessió."),
         "sessionClosedSuccess": MessageLookupByLibrary.simpleMessage(
             "Sessió tancada correctament."),
+        "show_results":
+            MessageLookupByLibrary.simpleMessage("Mostrar resultats"),
         "successUpdatingUser": MessageLookupByLibrary.simpleMessage(
             "Dades de l\'usuari modificades correctament"),
         "summary": MessageLookupByLibrary.simpleMessage("Resum"),

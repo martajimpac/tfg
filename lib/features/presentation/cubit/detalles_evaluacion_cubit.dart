@@ -75,7 +75,7 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
     emit(DetallesEvaluacionLoading());
     try {
       final preguntas = await repositorio.getPreguntas(evaluacion.ideval);
-      final categorias = await repositorio.getCategorias(evaluacion.ideval);
+      final categorias = await repositorio.getCategorias(evaluacion.ideval, evaluacion.idmaquina);
       final respuestas = await repositorio.getRespuestas();
 
       String? pathFichero = await PdfHelper.generarInformePDF(

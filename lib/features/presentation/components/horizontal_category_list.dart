@@ -41,7 +41,7 @@ class HorizontalCategoryList extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        categorias[index].idcat.toString(),
+                        (index + 1).toString(),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

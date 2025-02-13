@@ -21,6 +21,8 @@
   "discard": "Baztertu",
   "reset": "Berrezarri",
   "search": "Bilatu",
+  "show_results": "Emaitzak erakutsi",
+  "no_results": "Emaitzarik ez",
   "accept": "Onartu",
   "photoDesc": "Nola nahi duzu ekintza amaitzea?",
   "noEvaluations": "Ez dago ebaluaziorik",

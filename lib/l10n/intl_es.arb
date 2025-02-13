@@ -21,6 +21,8 @@
   "discard": "Descartar",
   "reset": "Restablecer",
   "search": "Buscar",
+  "show_results": "Mostrar resultados",
+  "no_results": "No hay resultados",
   "accept": "Aceptar",
   "photoDesc": "¿Cómo desea completar la acción?",
   "noEvaluations": "No hay evaluaciones",

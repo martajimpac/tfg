@@ -43,9 +43,8 @@ class _CheckListPageState extends State<CheckListPage> {
     super.initState();
     _cubit = BlocProvider.of<PreguntasCubit>(context);
     _currentPageIndex = 0; // Inicializa con la primera página
-    _cubit.getPreguntas(context, widget.evaluacion.ideval, _currentPageIndex);
+    _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina ,_currentPageIndex);
   }
-
 
   void _checkAllAnswer(List<PreguntaDataModel> preguntas){
     // Filtra las preguntas sin respuesta
@@ -53,120 +52,110 @@ class _CheckListPageState extends State<CheckListPage> {
 
     //asignar por defecto la respuesta si a lal preguntas sin resoonder
     for (var pregunta in preguntasSinResponder) {
-      pregunta.idRespuestaSeleccionada = 1; //ID DE Sí
+      pregunta.idRespuestaSeleccionada = pregunta.idDefaultAnswer; //ID DE Sí
     }
     //ConstantsHelper.showLoadingDialog(context);
     _cubit.insertarRespuestasAndGeneratePdf(context, widget.evaluacion, AccionesPdfChecklist.guardar);
   }
 
-
-
   void _exit(){
-    _cubit.clearCache();
+    /*_cubit.clearCache();
+    Navigator.of(context).pop(); //TODO ARREGLAR AQUI NAV ATRÁS*/
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop){
-        _exit();
-      //GoRouter.of(context).go('/home');
-    }, child:
-
-      Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            widget.isModifying ? S.of(context).modifyChecklistTitle : S.of(context).checklistTitle,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: Dimensions.titleTextSize,
-                fontWeight: FontWeight.bold
-            ),
+    return       Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          widget.isModifying ? S.of(context).modifyChecklistTitle : S.of(context).checklistTitle,
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: Dimensions.titleTextSize,
+              fontWeight: FontWeight.bold
           ),
         ),
-        body: Center(
-          child: BlocConsumer<PreguntasCubit, PreguntasState>(
-            builder: (context, state) {
-              if (state is PreguntasLoading) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(state.loadingMessage),
-                      const SizedBox(height: 16),
-                      const CircularProgressIndicator(),
-                    ],
-                  ),
-                );
-              } else if (state is PreguntasLoaded) {
-                final List<CategoriaPreguntaDataModel> categorias = _cubit.categorias ?? [];
-                final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
-                final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
-
-                return Column(
+      ),
+      body: Center(
+        child: BlocConsumer<PreguntasCubit, PreguntasState>(
+          builder: (context, state) {
+            if (state is PreguntasLoading) {
+              return Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    HorizontalCategoryList(
-                      categorias: categorias, // Lista de categorías
-                      currentIndex: _currentPageIndex, // Índice inicial
-                      onCategorySelected: (index) {
-                        _currentPageIndex = index;
-                        _cubit.getPreguntas(context, widget.evaluacion.ideval, _currentPageIndex);
-                      },
-                    ),
-                    _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
-
-                    if (_currentPageIndex == (categorias.length - 1))
-                    // Botón "Terminar" si estás en la última página
-                      MyButton(
-                        adaptableWidth: false,
-                        onTap: () {
-                          // Comprobar que todas las preguntas han sido respondidas
-                          _checkAllAnswer(preguntas);
-                        },
-                        text: S.of(context).finish,
-                        roundBorders: false,
-                      )
-                    else
-                    // Botón "Siguiente" si no estás en la última página
-                      MyButton(
-                        adaptableWidth: false,
-                        onTap: () {
-                          _currentPageIndex ++;
-                          _cubit.getPreguntas(context, widget.evaluacion.ideval, _currentPageIndex);
-                        },
-                        text: S.of(context).next, // Asumiendo que tienes el texto traducido
-                        roundBorders: false,
-                      )
+                    Text(state.loadingMessage),
+                    const SizedBox(height: 16),
+                    const CircularProgressIndicator(),
                   ],
-                );
+                ),
+              );
+            } else if (state is PreguntasLoaded) {
+              final List<CategoriaPreguntaDataModel> categorias = _cubit.categorias ?? [];
+              final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
+              final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
 
-              }  else {
-                return Text(S.of(context).defaultError);
-              }
-            }, listener: (BuildContext context, PreguntasState state) {
-            if(state is PdfGenerated){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
-            }else if(state is PdfError){
-              Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
-            }else if(state is PreguntasError){
-              Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HorizontalCategoryList(
+                    categorias: categorias, // Lista de categorías
+                    currentIndex: _currentPageIndex, // Índice inicial
+                    onCategorySelected: (index) {
+                      _currentPageIndex = index;
+                      _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina, _currentPageIndex);
+                    },
+                  ),
+                  _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
+
+                  if (_currentPageIndex == (categorias.length - 1))
+                  // Botón "Terminar" si estás en la última página
+                    MyButton(
+                      adaptableWidth: false,
+                      onTap: () {
+                        // Comprobar que todas las preguntas han sido respondidas
+                        _checkAllAnswer(preguntas);
+                      },
+                      text: S.of(context).finish,
+                      roundBorders: false,
+                    )
+                  else
+                  // Botón "Siguiente" si no estás en la última página
+                    MyButton(
+                      adaptableWidth: false,
+                      onTap: () {
+                        _currentPageIndex ++;
+                        _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina, _currentPageIndex);
+                      },
+                      text: S.of(context).next, // Asumiendo que tienes el texto traducido
+                      roundBorders: false,
+                    )
+                ],
+              );
+
+            }  else {
+              return Text(S.of(context).defaultError);
             }
-          },
-          ),
+          }, listener: (BuildContext context, PreguntasState state) {
+          if(state is PdfGenerated){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
+          }else if(state is PdfError){
+            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
+          }else if(state is PreguntasError){
+            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
+          }
+        },
         ),
-      )
+      ),
     );
   }
 

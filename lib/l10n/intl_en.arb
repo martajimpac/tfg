@@ -21,6 +21,8 @@
   "discard": "Discard",
   "reset": "Reset",
   "search": "Search",
+  "show_results": "Show results",
+  "no_results": "No results",
   "accept": "Accept",
   "photoDesc": "How would you like to complete the action?",
   "noEvaluations": "No evaluations",

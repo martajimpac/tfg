@@ -250,6 +250,26 @@ class S {
     );
   }
 
+  /// `Show results`
+  String get show_results {
+    return Intl.message(
+      'Show results',
+      name: 'show_results',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results`
+  String get no_results {
+    return Intl.message(
+      'No results',
+      name: 'no_results',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Accept`
   String get accept {
     return Intl.message(

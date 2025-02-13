@@ -233,6 +233,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ez dago internetik, aplikaziora sartzeko aukera izango duzu soilik zure gailuan gordetako PDFak ikusteko."),
         "noPdfAvaliable": MessageLookupByLibrary.simpleMessage(
             "Ez dago eskuragarri dagoen PDFrik"),
+        "no_results": MessageLookupByLibrary.simpleMessage("Emaitzarik ez"),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Oraindik ez da pdf-a sortu gailu honetan."),
         "numEvaluations":
@@ -348,6 +349,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Errore bat gertatu da saioa ixterakoan."),
         "sessionClosedSuccess":
             MessageLookupByLibrary.simpleMessage("Saioa arrakastaz itxi da."),
+        "show_results":
+            MessageLookupByLibrary.simpleMessage("Emaitzak erakutsi"),
         "successUpdatingUser": MessageLookupByLibrary.simpleMessage(
             "Erabiltzailearen datuak ondo aldatu dira"),
         "summary": MessageLookupByLibrary.simpleMessage("Laburpena"),

@@ -235,6 +235,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "No hay conexión a internet, podrá acceder a la aplicación únicamente para visualizar los pdf almacenados en su dispositivo."),
         "noPdfAvaliable": MessageLookupByLibrary.simpleMessage(
             "No hay ningún pdf disponible"),
+        "no_results": MessageLookupByLibrary.simpleMessage("No hay resultados"),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Aún no se ha generado el pdf en este dispositivo."),
         "numEvaluations":
@@ -352,6 +353,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ocurrió un error al cerrar la sesión."),
         "sessionClosedSuccess": MessageLookupByLibrary.simpleMessage(
             "Sesión cerrada exitosamente."),
+        "show_results":
+            MessageLookupByLibrary.simpleMessage("Mostrar resultados"),
         "successUpdatingUser": MessageLookupByLibrary.simpleMessage(
             "Datos del usuario modificados correctamente"),
         "summary": MessageLookupByLibrary.simpleMessage("Resumen"),

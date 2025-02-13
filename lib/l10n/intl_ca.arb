@@ -21,6 +21,8 @@
   "discard": "Descartar",
   "reset": "Restablir",
   "search": "Cercar",
+  "show_results": "Mostrar resultats",
+  "no_results": "No hi ha resultats",
   "accept": "Acceptar",
   "photoDesc": "Com voleu completar l'acció?",
   "noEvaluations": "No hi ha avaluacions",
