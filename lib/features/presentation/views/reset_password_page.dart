@@ -62,46 +62,51 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       ),
       body: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
-          switch (state.runtimeType) {
-            case ChangePasswordSuccess:
-
-              // Si el restablecimiento es exitoso
-              Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).passwordReseted, () {
+          if (state is ChangePasswordSuccess) {
+            // Si el restablecimiento es exitoso
+            Utils.showMyOkDialog(
+              context,
+              S.of(context).exito,
+              S.of(context).passwordReseted,
+                  () {
                 Navigator.of(context).pop();
-                //ir al login
+                // Ir al login
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
-              });
-              break;
+              },
+            );
+          } else if (state is ChangePasswordError) {
+            final errorMessage = state.message;
 
-            case ChangePasswordError:
-
-              if (state is ChangePasswordError) {
-                final errorMessage = state.message;
-                if (errorMessage == S.of(context).errorEmpty || errorMessage == S.of(context).errorPasswordsDontMatch) {
-                  Fluttertoast.showToast(
-                    msg: errorMessage,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.grey,
-                    textColor: Colors.white,
-                  );
-                } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, (state).message, () {
-                    Navigator.of(context).pop();
-                  });
-                }
-              }
-              break;
-
-            default: break;
+            if (errorMessage == S.of(context).errorEmpty ||
+                errorMessage == S.of(context).errorPasswordsDontMatch) {
+              Utils.showAdaptiveToast(
+                  context: context,
+                  message: errorMessage,
+                  gravity: ToastGravity.BOTTOM
+              );
+            } else {
+              Utils.showMyOkDialog(
+                context,
+                S.of(context).error,
+                state.message,
+                    () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }
           }
+
         },
         builder: (context, state) {
           final isNewPasswordRed = state is ChangePasswordError ? state.isNewPasswordRed : false;
           final isConfirmPasswordRed = state is ChangePasswordError ? state.isConfirmPasswordRed : false;
+
+          // Mantener los valores actuales si el estado contiene las contraseñas
+          _newPasswordController.text = state is ChangePasswordError ? state.newPassword : _newPasswordController.text;
+          _confirmPasswordController.text = state is ChangePasswordError ? state.repeatPassword : _confirmPasswordController.text;
 
           return SingleChildScrollView(
             child: Center(

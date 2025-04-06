@@ -146,6 +146,10 @@
   "uploadingImage": "Irudia igotzen...",
   "errorUploadingImage": "Errore bat egon da irudia igotzean",
   "savingEvaluation": "Ebaluazioaren datuak gordetzen...",
+  "elevationMachine": "Kargak altxatzeko makina",
+  "mobileMachine": "Makina mugikorra",
+  "notCreator": "Kontsultatu behar duzun ebaluazioa beste erabiltzaile batek sortu du, beraz ezin da aldatu.",
+  "loginNeeded": "Ebaluazioa kontsultatzeko aplikazioan saioa hasi behar duzu.",
 
   "checklistTitle": "Checklist",
   "errorPdf": "Errore bat egon da pdf-a sortzean",
@@ -155,6 +159,7 @@
   "unknownManufacterer": "Ekoizle ezezaguna",
   "completionDate": "Egindako data",
   "generatingPdf": "PDF sortzen...",
+  "sanvingAnswers": "Erantzunak gordetzen...",
   "notGenerated": "Oraindik ez da pdf-a sortu gailu honetan.",
   "generate": "Sortu",
   "errorChargingPdf": "Errore bat egon da pdf-a kargatzean",

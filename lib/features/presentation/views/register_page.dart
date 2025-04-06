@@ -76,45 +76,52 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       body: BlocConsumer<RegisterCubit, RegisterState>(
         listener: (context, state) {
-          switch (state.runtimeType) {
-            case RegisterSuccess:
-
-              // Autenticación exitosa, navega a la siguiente página
-              Utils.showMyOkDialog(context, S.of(context).registerSuccessTitle, S.of(context).registerSuccessDesc, () {
+          if (state is RegisterSuccess) {
+            // Autenticación exitosa, navega a la siguiente página
+            Utils.showMyOkDialog(
+              context,
+              S.of(context).registerSuccessTitle,
+              S.of(context).registerSuccessDesc,
+                  () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
-              });
-              break;
+              },
+            );
+          } else if (state is RegisterError) {
+            final errorMessage = state.message;
 
-            case RegisterError:
-
-              if (state is RegisterError) {
-                final errorMessage = state.message;
-                if (errorMessage == S.of(context).errorEmpty || errorMessage == S.of(context).errorPasswordsDontMatch) {
-                  Fluttertoast.showToast(
-                    msg: errorMessage,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.grey,
-                    textColor: Colors.white,
-                  );
-                } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, state.message, () {
-                    Navigator.of(context).pop();
-                  });
-                }
-              }
-              break;
-
-            default: break;
+            if (errorMessage == S.of(context).errorEmpty ||
+                errorMessage == S.of(context).errorPasswordsDontMatch) {
+              Utils.showAdaptiveToast(
+                  context: context,
+                  message: errorMessage,
+                  gravity: ToastGravity.BOTTOM
+              );
+            } else {
+              Utils.showMyOkDialog(
+                context,
+                S.of(context).error,
+                state.message,
+                    () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }
           }
+
         },
         builder: (context, state) {
           final isEmailRed = state is RegisterError ? state.isEmailRed : false;
           final isPasswordRed = state is RegisterError ? state.isPasswordRed : false;
           final isRepeatPasswordRed = state is RegisterError ? state.isRepeatPasswordRed : false;
+
+          // Mantener los valores actuales si el estado contiene email y password
+          _emailController.text = state is RegisterError ? state.email : _emailController.text;
+          _passwordController.text = state is RegisterError ? state.password : _passwordController.text;
+          _repeatPasswordController.text = state is RegisterError ? state.repeatPassword : _repeatPasswordController.text;
+          _nameController.text = state is RegisterError ? state.name : _nameController.text;
 
           return SingleChildScrollView(
             child: Center(
@@ -170,7 +177,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           focusNode: _campoRepeatPasswordFocus,
                           isRed: isRepeatPasswordRed,
                           onSubmited: () {
-                            _register(context);
+                            if (state is! RegisterLoading) {
+                              _register(context);
+                            }
                           },
                         ),
                         const SizedBox(height: Dimensions.marginMedium),
@@ -181,7 +190,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         : MyButton(
                           adaptableWidth: false,
                           onTap: () async {
-                            _register(context);
+                            if (state is! RegisterLoading) {
+                              _register(context);
+                            }
                           },
                           text:S.of(context).registerAndLoginButton,
                         ),

@@ -85,6 +85,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("*Izendapena"),
         "discard": MessageLookupByLibrary.simpleMessage("Baztertu"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Profila aldatzea"),
+        "elevationMachine":
+            MessageLookupByLibrary.simpleMessage("Kargak altxatzeko makina"),
         "email": MessageLookupByLibrary.simpleMessage("Posta elektronikoa"),
         "emailAlredyRegistered": MessageLookupByLibrary.simpleMessage(
             "Errore bat egon da erregistroan.\nPosta honekin erabiltzaile bat dago dagoeneko."),
@@ -204,6 +206,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "hintPassword": MessageLookupByLibrary.simpleMessage("***********"),
         "hintSerialNumber": MessageLookupByLibrary.simpleMessage("Zenbakia"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Saioa hasi"),
+        "loginNeeded": MessageLookupByLibrary.simpleMessage(
+            "Ebaluazioa kontsultatzeko aplikazioan saioa hasi behar duzu."),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Saioa hasi"),
         "logout": MessageLookupByLibrary.simpleMessage("Saioa itxi"),
         "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
@@ -214,6 +218,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "manufacturedDateAsterisk":
             MessageLookupByLibrary.simpleMessage("Ekoizpen data"),
         "manufacturer": MessageLookupByLibrary.simpleMessage("Ekoizlea"),
+        "mobileMachine":
+            MessageLookupByLibrary.simpleMessage("Makina mugikorra"),
         "modify": MessageLookupByLibrary.simpleMessage("Aldatu"),
         "modifyChecklistTitle":
             MessageLookupByLibrary.simpleMessage("Aldatu checklist-a"),
@@ -234,6 +240,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noPdfAvaliable": MessageLookupByLibrary.simpleMessage(
             "Ez dago eskuragarri dagoen PDFrik"),
         "no_results": MessageLookupByLibrary.simpleMessage("Emaitzarik ez"),
+        "notCreator": MessageLookupByLibrary.simpleMessage(
+            "Kontsultatu behar duzun ebaluazioa beste erabiltzaile batek sortu du, beraz ezin da aldatu."),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Oraindik ez da pdf-a sortu gailu honetan."),
         "numEvaluations":
@@ -273,6 +281,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "retryText":
             MessageLookupByLibrary.simpleMessage("Berriro saiatu nahi duzu?"),
         "retryTitle": MessageLookupByLibrary.simpleMessage("Saiatu berriro"),
+        "sanvingAnswers":
+            MessageLookupByLibrary.simpleMessage("Erantzunak gordetzen..."),
         "save": MessageLookupByLibrary.simpleMessage("Gorde"),
         "saveSessionDesc": MessageLookupByLibrary.simpleMessage(
             "Erabiltzaile honekin automatikoki saioa hasi nahi duzu?"),

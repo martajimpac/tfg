@@ -146,6 +146,10 @@
   "uploadingImage": "Uploading image...",
   "errorUploadingImage": "Error uploading image",
   "savingEvaluation": "Saving evaluation data...",
+  "elevationMachine": "Load lifting machine",
+  "mobileMachine": "Mobile machine",
+  "notCreator": "The evaluation you are trying to access was created by another user, so it cannot be modified.",
+  "loginNeeded": "You need to be logged into the application to access the evaluation.",
 
   "checklistTitle": "Checklist",
   "errorPdf": "There was an error generating the PDF",
@@ -155,6 +159,7 @@
   "unknownManufacterer": "Unknown manufacturer",
   "completionDate": "Completion date",
   "generatingPdf": "Generating PDF...",
+  "sanvingAnswers": "Saving the anwers...",
   "notGenerated": "The PDF has not yet been generated on this device.",
   "generate": "Generate",
   "errorChargingPdf": "There was an error loading the PDF",

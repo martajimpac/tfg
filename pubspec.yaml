@@ -31,12 +31,14 @@ dependencies:
   qr_flutter: 4.1.0
   screenshot: ^3.0.0
   image: ^4.0.21
+  open_filex: ^4.7.0 # Mejor soporte para desktop
+  path: 1.9.0 # Para manejo correcto de rutas
 
   #PDF
-  flutter_pdfview: ^1.2.7
+ # flutter_pdfview: ^1.2.7
   path_provider: ^2.0.11
   pdf: ^3.10.8
-
+  syncfusion_flutter_pdfviewer: 28.2.7
 
   fluttertoast: ^8.2.8
 

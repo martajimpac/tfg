@@ -53,39 +53,37 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
 
-          switch (state.runtimeType) {
-            case SendPasswordResetEmailSuccess:
+          if (state is SendPasswordResetEmailSuccess) {
+            // Correo enviado con éxito
+            Utils.showMyOkDialog(
+              context,
+              S.of(context).emailSent,
+              S.of(context).emailSentDesc,
+                  () {
+                Navigator.of(context).pop();
+              },
+            );
+          } else if (state is SendPasswordResetEmailError) {
+            final errorMessage = state.message;
 
-              //Correo enviado con éxito
-              Utils.showMyOkDialog(context,
-                  S.of(context).emailSent,
-                  S.of(context).emailSentDesc,
-                      () {Navigator.of(context).pop();}
+            if (errorMessage == S.of(context).errorEmpty) {
+              Utils.showAdaptiveToast(
+                  context: context,
+                  message: errorMessage,
+                  gravity: ToastGravity.BOTTOM
               );
-              break;
-
-            case SendPasswordResetEmailError:
-
-              if (state is SendPasswordResetEmailError) {
-                final errorMessage = state.message;
-                if (errorMessage == S.of(context).errorEmpty) {
-                  Fluttertoast.showToast(
-                    msg: errorMessage,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.grey,
-                    textColor: Colors.white,
-                  );
-                } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, state.message, () {
-                    Navigator.of(context).pop();
-                  });
-                }
-              }
-              break;
-
-            default: break;
+            } else {
+              Utils.showMyOkDialog(
+                context,
+                S.of(context).error,
+                state.message,
+                    () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }
           }
+
         },
         builder: (context, state) {
           final isEmailRed = state is SendPasswordResetEmailError ? state.isEmailRed : false;

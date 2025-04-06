@@ -1,13 +1,11 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'dart:async';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../../core/theme/dimensions.dart';
 import '../../../../generated/l10n.dart';
 import '../../views/pdf_page.dart';
-
-
 
 class TabPdf extends StatefulWidget {
   final String filePath;
@@ -22,10 +20,9 @@ class TabPdf extends StatefulWidget {
 }
 
 class _TabPdfState extends State<TabPdf> {
-  final Completer<PDFViewController> _controller = Completer<PDFViewController>();
-  int pages = 0;
-  bool isReady = false;
+  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   String errorMessage = '';
+  bool isReady = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,45 +30,30 @@ class _TabPdfState extends State<TabPdf> {
       padding: const EdgeInsets.all(Dimensions.marginMedium),
       child: Stack(
         children: <Widget>[
-          // Container para el PDFView con bordes redondeados
+          // Contenedor para el PDFView con bordes redondeados
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onPrimary,
-              borderRadius: BorderRadius.circular(Dimensions.cornerRadius), // Ajusta el radio según tus necesidades
+              borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
             ),
-            clipBehavior: Clip.hardEdge, // Asegura que el contenido se recorte en los bordes redondeados
-            child: PDFView(
-              filePath: widget.filePath,
-              enableSwipe: true,
-              swipeHorizontal: false,
-              autoSpacing: true,
-              pageFling: true,
-              onRender: (pages) {
+            clipBehavior: Clip.hardEdge,
+            child: SfPdfViewer.file(
+              File(widget.filePath),
+              key: _pdfViewerKey,
+              onDocumentLoaded: (PdfDocumentLoadedDetails details) {
                 setState(() {
-                  pages = pages!;
                   isReady = true;
                 });
               },
-              onError: (error) {
+              onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
                 setState(() {
-                  errorMessage = error.toString();
+                  errorMessage = details.error;
                 });
                 print(errorMessage);
-              },
-              onPageError: (page, error) {
-                setState(() {
-                  errorMessage = '$page: ${error.toString()}';
-                });
-                print(errorMessage);
-              },
-              onViewCreated: (PDFViewController pdfViewController) {
-                _controller.complete(pdfViewController);
-              },
-              onPageChanged: (int? page, int? total) {
-                print('page change: $page/$total');
               },
             ),
           ),
+
           if (errorMessage.isNotEmpty)
             Container(
               color: Theme.of(context).colorScheme.onPrimary,
@@ -79,6 +61,7 @@ class _TabPdfState extends State<TabPdf> {
                 child: Text(S.of(context).errorChargingPdf),
               ),
             ),
+
           if (!isReady && errorMessage.isEmpty)
             const Center(child: CircularProgressIndicator()),
 
@@ -88,7 +71,6 @@ class _TabPdfState extends State<TabPdf> {
             right: Dimensions.marginSmall,
             child: FloatingActionButton(
               onPressed: () {
-                // Navegar a la página de ampliación del PDF
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -97,7 +79,7 @@ class _TabPdfState extends State<TabPdf> {
                 );
               },
               tooltip: S.of(context).semanticlabelExpand,
-              child: Icon(Icons.zoom_in, semanticLabel:S.of(context).semanticlabelExpand),
+              child: Icon(Icons.zoom_in, semanticLabel: S.of(context).semanticlabelExpand),
             ),
           ),
         ],

@@ -1,26 +1,33 @@
+import 'package:equatable/equatable.dart'; // Importar Equatable
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 
-class SettingsState{
+// Heredar de Equatable
+class SettingsState extends Equatable {
   final ThemeData theme;
-  SettingsState({
+
+  const SettingsState({
     required this.theme
   });
+
+  // Definir propiedades para comparación
+  @override
+  List<Object> get props => [theme]; // Comparar por el tema
 }
+
 class SettingsCubit extends Cubit<SettingsState>{
   SettingsCubit(): super(SettingsState(theme: MyAppTheme.lightTheme));
 
-  bool isDarkMode() => state.theme == MyAppTheme.lightTheme ? false : true;
+  bool get isDarkMode => state.theme == MyAppTheme.darkTheme;
 
   void toggleTheme(){
-    if(state.theme == MyAppTheme.lightTheme){
-      final updatedState = SettingsState(theme: MyAppTheme.darkTheme);
-      emit(updatedState);
-    }else{
-      final updatedState = SettingsState(theme: MyAppTheme.lightTheme);
-      emit(updatedState);
+    final newTheme = isDarkMode ? MyAppTheme.lightTheme : MyAppTheme.darkTheme;
+
+    // Solo emitir si el tema cambió realmente
+    if (newTheme != state.theme) {
+      emit(SettingsState(theme: newTheme));
     }
   }
 }

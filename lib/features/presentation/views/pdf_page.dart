@@ -1,9 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'dart:async';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../generated/l10n.dart';
-
 
 class PdfPage extends StatefulWidget {
   final String filePath;
@@ -15,8 +15,6 @@ class PdfPage extends StatefulWidget {
 }
 
 class _PdfPageState extends State<PdfPage> {
-  final Completer<PDFViewController> _controller = Completer<PDFViewController>();
-  int pages = 0;
   bool isReady = false;
   String errorMessage = '';
 
@@ -26,35 +24,17 @@ class _PdfPageState extends State<PdfPage> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            PDFView(
-              filePath: widget.filePath,
-              enableSwipe: true,
-              swipeHorizontal: false,
-              autoSpacing: true,
-              pageFling: true,
-              onRender: (pages) {
+            SfPdfViewer.file(
+              File(widget.filePath),
+              onDocumentLoaded: (details) {
                 setState(() {
-                  pages = pages!;
                   isReady = true;
                 });
               },
-              onError: (error) {
+              onDocumentLoadFailed: (details) {
                 setState(() {
-                  errorMessage = error.toString();
+                  errorMessage = details.error;
                 });
-                print(errorMessage);
-              },
-              onPageError: (page, error) {
-                setState(() {
-                  errorMessage = '$page: ${error.toString()}';
-                });
-                print(errorMessage);
-              },
-              onViewCreated: (PDFViewController pdfViewController) {
-                _controller.complete(pdfViewController);
-              },
-              onPageChanged: (int? page, int? total) {
-                print('page change: $page/$total');
               },
             ),
             if (errorMessage.isNotEmpty)
@@ -67,22 +47,20 @@ class _PdfPageState extends State<PdfPage> {
             if (!isReady && errorMessage.isEmpty)
               const Center(child: CircularProgressIndicator()),
 
-            // Botón flotante para cerrar el PDF
             Positioned(
               top: 16.0,
               right: 16.0,
               child: FloatingActionButton(
                 onPressed: () {
-                  // Navegar a la página de ampliación del PDF
                   Navigator.of(context).pop();
                 },
-                tooltip:  S.of(context).semanticlabelClose,
-                child: Icon(Icons.close, semanticLabel:  S.of(context).semanticlabelClose),
+                tooltip: S.of(context).semanticlabelClose,
+                child: Icon(Icons.close, semanticLabel: S.of(context).semanticlabelClose),
               ),
             ),
           ],
         ),
-      )
+      ),
     );
   }
 }

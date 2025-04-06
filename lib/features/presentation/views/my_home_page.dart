@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../../core/utils/Constants.dart';
+import '../../../core/utils/Utils.dart';
 import '../../../generated/l10n.dart';
 import 'mis_evaluaciones_page.dart';
 import 'nueva_evaluacion_page.dart';
@@ -43,12 +44,10 @@ class _MyHomePageState extends State<MyHomePage> {
           _lastPressedAt = now;
 
           // Muestra el Toast
-          Fluttertoast.showToast(
-            msg: S.of(context).pressAgainToExit,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.grey,
-            textColor: Colors.white,
+          Utils.showAdaptiveToast(
+              context: context,
+              message:  S.of(context).pressAgainToExit,
+              gravity: ToastGravity.BOTTOM
           );
 
           return false; // Evita cerrar la aplicación

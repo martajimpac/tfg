@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:evaluacionmaquinas/features/presentation/cubit/auto_login_cubit.dart';
+import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';  // Asegúrate de importar Flutter Bloc
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,34 +23,23 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   final supabase = Supabase.instance.client;
-  late LoginCubit _cubit;
+
   @override
   void initState() {
     super.initState();
-    _cubit = BlocProvider.of<LoginCubit>(context);
-    _cubit.autologin(context);
-
+    WidgetsBinding.instance.addPostFrameCallback((_) { //TODO VOLVER A USAR BLOC PROVIDER
+      context.read<AutoLoginCubit>().autologin();
+    });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
+    return BlocListener<AutoLoginCubit, AutoLoginState>(
       listener: (context, state) {
-        switch (state.runtimeType) {
-          case LoginSuccess:
-            _navigateToHomePage();
-            break;
-
-          case LoginError:
-            if (state is LoginError) {
-              _loginError();
-            }
-            break;
-
-          default:
-            break;
+        if (state is AutoLoginSuccess) {
+          _navigateToHomePage();
+        } else if (state is AutoLoginError) {
+          _loginError();
         }
       },
       child: Scaffold(
@@ -73,7 +66,10 @@ class _SplashPageState extends State<SplashPage> {
 
   void _navigateToLoginPage() {
     Future.delayed(const Duration(seconds: 3), () {
-      GoRouter.of(context).go('/login');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
     });
   }
 
@@ -94,7 +90,7 @@ class _SplashPageState extends State<SplashPage> {
             title: S.of(context).error,
             desc: S.of(context).noInternetConexion,
             primaryButtonText: S.of(context).continuee,
-            secondaryButtonText: S.of(context).cancel,
+            secondaryButtonText: S.of(context).retryTitle,
             onPrimaryButtonTap: () {
               Navigator.push(
                   context,
@@ -102,7 +98,8 @@ class _SplashPageState extends State<SplashPage> {
               );
             },
             onSecondaryButtonTap: () {
-              _navigateToLoginPage();
+              Navigator.of(context).pop();
+              context.read<AutoLoginCubit>().autologin();
             },
           );
         }

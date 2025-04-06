@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +12,12 @@ import '../../data/repository/repositorio_db_supabase.dart';
 
 
 // Define los estados para el cubit
-abstract class InsertarEvaluacionState {}
+abstract class InsertarEvaluacionState extends Equatable {
+  const InsertarEvaluacionState();
+
+  @override
+  List<Object> get props => [];
+}
 
 class InsertarEvaluacionInicial extends InsertarEvaluacionState {}
 
@@ -21,12 +27,18 @@ class EvaluacionInsertada extends InsertarEvaluacionState {
   final EvaluacionDetailsDataModel evaluacion;
   final List<ImagenDataModel> imagenes;
   EvaluacionInsertada(this.evaluacion, this.imagenes);
+
+  @override
+  List<Object> get props => [evaluacion, imagenes];
 }
 
 class InsertarEvaluacionError extends InsertarEvaluacionState {
   final String errorMessage;
 
   InsertarEvaluacionError(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
 }
 
 class CamposCheckError extends InsertarEvaluacionState {
@@ -37,6 +49,9 @@ class CamposCheckError extends InsertarEvaluacionState {
   bool isNumeroSerieRed = false;
 
   CamposCheckError(this.errorMessage, this.isFechasRed, this.isCentroRed, this.isNombreMaquinaRed, this.isNumeroSerieRed);
+
+  @override
+  List<Object> get props => [errorMessage, isFechasRed, isCentroRed, isNombreMaquinaRed, isNumeroSerieRed];
 }
 
 class CamposCheckSuccess extends InsertarEvaluacionState {}

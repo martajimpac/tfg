@@ -1,9 +1,15 @@
+import 'dart:ffi';
 import 'dart:io';
 
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:logger/logger.dart';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart';
 
@@ -29,9 +35,12 @@ class PdfHelper {
   static const double tamanoFuente = 9;
   static const double tamanoFuenteCabera = 11;
   static const double padding = 5;
+  static const double paddingTitle = 12;
+  static const double paddingSubtitle = 5;
+  static const double paddingCondition = 2;
   static PdfColor yellowColor = PdfColor.fromHex('EEE2BC');
 
-  /// * Función que genera informe *
+  /*** Función que genera informe **/
   static Future<String?> generarInformePDF(
       EvaluacionDetailsDataModel evaluacion,
       List<PreguntaDataModel> preguntas,
@@ -86,20 +95,44 @@ class PdfHelper {
 
   ///share pdf from internal extorage
   static Future<void> sharePdf(int idEval, String nombreMaquina, File file) async {
-    // Obtén el directorio temporal
-    final directory = await getTemporaryDirectory();
+    try {
+      Directory directory;
 
-    // Crea una nueva ruta con el nombre modificado
-    final newFilePath = '${directory.path}/${getNamePdf(nombreMaquina)}.pdf';
+      if (Platform.isWindows) {
+        // En Windows, guardamos en Documentos o Escritorio para mejor acceso
+        directory = Directory(path.join(
+            Platform.environment['USERPROFILE'] ?? '',
+            'Documents'
+        ));
+        if (!await directory.exists()) {
+          directory = await getApplicationDocumentsDirectory();
+        }
+      } else {
+        // Para móvil/otros, usamos el directorio temporal
+        directory = await getTemporaryDirectory();
+      }
 
-    // Copia el archivo a la nueva ubicación con el nuevo nombre
-    final newFile = await file.copy(newFilePath);
+      final newFilePath = path.join(directory.path, '${getNamePdf(nombreMaquina)}.pdf');
+      final newFile = await file.copy(newFilePath);
 
-    // Crea el XFile a partir del nuevo archivo
-    XFile xFile = XFile(newFile.path);
+      if (Platform.isWindows) {
+        // En Windows: Abrir el archivo con la aplicación predeterminada
+        await OpenFilex.open(newFile.path);
 
-    // Comparte el archivo usando share_plus
-    await Share.shareXFiles([xFile], text: '');
+        // Opcional: Mostrar diálogo con la ruta para compartir manualmente
+        await Share.share(
+          'PDF generado: $newFilePath',
+          subject: 'Compartir PDF',
+        );
+      } else {
+        // Para móvil/otros: Compartir directamente el archivo
+        await Share.shareXFiles([XFile(newFile.path)]);
+      }
+    } catch (e) {
+      print('Error al compartir PDF: $e');
+      // Puedes lanzar el error o manejarlo según tu aplicación
+      rethrow;
+    }
   }
 
   ///Funcion para obtener el nombre del pdf a partir del nombre de la máquina
@@ -164,7 +197,7 @@ class PdfHelper {
     ];
   }
 
-  /// ****************************** GENERAR TABLA ******************************************************
+  /******************************** GENERAR TABLA *******************************************************/
 
   static List<pw.Widget> _dameTablaDatos(EvaluacionDetailsDataModel evaluacion, List<PreguntaDataModel> preguntas, List<OpcionRespuestaDataModel> respuestas) {
     // Agrupar las preguntas por idCategoria
@@ -252,11 +285,35 @@ class PdfHelper {
 
   static pw.Widget _buildTableCellTitle(String label, TextAlign textAlign) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.all(padding),
+      padding: const pw.EdgeInsets.all(paddingTitle),
 
       child: pw.Text(
         label,
         style: pw.TextStyle(fontSize: tamanoFuenteCabera, fontWeight: pw.FontWeight.bold),
+        textAlign: textAlign,
+      ),
+    );
+  }
+
+  static pw.Widget _buildTableCellSubtitle(String label, TextAlign textAlign) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(paddingSubtitle),
+
+      child: pw.Text(
+        label,
+        style: pw.TextStyle(fontSize: tamanoFuenteCabera, fontWeight: pw.FontWeight.bold),
+        textAlign: textAlign,
+      ),
+    );
+  }
+
+  static pw.Widget _buildTableCellCondition(String label, TextAlign textAlign) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(paddingCondition),
+
+      child: pw.Text(
+        label,
+        style: pw.TextStyle(fontSize: tamanoFuente, fontWeight: pw.FontWeight.bold),
         textAlign: textAlign,
       ),
     );
@@ -444,11 +501,32 @@ class PdfHelper {
           pw.Table(
             border: pw.TableBorder.all(width: 1, color: PdfColors.black),
             children: [
-              pw.TableRow( //FILA DE TITULO DE LA CATEGORIA
+              // Fila de título (solo para categorías especiales)
+              if (categoria.idcat == idMaqCarga1 || categoria.idcat == idMaqMovil1)
+                pw.TableRow(
+                  children: [
+                    _buildTableCellTitle(
+                      getTituloEspecial(categoria),
+                      pw.TextAlign.center
+                    ),
+                  ],
+                  decoration: pw.BoxDecoration(color: yellowColor),
+                ),
+
+              // Fila de subtítulo
+              pw.TableRow(
                 children: [
-                  _buildTableCellTitle("${categoria.idcat - 1}. ${categoria.categoria}", TextAlign.left),
+                  _buildTableCellSubtitle(
+                    categoria.idcat == idMaqCarga1 ||  categoria.idcat == idMaqCarga2 || categoria.idcat == idMaqMovil1 ||  categoria.idcat == idMaqMovil2
+                        ? categoria.categoria
+                        : "${categoria.idcat - 1}. ${categoria.categoria}",
+                    pw.TextAlign.start,
+                  ),
                 ],
-                decoration: pw.BoxDecoration(color: yellowColor),
+                decoration: pw.BoxDecoration(
+                  color: yellowColor,
+                  border: const pw.Border(top: pw.BorderSide.none), // Elimina borde superior para unión visual
+                ),
               ),
             ],
           ),
@@ -456,7 +534,31 @@ class PdfHelper {
 
           // Filas de preguntas
           ...preguntasDeLaCategoria.expand((pregunta) {
-            return [
+            final index = preguntasDeLaCategoria.indexOf(pregunta);
+            final widgets = <pw.Widget>[];
+
+            // Insertar condiciones especiales para las preguntas
+            if (pregunta.textoAux != null) {
+              widgets.add(
+                pw.Table(
+                  border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+                  children: [
+                    pw.TableRow(
+                      children: [
+                        _buildTableCellCondition(
+                          pregunta.textoAux ?? "",
+                          pw.TextAlign.start,
+                        ),
+                      ],
+                      decoration: pw.BoxDecoration(color: yellowColor),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Añadir la pregunta normal
+            widgets.add(
               pw.Table(
                 columnWidths: {
                   0: const pw.FlexColumnWidth(3),
@@ -466,16 +568,15 @@ class PdfHelper {
                 children: [
                   pw.TableRow(
                     children: [
-                      _buildTableCell(
-                        pregunta.pregunta,
-                        TextAlign.left
-                      ),
+                      _buildTableCell(pregunta.pregunta, TextAlign.left),
                       _buildAnswersRow(respuestas, pregunta),
                     ],
                   ),
                 ],
               ),
-            ];
+            );
+
+            return widgets;
           }),
 
           //Observaciones
@@ -503,6 +604,18 @@ class PdfHelper {
           style: pw.TextStyle(fontSize: tamanoFuente, fontWeight: FontWeight.bold)
       ),
     ];
+  }
+
+
+
+
+  static String getTituloEspecial(CategoriaPreguntaDataModel categoria) {
+    if (categoria.idcat == idMaqCarga1) {
+      return "DISPOSICIONES ADICIONALES APLICABLES A MÁQUINAS DE ELEVACIÓN DE CARGAS";
+    } else if (categoria.idcat == idMaqMovil1) {
+      return "DISPOSICIONES ADICIONALES APLICABLES A MÁQUINAS MÓVILES";
+    }
+    return "${categoria.idcat - 1}. ${categoria.categoria}";
   }
 
 

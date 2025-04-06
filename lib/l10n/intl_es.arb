@@ -145,7 +145,10 @@
   "uploadingImage": "Subiendo la imagen...",
   "errorUploadingImage": "Error al subir la imagen",
   "savingEvaluation": "Guardando datos de la evaluación...",
-
+  "elevationMachine": "Máquina dedicada a elevación de cargas",
+  "mobileMachine": "Máquina móvil",
+  "notCreator": "La evaluación que va a consultar ha sido creada por otro usuario, por lo que no es posible modificarla.",
+  "loginNeeded": "Necesitas haber iniciado sesión en la aplicación para poder consultar la evaluación",
 
   "checklistTitle": "Checklist",
   "errorPdf": "Ha habido un error al generar el pdf",
@@ -154,6 +157,7 @@
   "unknownDate": "Fecha desconocida",
   "unknownManufacterer": "Fabricante desconocido",
   "completionDate": "Fecha de realización",
+  "sanvingAnswers": "Guardando las respuestas...",
   "generatingPdf": "Generando PDF...",
   "notGenerated": "Aún no se ha generado el pdf en este dispositivo.",
   "generate": "Generar",

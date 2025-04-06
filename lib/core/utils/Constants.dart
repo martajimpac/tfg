@@ -19,15 +19,9 @@ enum AccionesPdfChecklist { guardar, compartir }
 //Listado de tipos de ficheros que podemos crear
 enum TiposFicheros { word, excel, pdf }
 
+const idMaqCarga1 = 6;
+const idMaqCarga2 = 7;
+const idMaqMovil1 = 8;
+const idMaqMovil2 = 9;
 
 const bucketName = "images";
-
-enum Categorias {
-  catMaqCarga1(6),
-  catMaqCarga2(7),
-  catMaqMovil1(8),
-  catMaqMovil2(9);
-
-  final int value;
-  const Categorias(this.value);
-}

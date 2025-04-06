@@ -19,11 +19,17 @@ class EditProfileLoading extends EditProfileState {}
 class EditProfileLoaded extends EditProfileState {
   final String userName;
   const EditProfileLoaded(this.userName);
+
+  @override
+  List<Object> get props => [userName];
 }
 
 class EditProfileSuccess extends EditProfileState {
   final String newUserName;
   const EditProfileSuccess(this.newUserName);
+
+  @override
+  List<Object> get props => [newUserName];
 }
 
 class EditProfileError extends EditProfileState {
@@ -31,6 +37,9 @@ class EditProfileError extends EditProfileState {
   final bool isNameRed;
 
   const EditProfileError(this.errorMessage, this.isNameRed);
+
+  @override
+  List<Object> get props => [errorMessage, isNameRed];
 }
 
 

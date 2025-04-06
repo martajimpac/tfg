@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
@@ -36,37 +38,9 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   late List<ImagenDataModel> _imagenes;
   bool _generatingPdf = false;
   bool _isEvaluationLoaded = false;
+  bool _showModifyButton = true;
+  bool _checkedPermission = false;
 
-  Future<void> _checkUserPermission() async {
-    final id = await SharedPrefs.getUserId();
-    if (id != "" && _evaluacion.idinspector != id) {
-      Utils.showMyOkDialog(
-        context,
-        S.of(context).error,
-        "La evaluación no es del usuario, no se puede modificar", //TODO METER STRINGS
-            () => {},
-        buttonText: S.of(context).accept,
-      );
-    } else if (id == "") {
-      Utils.showMyOkDialog(
-        context,
-        S.of(context).error,
-        "Necesitas estar registrado para poder ver la evaluación",
-            () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NuevaEvaluacionPage(
-                    evaluacion: _evaluacion,
-                    imagenes: _imagenes,
-                  ),
-                ),
-              )
-            },
-        buttonText: "IR A LOGIN",
-      );
-    }
-  }
 
   Future<void> _sharePdf() async {
     if (_isEvaluationLoaded) {
@@ -89,6 +63,39 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       } else {
         _showFileNotGeneratedDialog();
       }
+    }
+  }
+
+  Future<void> _checkUserPermission() async {
+    final id = await SharedPrefs.getUserId();
+    if (_evaluacion.idinspector != id) {
+      setState(() {
+        _showModifyButton = false; // Ocultar botón
+      });
+      Utils.showMyOkDialog(
+        context,
+        S.of(context).error,
+        S.of(context).notCreator,
+            () => {
+          Navigator.of(context).pop()
+        },
+        buttonText: S.of(context).accept,
+      );
+    } else if (id == "") {
+      Utils.showMyOkDialog(
+        context,
+        S.of(context).error,
+        S.of(context).loginNeeded,
+            () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+          )
+        },
+        buttonText: S.of(context).loginTitle,
+      );
     }
   }
 
@@ -117,17 +124,15 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
 
   void _onQRPressed() {
     if(_isEvaluationLoaded){
-      setState(() {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return MyQrDialog(
-              qrData: QRPage + _evaluacion.ideval.toString(),
-              nombreMaquina: _evaluacion.nombreMaquina,
-            );
-          },
-        );
-      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyQrDialog(
+            qrData: QRPage + _evaluacion.ideval.toString(),
+            nombreMaquina: _evaluacion.nombreMaquina,
+          );
+        },
+      );
     }
   }
 
@@ -175,23 +180,14 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                   _evaluacion = state.evaluacion;
                   _imagenes = state.imagenes;
 
-                  debugPrint("COMES FROM .. ${widget.comesFromQR}");
-                  if (widget.comesFromQR) {
+                  if (widget.comesFromQR && !_checkedPermission) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _checkUserPermission();
                     });
+                    _checkedPermission = true;
                   }
 
-                  return Column(
-                    children: [
-                      Text(
-                        widget.comesFromQR ? "Viene del QR" : "No viene del QR",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Expanded(child: _buildView(),)
-
-                    ],
-                  );
+                  return _buildView();
                 } else if (state is DetallesEvaluacionError) {
                   return Center(
                     child: Padding(
@@ -293,25 +289,25 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
               ],
             ),
           ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
-            child: MyButton(
-              adaptableWidth: false,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NuevaEvaluacionPage(
-                      evaluacion: _evaluacion,
-                      imagenes: _imagenes,
+          if (_showModifyButton)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
+              child: MyButton(
+                adaptableWidth: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NuevaEvaluacionPage(
+                        evaluacion: _evaluacion,
+                        imagenes: _imagenes,
+                      ),
                     ),
-                  ),
-                );
-              },
-              text: S.of(context).modify,
+                  );
+                },
+                text: S.of(context).modify,
+              ),
             ),
-          ),
         ],
       ),
     );

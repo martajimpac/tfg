@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'core/utils/Constants.dart';
 import 'features/data/repository/repositorio_autenticacion.dart';
 import 'features/data/repository/repositorio_db_supabase.dart';
+import 'features/presentation/cubit/auto_login_cubit.dart';
 import 'features/presentation/cubit/centros_cubit.dart';
 import 'features/presentation/cubit/change_password_cubit.dart';
 import 'features/presentation/cubit/detalles_evaluacion_cubit.dart';
@@ -110,45 +111,39 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => SupabaseAuthRepository(widget.supabase),
-        ),
-        RepositoryProvider(
-          create: (context) => RepositorioDBSupabase(widget.supabase),
-        ),
+        RepositoryProvider(create: (context) => SupabaseAuthRepository(widget.supabase)),
+        RepositoryProvider(create: (context) => RepositorioDBSupabase(widget.supabase)),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => LoginCubit(SupabaseAuthRepository(widget.supabase))),
-          BlocProvider(create: (context) => RegisterCubit(SupabaseAuthRepository(widget.supabase))),
-          BlocProvider(create: (context) => ChangePasswordCubit(SupabaseAuthRepository(widget.supabase))),
-          BlocProvider(create: (context) => EditProfileCubit(SupabaseAuthRepository(widget.supabase))),
-          BlocProvider(create: (context) => CentrosCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
+          BlocProvider(create: (context) => AutoLoginCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(create: (context) => LoginCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(create: (context) => RegisterCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(create: (context) => ChangePasswordCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(create: (context) => EditProfileCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(create: (context) => CentrosCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(create: (context) => PreguntasCubit(context.read<RepositorioDBSupabase>())),
           BlocProvider(create: (context) => SettingsCubit()),
-          BlocProvider(create: (context) => InsertarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => EvaluacionesCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => DetallesEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => PreguntasCubit(RepositorioDBSupabase(widget.supabase))),
-          BlocProvider(create: (context) => EliminarEvaluacionCubit(RepositorioDBSupabase(widget.supabase))),
+          BlocProvider(create: (context) => InsertarEvaluacionCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(create: (context) => EvaluacionesCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(create: (context) => DetallesEvaluacionCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(create: (context) => EliminarEvaluacionCubit(context.read<RepositorioDBSupabase>())),
         ],
         child: Builder(
           builder: (context) {
             final settingsCubit = context.watch<SettingsCubit>();
             return MaterialApp.router(
               locale: _locale,
-
               debugShowCheckedModeBanner: false,
               theme: settingsCubit.state.theme,
               localizationsDelegates: const [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
               supportedLocales: S.delegate.supportedLocales,
               title: 'Evaluaciones',
-              // theme: state.theme
               routerConfig: _enrutador,
             );
           },
@@ -156,6 +151,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
 }
 
 

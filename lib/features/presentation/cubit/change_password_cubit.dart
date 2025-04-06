@@ -16,11 +16,14 @@ abstract class ChangePasswordState extends Equatable {
 class ChangePasswordInitial extends ChangePasswordState {
   final bool isEmailRed;
   final bool isPasswordRed;
+  final String currentPassword;
+  final String newPassword;
+  final String repeatPassword;
 
-  const ChangePasswordInitial(this.isEmailRed, this.isPasswordRed);
+  const ChangePasswordInitial(this.isEmailRed, this.isPasswordRed, {this.currentPassword = '', this.newPassword = '', this.repeatPassword = ''});
 
   @override
-  List<Object> get props => [isEmailRed, isPasswordRed];
+  List<Object> get props => [isEmailRed, isPasswordRed, currentPassword, newPassword, repeatPassword];
 }
 
 class ChangePasswordLoading extends ChangePasswordState {}
@@ -32,8 +35,14 @@ class ChangePasswordError extends ChangePasswordState {
   final bool isCurrentPasswordRed;
   final bool isNewPasswordRed;
   final bool isConfirmPasswordRed;
+  final String currentPassword;
+  final String newPassword;
+  final String repeatPassword;
 
-  const ChangePasswordError(this.message, this.isCurrentPasswordRed, this.isNewPasswordRed, this.isConfirmPasswordRed);
+  const ChangePasswordError(this.message, this.isCurrentPasswordRed, this.isNewPasswordRed, this.isConfirmPasswordRed, this.currentPassword, this.repeatPassword, this.newPassword);
+
+  @override
+  List<Object> get props => [message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed, currentPassword, newPassword, repeatPassword];
 }
 
 class SendPasswordResetEmailError extends ChangePasswordState {
@@ -41,6 +50,9 @@ class SendPasswordResetEmailError extends ChangePasswordState {
   final bool isEmailRed;
 
   const SendPasswordResetEmailError(this.message, this.isEmailRed);
+
+  @override
+  List<Object> get props => [message, isEmailRed];
 }
 
 class SendPasswordResetEmailSuccess extends ChangePasswordState {}
@@ -62,7 +74,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     emit(ChangePasswordLoading());
     if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
       var message = S.of(context).errorEmpty;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed, currentPassword, newPassword, confirmPassword));
       return;
     }
 
@@ -71,7 +83,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       isNewPasswordRed = true;
       isConfirmPasswordRed = true;
       var message = S.of(context).errorChangePasswordNoMatch;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed, currentPassword, newPassword, confirmPassword));
       return;
     }
     if (newPassword.length < 6) {
@@ -79,7 +91,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       isNewPasswordRed = true;
       isConfirmPasswordRed = true;
       var message = S.of(context).errorChangePasswordLength;
-      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, isCurrentPasswordRed, isNewPasswordRed, isConfirmPasswordRed, currentPassword, newPassword, confirmPassword));
       return;
     }
 
@@ -88,9 +100,9 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     if(errorMessage == null){
       emit(ChangePasswordSuccess());
     }else if(errorMessage == S.of(context).errorChangePasswordIncorrect){
-      emit(ChangePasswordError(errorMessage, true, false, false));
+      emit(ChangePasswordError(errorMessage, true, false, false, currentPassword, newPassword, confirmPassword));
     }else{
-      emit(ChangePasswordError(errorMessage, false, false, false));
+      emit(ChangePasswordError(errorMessage, false, false, false, currentPassword, newPassword, confirmPassword));
     }
   }
 
@@ -100,10 +112,11 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     bool isNewPasswordRed = newPassword.isEmpty;
     bool isConfirmPasswordRed = confirmPassword.isEmpty;
 
+
     emit(ChangePasswordLoading());
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
       var message = S.of(context).errorEmpty;
-      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed, "", newPassword, confirmPassword));
       return;
     }
 
@@ -111,7 +124,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       isNewPasswordRed = true;
       isConfirmPasswordRed = true;
       var message = S.of(context).errorChangePasswordNoMatch;
-      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed, "", newPassword, confirmPassword));
       return;
     }
     if (newPassword.length < 6) {
@@ -119,7 +132,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       isConfirmPasswordRed = true;
 
       var message = S.of(context).errorChangePasswordLength;
-      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed));
+      emit(ChangePasswordError(message, false, isNewPasswordRed, isConfirmPasswordRed, "", newPassword, confirmPassword));
       return;
     }
 
@@ -127,7 +140,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     if(errorMessage == null){
       emit(ChangePasswordSuccess());
     }else{
-      emit(ChangePasswordError(errorMessage, false, false, false));
+      emit(ChangePasswordError(errorMessage, false, false, false, "", newPassword, confirmPassword));
     }
   }
 

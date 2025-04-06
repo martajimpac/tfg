@@ -38,6 +38,8 @@ class PreguntasLoaded extends PreguntasState {
 
   const PreguntasLoaded(this.preguntasPorPagina, this.categoria, this.idEval, this.pageIndex);
 
+  @override
+  List<Object> get props => [preguntasPorPagina, categoria, idEval, pageIndex];
 }
 
 class PreguntasError extends PreguntasState {
@@ -45,7 +47,7 @@ class PreguntasError extends PreguntasState {
 
   const PreguntasError(this.errorMessage);
 
-@override
+  @override
   List<Object> get props => [errorMessage];
 }
 
@@ -53,6 +55,7 @@ class PdfGenerated extends PreguntasState {
   final String pathFichero;
 
   const PdfGenerated(this.pathFichero);
+
   @override
   List<Object> get props => [pathFichero];
 }
@@ -75,13 +78,38 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   List<CategoriaPreguntaDataModel>? categorias;
   List<OpcionRespuestaDataModel>? respuestas;
   int? _idEvalacionActual;
+  bool? _isMaqMovil;
+  bool? _isMaqCarga;
+  bool? _isMaqMovilNew;
+  bool? _isMaqCargaNew;
+
 
   PreguntasCubit(this.repositorio) : super(const PreguntasLoading(""));
 
-  Future<List<PreguntaDataModel>> _getPreguntas(int idEvaluacion) async {
-    // Si las preguntas ya están en el caché, se devuelven directamente.
+  Future<List<PreguntaDataModel>> _getPreguntas(int idEvaluacion, bool isMaqMovil, bool isMaqCarga) async {
+    // Si las preguntas ya están en el caché, y no hemos hecho cambios en el tipo de maquina, se devuelven directamente.
     if (preguntas != null && _idEvalacionActual == idEvaluacion) {
-      return preguntas ?? [];
+      bool configChanged = _isMaqMovil != isMaqMovil || _isMaqCarga != isMaqCarga;
+      if(configChanged){
+
+        if(removeMaqMovil()){
+          preguntas?.removeWhere((p) => p.idCategoria == idMaqMovil1 || p.idCategoria == idMaqMovil2);
+        }
+        if(removeMaqCarga()){
+          preguntas?.removeWhere((p) => p.idCategoria == idMaqCarga1 || p.idCategoria == idMaqCarga2);
+        }
+
+        if(addMaqMovil() || addMaqCarga()){
+          //Añadir preguntas
+          var preguntasNew = await repositorio.getPreguntas(idEvaluacion);
+          preguntasNew = preguntasNew.where((p) => [idMaqMovil1, idMaqMovil2, idMaqCarga1, idMaqCarga2].contains(p.idCategoria)).toList();
+          preguntas?.addAll(preguntasNew);
+          return preguntas ?? []; // Añadir las nuevas preguntas después de las otras
+        }
+
+      }else{
+        return preguntas ?? [];
+      }
     }
 
     try {
@@ -92,10 +120,34 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<List<CategoriaPreguntaDataModel>> _getCategorias(int idEvaluacion, int idMaquina) async {
+  Future<List<CategoriaPreguntaDataModel>> _getCategorias(int idEvaluacion, int idMaquina, bool isMaqMovil, bool isMaqCarga) async {
     // Si las categorías ya están en el caché, se devuelven directamente.
     if (categorias != null && _idEvalacionActual == idEvaluacion) {
-      return categorias ?? [];
+      bool configChanged = _isMaqMovil != isMaqMovil || _isMaqCarga != isMaqCarga;
+      if(configChanged){
+
+        // Eliminar maq móvil si corresponde
+        if(removeMaqMovil()){
+          categorias?.removeWhere((c) => c.idcat == idMaqMovil1 || c.idcat == idMaqMovil2);
+        }
+
+        // Eliminar maq carga si corresponde
+        if(removeMaqCarga()){
+          categorias?.removeWhere((c) => c.idcat == idMaqCarga1 || c.idcat == idMaqCarga2);
+        }
+
+        // Ver si se ha añadido alguna
+        if(addMaqMovil() || addMaqCarga()){
+          var categoriasNew = await repositorio.getCategorias(idEvaluacion, idMaquina);
+          categoriasNew = categoriasNew.where((c) =>
+              [idMaqMovil1, idMaqMovil2, idMaqCarga1, idMaqCarga2].contains(c.idcat)).toList();
+          categorias?.addAll(categoriasNew);
+        }
+
+
+      }else{
+        return categorias ?? [];
+      }
     }
 
     try {
@@ -107,7 +159,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<List<OpcionRespuestaDataModel>> _getRespuestas(int idEvaluacion) async {
+  Future<List<OpcionRespuestaDataModel>> _getRespuestas(int idEvaluacion, bool isMaqMovil, bool isMaqCarga) async {
     // Si las respuestas ya están en el caché, se devuelven directamente.
     if (respuestas != null && _idEvalacionActual == idEvaluacion) {
       return respuestas ?? [];
@@ -121,13 +173,18 @@ class PreguntasCubit extends Cubit<PreguntasState> {
     }
   }
 
-  Future<void> getPreguntas(BuildContext context, int idEvaluacion, int idMaquina, int pageIndex) async { //TOO SOLO EN EL INIT, LUEGO YA...
-    _idEvalacionActual = idEvaluacion;
+  Future<void> getPreguntas(BuildContext context, EvaluacionDetailsDataModel evaluacion, int pageIndex) async { //TOO SOLO EN EL INIT, LUEGO YA...
+    _idEvalacionActual = evaluacion.ideval;
+    _isMaqMovilNew = evaluacion.isMaqMovil;
+    _isMaqCargaNew = evaluacion.isMaqCarga;
     try {
       emit(PreguntasLoading(""));
-      final preguntas = await _getPreguntas(idEvaluacion);
-      final categorias = await _getCategorias(idEvaluacion, idMaquina);
-      await _getRespuestas(idEvaluacion);
+      final preguntas = await _getPreguntas(evaluacion.ideval, evaluacion.isMaqMovil, evaluacion.isMaqCarga);
+      final categorias = await _getCategorias(evaluacion.ideval, evaluacion.idmaquina,   evaluacion.isMaqMovil, evaluacion.isMaqCarga);
+      await _getRespuestas(evaluacion.ideval,  evaluacion.isMaqMovil, evaluacion.isMaqCarga);
+
+      _isMaqCarga = evaluacion.isMaqCarga;
+      _isMaqCarga = evaluacion.isMaqMovil;
 
       if (categorias.isEmpty || pageIndex < 0 || pageIndex >= categorias.length) {
         debugPrint("MARTA: Índice de página fuera de rango o categorías vacías.");
@@ -142,7 +199,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
 
 
-      emit(PreguntasLoaded(preguntasPagina,categoria, idEvaluacion, pageIndex));
+      emit(PreguntasLoaded(preguntasPagina, categoria, evaluacion.ideval, pageIndex));
 
     } catch (e) {
       emit(PreguntasError(S.of(context).cubitQuestionsError));
@@ -164,12 +221,14 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
       final loadedState = state as PreguntasLoaded;
 
-      emit(PreguntasLoading(S.of(context).generatingPdf));
+      emit(PreguntasLoading(S.of(context).sanvingAnswers));
 
 
       await repositorio.insertarRespuestas(preguntas ?? [], evaluacion.ideval, categorias ?? []);
       try {
 
+
+        emit(PreguntasLoading(S.of(context).generatingPdf));
         String? pathFichero = await PdfHelper.generarInformePDF(
             evaluacion, preguntas ?? [], respuestas ?? [], categorias ?? []
         );
@@ -185,6 +244,38 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       } catch (e) {
         emit(PdfError(S.of(context).errorPdf));
       }
+    }
+  }
+
+  bool removeMaqMovil() {
+    if(_isMaqMovil != null && _isMaqMovilNew != null){
+      return (!_isMaqMovil! && _isMaqMovilNew!);
+    }else{
+      return false;
+    }
+  }
+
+  bool removeMaqCarga() {
+    if(_isMaqCarga != null && _isMaqCargaNew != null){
+      return (!_isMaqCarga! && _isMaqCargaNew!);
+    }else{
+      return false;
+    }
+  }
+
+  bool addMaqMovil() {
+    if (_isMaqMovil != null && _isMaqMovilNew != null) {
+      return (!_isMaqMovil! && _isMaqMovilNew!); // Antes no era móvil, ahora sí
+    } else {
+      return false;
+    }
+  }
+
+  bool addMaqCarga() {
+    if (_isMaqCarga != null && _isMaqCargaNew != null) {
+      return (!_isMaqCarga! && _isMaqCargaNew!); // Antes no era carga, ahora sí
+    } else {
+      return false;
     }
   }
 

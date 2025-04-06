@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
@@ -39,6 +41,7 @@ class MySelectPhotoDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  // Botón de galería (siempre visible)
                   ElevatedButton(
                     onPressed: onGalleryButtonTap,
                     style: ElevatedButton.styleFrom(
@@ -47,18 +50,28 @@ class MySelectPhotoDialog extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                       foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
-                    child: Icon(Icons.photo_library_rounded, color: Colors.white, semanticLabel: S.of(context).semanticlabelAddFromGallery),
-                  ),
-                  ElevatedButton(
-                    onPressed: onCameraButtonTap,
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(20),
-                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                    child: Icon(
+                      Icons.photo_library_rounded,
+                      color: Colors.white,
+                      semanticLabel: S.of(context).semanticlabelAddFromGallery,
                     ),
-                    child: Icon(Icons.camera_alt, color: Colors.white, semanticLabel:  S.of(context).semanticlabelOpenCamera),
-                  )
+                  ),
+                  // Botón de cámara (solo visible si NO es Windows)
+                  if (!Platform.isWindows) // Condición para ocultar en Windows
+                    ElevatedButton(
+                      onPressed: onCameraButtonTap,
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(20),
+                        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        semanticLabel: S.of(context).semanticlabelOpenCamera,
+                      ),
+                    ),
                 ],
               ),
             ],

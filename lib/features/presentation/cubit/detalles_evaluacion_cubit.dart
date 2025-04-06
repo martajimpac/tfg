@@ -71,7 +71,7 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
     }
   }
 
-    Future<void> generatePdf(BuildContext context, EvaluacionDetailsDataModel evaluacion) async {
+  Future<void> generatePdf(BuildContext context, EvaluacionDetailsDataModel evaluacion) async {
     emit(DetallesEvaluacionLoading());
     try {
       final preguntas = await repositorio.getPreguntas(evaluacion.ideval);
@@ -94,4 +94,6 @@ class DetallesEvaluacionCubit extends Cubit<DetallesEvaluacionState> {
       emit(DetallesEvaluacionError(S.of(context).cubitEvaluationDetailsError));
     }
   }
+
+
 }

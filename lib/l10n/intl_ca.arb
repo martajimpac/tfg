@@ -146,6 +146,10 @@
   "uploadingImage": "Pujant la imatge...",
   "errorUploadingImage": "Error en pujar la imatge",
   "savingEvaluation": "Guardant dades de l'avaluació...",
+  "elevationMachine": "Màquina d’elevació de càrregues",
+  "mobileMachine": "Màquina mòbil",
+  "notCreator": "L’avaluació que vols consultar ha estat creada per un altre usuari, per la qual cosa no es pot modificar.",
+  "loginNeeded": "Has d’iniciar sessió a l’aplicació per poder consultar l’avaluació.",
 
   "checklistTitle": "Checklist",
   "errorPdf": "Hi ha hagut un error en generar el pdf",
@@ -155,6 +159,7 @@
   "unknownManufacterer": "Fabricant desconegut",
   "completionDate": "Data de realització",
   "generatingPdf": "Generant PDF...",
+  "sanvingAnswers": "Desant les respostes...",
   "notGenerated": "Encara no s'ha generat el pdf en aquest dispositiu.",
   "generate": "Generar",
   "errorChargingPdf": "Hi ha hagut un error en carregar el pdf",

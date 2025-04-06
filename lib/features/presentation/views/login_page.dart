@@ -25,10 +25,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
   final FocusNode _passwordFocusNode = FocusNode();
   final supabase = Supabase.instance.client;
+  String previousError = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
 
   @override
   void dispose() {
@@ -37,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordFocusNode.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -60,51 +67,38 @@ class _LoginPageState extends State<LoginPage> {
         ),
         body: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
-            switch (state.runtimeType) {
-              case LoginSuccess:
-                _goToHomePage();
+            if (state is LoginSuccess) {
+              _goToHomePage();
+            } else if (state is LoginError) {
+              final errorMessage = state.message;
 
-                break;
-
-              case LoginError:
-
-                if (state is LoginError) {
-                  final errorMessage = state.message;
-                  if (errorMessage == S.of(context).errorEmpty) {
-                    Fluttertoast.showToast(
-                      msg: errorMessage,
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      backgroundColor: Colors.grey,
-                      textColor: Colors.white,
-                    );
-                  } else if (errorMessage == S.of(context).errorAuthenticationNotConfirmed) {
-                    final email = _emailController.text.trim();
-                    final password = _passwordController.text.trim();
-                    _showErrorDialogWithResendOption(errorMessage, email, password);
-                  } else {
-                    _showErrorDialog(errorMessage);
-                  }
+                if (errorMessage == S.of(context).errorEmpty) {
+                  Utils.showAdaptiveToast(
+                      context: context,
+                      message: errorMessage,
+                      gravity: ToastGravity.BOTTOM
+                  );
+                } else if (errorMessage == S.of(context).errorAuthenticationNotConfirmed) {
+                  final email = _emailController.text.trim();
+                  final password = _passwordController.text.trim();
+                  _showErrorDialogWithResendOption(errorMessage, email, password);
+                } else {
+                  _showErrorDialog(errorMessage);
                 }
 
-                break;
-
-              case ConfirmationEmailSent:
-                Utils.showMyOkDialog(
-                  context,
-                  S.of(context).emailResent,
-                  S.of(context).emailResentDesc,
-                      () {
-                    Navigator.of(context).pop();
-                  },
-                );
-                break;
-
-              default:
-              // Manejar otros casos si es necesario
-                break;
+            } else if (state is ConfirmationEmailSent) {
+              Utils.showMyOkDialog(
+                context,
+                S.of(context).emailResent,
+                S.of(context).emailResentDesc,
+                    () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }else{
             }
           },
+
           builder: (context, state) {
             final isEmailRed = state is LoginError ? state.isEmailRed : false;
             final isPasswordRed = state is LoginError ? state.isPasswordRed : false;
@@ -152,9 +146,9 @@ class _LoginPageState extends State<LoginPage> {
                               isRed: isPasswordRed,
                               focusNode: _passwordFocusNode,
                               onSubmited: () {
-                                final email = _emailController.text.trim();
-                                final password = _passwordController.text.trim();
-                                context.read<LoginCubit>().login(email, password, context);
+                                if (state is! LoginLoading) {
+                                  login();
+                                }
                               },
                             ),
                             TextButton(
@@ -181,9 +175,10 @@ class _LoginPageState extends State<LoginPage> {
                                 : MyButton(
                                   adaptableWidth: false,
                                   onTap: () async {
-                                    final email = _emailController.text.trim();
-                                    final password = _passwordController.text.trim();
-                                    context.read<LoginCubit>().login(email, password, context);
+                                    // Evitar clics múltiples si ya está cargando
+                                    if (state is! LoginLoading) {
+                                      login();
+                                    }
                                   },
                                   text: S.of(context).loginButton,
                                 ),
@@ -253,6 +248,12 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void login(){
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    context.read<LoginCubit>().login(email, password, context);
+  }
+
   void showNoConnectionDialog(BuildContext context){
     showDialog(
         context: context,
@@ -262,7 +263,7 @@ class _LoginPageState extends State<LoginPage> {
             title: S.of(context).error,
             desc: S.of(context).noInternetConexion,
             primaryButtonText: S.of(context).continuee,
-            secondaryButtonText: S.of(context).cancel,
+            secondaryButtonText: S.of(context).retryTitle,
             onPrimaryButtonTap: () {
               Navigator.push(
                   context,
@@ -271,6 +272,7 @@ class _LoginPageState extends State<LoginPage> {
             },
             onSecondaryButtonTap: () {
               Navigator.of(context).pop();
+              login();
             },
           );
         }

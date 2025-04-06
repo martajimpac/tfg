@@ -8,9 +8,10 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
   SupabaseAuthRepository(this.supabase);
 
 
+
   //Funcion que inicia sesión y te devuelve el código de error
   @override
-  Future<String?> signInWithEmailAndPassword(String email, String password, BuildContext context) async {
+  Future<String?> signInWithEmailAndPassword(String email, String password, BuildContext? context) async {
     try {
       final response = await supabase.client.auth.signInWithPassword(
         email: email,
@@ -23,27 +24,39 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         await SharedPrefs.saveUserPreferences(user, password);
         return null;
       } else {
-        var message = S.of(context).errorAuthentication;
+        var message = "";
+        if(context != null){
+          message = S.of(context).errorAuthentication;
+        }
         return message;
       }
     } on AuthException catch (error) {
       var message = "";
       switch (error.message) {
         case "Invalid login credentials":
-          message = S.of(context).errorAuthenticationCredentials;
+          if(context != null){
+            message = S.of(context).errorAuthenticationCredentials;
+          }
           return message;
           break;
         case "Email not confirmed":
-          message = S.of(context).errorAuthenticationNotConfirmed;
+          if(context != null){
+            message = S.of(context).errorAuthenticationNotConfirmed;
+          }
           return message;
           break;
         default:
-          message = S.of(context).errorAuthentication;
+          if(context != null){
+            message = S.of(context).errorAuthentication;
+          }
           return message;
           break;
       }
     } catch (error) {
-      var message = S.of(context).unknownError;
+      var message = "";
+      if(context != null){
+        message = S.of(context).unknownError;
+      }
       return message;
     }
   }
@@ -80,22 +93,19 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
       // Verificar si el usuario existe, pero no tiene identidades (usuario "falso")
       if (authResponse.user != null &&
           authResponse.user!.identities != null &&
-          authResponse.user!.identities!.isEmpty) //todo con marta@yopmail.com problema ...
+          authResponse.user!.identities!.isEmpty)
       {
-
-        return "YA REGISTRADO ${authResponse.user == null} IDENTITIS ${authResponse.user?.identities}"; //S.of(context).errorRegister
-      }else{
+        return S.of(context).emailAlredyRegistered;
+      } else{
         //si el usuario no existe procedemos a crear la cuenta
 
         final user = authResponse.user;
         if (user != null && user.userMetadata != null) {
           return null;
         } else {
-          return "error raro"; //S.of(context).errorRegister TODO REVISA ESTO
+          return S.of(context).errorRegister;
         }
       }
-
-
     } on AuthException catch (error) {
       if (error.statusCode == "429") {
         return S.of(context).errorRegisterLimit;
@@ -107,7 +117,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
         return S.of(context).errorRegister;
       }
     } catch (error) {
-      return "Excepcion"; //S.of(context).errorRegister
+      return S.of(context).errorRegister;
     }
   }
 

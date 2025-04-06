@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/dimensions.dart';
+import '../../../core/utils/Utils.dart';
 import '../../data/shared_prefs.dart';
 import '../../../generated/l10n.dart';
 import '../components/buttons/my_button_card.dart';
@@ -42,12 +43,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (!mounted) return; // Verifica si el widget sigue montado
 
-      Fluttertoast.showToast(
-        msg: S.of(context).sessionClosedSuccess,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.grey,
-        textColor: Colors.white,
+      Utils.showAdaptiveToast(
+          context: context,
+          message:  S.of(context).sessionClosedSuccess
       );
 
       Navigator.pushReplacement(
@@ -57,12 +55,9 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (error) {
       if (!mounted) return; // Verifica nuevamente si el widget sigue montado
 
-      Fluttertoast.showToast(
-        msg: S.of(context).sessionCloseError,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.grey,
-        textColor: Colors.white,
+      Utils.showAdaptiveToast(
+          context: context,
+          message:  S.of(context).sessionCloseError
       );
     }
   }

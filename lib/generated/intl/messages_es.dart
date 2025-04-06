@@ -86,6 +86,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("*Denominación"),
         "discard": MessageLookupByLibrary.simpleMessage("Descartar"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Modificar perfil"),
+        "elevationMachine": MessageLookupByLibrary.simpleMessage(
+            "Máquina dedicada a elevación de cargas"),
         "email": MessageLookupByLibrary.simpleMessage("Correo electrónico"),
         "emailAlredyRegistered": MessageLookupByLibrary.simpleMessage(
             "Ha habido un error al realizar el registro.\nYa existe un usuario con este correo."),
@@ -205,6 +207,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "hintPassword": MessageLookupByLibrary.simpleMessage("***********"),
         "hintSerialNumber": MessageLookupByLibrary.simpleMessage("Número"),
         "loginButton": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
+        "loginNeeded": MessageLookupByLibrary.simpleMessage(
+            "Necesitas haber iniciado sesión en la aplicación para poder consultar la evaluación"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Inicio de sesión"),
         "logout": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
@@ -216,6 +220,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "manufacturedDateAsterisk":
             MessageLookupByLibrary.simpleMessage("Fecha de fabricación"),
         "manufacturer": MessageLookupByLibrary.simpleMessage("Fabricante"),
+        "mobileMachine": MessageLookupByLibrary.simpleMessage("Máquina móvil"),
         "modify": MessageLookupByLibrary.simpleMessage("Modificar"),
         "modifyChecklistTitle":
             MessageLookupByLibrary.simpleMessage("Modificar checklist"),
@@ -236,6 +241,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noPdfAvaliable": MessageLookupByLibrary.simpleMessage(
             "No hay ningún pdf disponible"),
         "no_results": MessageLookupByLibrary.simpleMessage("No hay resultados"),
+        "notCreator": MessageLookupByLibrary.simpleMessage(
+            "La evaluación que va a consultar ha sido creada por otro usuario, por lo que no es posible modificarla."),
         "notGenerated": MessageLookupByLibrary.simpleMessage(
             "Aún no se ha generado el pdf en este dispositivo."),
         "numEvaluations":
@@ -275,6 +282,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "retryText":
             MessageLookupByLibrary.simpleMessage("¿Desea volver a intentarlo?"),
         "retryTitle": MessageLookupByLibrary.simpleMessage("Reintentar"),
+        "sanvingAnswers":
+            MessageLookupByLibrary.simpleMessage("Guardando las respuestas..."),
         "save": MessageLookupByLibrary.simpleMessage("Guardar"),
         "saveSessionDesc": MessageLookupByLibrary.simpleMessage(
             "¿Desea iniciar sesión automáticamente con este usuario?"),

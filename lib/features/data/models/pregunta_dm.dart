@@ -9,6 +9,7 @@ class PreguntaDataModel extends Equatable {
   bool tieneObservaciones;
   String? observaciones;
   int? idDefaultAnswer;
+  String? textoAux;
 
   PreguntaDataModel({
     required this.idpregunta,
@@ -19,6 +20,7 @@ class PreguntaDataModel extends Equatable {
     this.tieneObservaciones = false,
     this.observaciones,
     this.idDefaultAnswer,
+    this.textoAux
   });
 
   factory PreguntaDataModel.fromMap(Map<String, dynamic> json) {
@@ -30,7 +32,8 @@ class PreguntaDataModel extends Equatable {
       isAnswered: json['respondida'] as bool? ?? false,
       tieneObservaciones: json['tiene_observaciones'] as bool? ?? false,
       observaciones: json['observaciones'] as String?,
-      idDefaultAnswer: json['id_respuesta_por_defecto'] as int?
+      idDefaultAnswer: json['id_respuesta_por_defecto'] as int?,
+      textoAux: json['texto_aux'] as String?
     );
   }
 
@@ -43,10 +46,11 @@ class PreguntaDataModel extends Equatable {
       'respondida': isAnswered,
       'tiene_observaciones': tieneObservaciones,
       'observaciones': observaciones,
-      'id_respuesta_por_defecto': idDefaultAnswer
+      'id_respuesta_por_defecto': idDefaultAnswer,
+      'texto_aux': textoAux
     };
   }
 
   @override
-  List<Object?> get props => [idpregunta, pregunta, idCategoria, idRespuestaSeleccionada, isAnswered, tieneObservaciones, observaciones, idDefaultAnswer];
+  List<Object?> get props => [idpregunta, pregunta, idCategoria, idRespuestaSeleccionada, isAnswered, tieneObservaciones, observaciones, idDefaultAnswer, textoAux];
 }

@@ -62,41 +62,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       body: BlocConsumer<EditProfileCubit, EditProfileState>(
         listener: (context, state) async {
-          switch (state.runtimeType) {
-            case EditProfileSuccess:
+          if (state is EditProfileSuccess) {
+            await SharedPrefs.updateUserName(state.newUserName);
 
-              await SharedPrefs.updateUserName((state as EditProfileSuccess).newUserName);
-
-              //Datos del usuario modificados con éxito
-              Utils.showMyOkDialog(context, S.of(context).exito, S.of(context).successUpdatingUser, () {
+            // Datos del usuario modificados con éxito
+            Utils.showMyOkDialog(
+              context,
+              S.of(context).exito,
+              S.of(context).successUpdatingUser,
+                  () {
                 Navigator.of(context).pop(); // Navega hacia atrás
                 Navigator.of(context).pop(); // Navega hacia atrás
-              });
+              },
+            );
+          } else if (state is EditProfileError) {
+            final errorMessage = state.errorMessage;
 
-              break;
-
-            case EditProfileError:
-
-              if (state is EditProfileError) {
-                final errorMessage = state.errorMessage;
-                if (errorMessage == S.of(context).errorEmpty) {
-                  Fluttertoast.showToast(
-                    msg: errorMessage,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.grey,
-                    textColor: Colors.white,
-                  );
-                } else {
-                  Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
-                    Navigator.of(context).pop();
-                  });
-                }
-              }
-              break;
-
-            default: break;
+            if (errorMessage == S.of(context).errorEmpty) {
+              Utils.showAdaptiveToast(
+                  context: context,
+                  message: errorMessage,
+                  gravity: ToastGravity.BOTTOM
+              );
+            } else {
+              Utils.showMyOkDialog(
+                context,
+                S.of(context).error,
+                state.errorMessage,
+                    () {
+                  Navigator.of(context).pop();
+                },
+              );
+            }
           }
+
         },
         builder: (context, state) {
           final isUserNameRed = state is EditProfileError ? state.isNameRed : false;

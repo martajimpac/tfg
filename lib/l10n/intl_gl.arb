@@ -146,6 +146,10 @@
   "uploadingImage": "Subindo a imaxe...",
   "errorUploadingImage": "Erro ao subir a imaxe",
   "savingEvaluation": "Gardando datos da avaliación...",
+  "elevationMachine": "Máquina de elevación de cargas",
+  "mobileMachine": "Máquina móbil",
+  "notCreator": "A avaliación que vas consultar foi creada por outro usuario, polo que non é posible modificala.",
+  "loginNeeded": "Precisas iniciar sesión na aplicación para poder consultar a avaliación.",
 
   "checklistTitle": "Checklist",
   "errorPdf": "Houbo un erro ao xerar o pdf",
@@ -155,6 +159,7 @@
   "unknownManufacterer": "Fabricante descoñecido",
   "completionDate": "Data de realización",
   "generatingPdf": "Xerando PDF...",
+  "sanvingAnswers": "Gardando as respostas...",
   "notGenerated": "Aínda non se xerou o pdf neste dispositivo.",
   "generate": "Xerar",
   "errorChargingPdf": "Houbo un erro ao cargar o pdf",

@@ -43,14 +43,14 @@ class _CheckListPageState extends State<CheckListPage> {
     super.initState();
     _cubit = BlocProvider.of<PreguntasCubit>(context);
     _currentPageIndex = 0; // Inicializa con la primera página
-    _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina ,_currentPageIndex);
+    _cubit.getPreguntas(context, widget.evaluacion,_currentPageIndex);
   }
 
   void _checkAllAnswer(List<PreguntaDataModel> preguntas){
     // Filtra las preguntas sin respuesta
     List<PreguntaDataModel> preguntasSinResponder = preguntas.where((pregunta) => pregunta.idRespuestaSeleccionada == null).toList();
 
-    //asignar por defecto la respuesta si a lal preguntas sin resoonder
+    //asignar por defecto la respuesta si a la preguntas sin resoonder
     for (var pregunta in preguntasSinResponder) {
       pregunta.idRespuestaSeleccionada = pregunta.idDefaultAnswer; //ID DE Sí
     }
@@ -112,7 +112,7 @@ class _CheckListPageState extends State<CheckListPage> {
                     currentIndex: _currentPageIndex, // Índice inicial
                     onCategorySelected: (index) {
                       _currentPageIndex = index;
-                      _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina, _currentPageIndex);
+                      _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
                     },
                   ),
                   _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
@@ -134,7 +134,7 @@ class _CheckListPageState extends State<CheckListPage> {
                       adaptableWidth: false,
                       onTap: () {
                         _currentPageIndex ++;
-                        _cubit.getPreguntas(context, widget.evaluacion.ideval, widget.evaluacion.idmaquina, _currentPageIndex);
+                        _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
                       },
                       text: S.of(context).next, // Asumiendo que tienes el texto traducido
                       roundBorders: false,
@@ -211,9 +211,11 @@ class _CheckListPageState extends State<CheckListPage> {
               pregunta.observaciones = observaciones;
               pregunta.isAnswered = true;
             },
+            idDefaultAnswer: pregunta.idDefaultAnswer,
             isAnswered: pregunta.isAnswered,
             tieneObservaciones: pregunta.tieneObservaciones,
             observaciones: pregunta.observaciones ?? "",
+            textoAux: pregunta.textoAux,
           );
         } else if (pregunta is CategoriaPreguntaDataModel) {
           return Column(

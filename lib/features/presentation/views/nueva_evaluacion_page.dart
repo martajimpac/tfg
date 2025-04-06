@@ -517,6 +517,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   CustomDatePickerScroll(
                     onDateChanged: (DateTime newDate) {
                       _fechaCaducidad = newDate;
+
                       Fluttertoast.showToast(
                         msg:  Utils.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
                         toastLength: Toast.LENGTH_SHORT,
@@ -596,7 +597,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   const SizedBox(height: Dimensions.marginSmall),
                   Row(
                     children: [
-                      Expanded(child: Text("Máquina dedicada a elevación de cargas")), //TODO TEXTO
+                      Expanded(child: Text(S.of(context).elevationMachine,)),
                       Checkbox(
                         value: _isMaqCarga,
                         activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
@@ -612,7 +613,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   const SizedBox(height: Dimensions.marginSmall),
                   Row(
                     children: [
-                      Expanded(child: Text("Máquina móvil")),
+                      Expanded(child: Text(S.of(context).mobileMachine)),
                       Checkbox(
                         activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
                         checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)

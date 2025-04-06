@@ -8,6 +8,7 @@ import '../../../../core/utils/Utils.dart';
 import '../../../../generated/l10n.dart';
 import '../../../data/models/evaluacion_details_dm.dart';
 import '../../../data/models/imagen_dm.dart';
+import '../caducidad_indicator.dart';
 import '../dialog/my_image_dialog.dart';
 
 class TabEvaluacion extends StatelessWidget {
@@ -89,19 +90,21 @@ class TabEvaluacion extends StatelessWidget {
 
                       const SizedBox(height: Dimensions.marginMedium),
 
-                      Center(
+                      Utils.menosDe30DiasParaCaducar(context, evaluacion.fechaCaducidad) || Utils.haCaducado(context, evaluacion.fechaCaducidad)
+                          ? CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
+                          : Center(
                         child: Text(
                           Utils.getDifferenceBetweenDates(context, DateTime.now(), evaluacion.fechaCaducidad),
                           style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
-                        )
+                        ),
                       ),
 
                       const SizedBox(height: Dimensions.marginMedium),
 
                       Divider(
-                        color: Theme.of(context).colorScheme.surface,  // Color de la línea
-                        thickness: 1,        // Grosor de la línea
+                        color: Theme.of(context).colorScheme.surface,
+                        thickness: 1,
                       ),
 
                       /// Datos de la Máquina
@@ -162,6 +165,58 @@ class TabEvaluacion extends StatelessWidget {
                             ? DateFormat(DateFormatString).format(evaluacion.fechaPuestaServicio!)
                             : S.of(context).unknownDate,
                       ),
+
+                      // Fecha de Puesta en Servicio
+                      _buildInfoRow(
+                        context: context,
+                        icon: Icons.event_available,
+                        label: "${S.of(context).comissioningDate}:",
+                        value: evaluacion.fechaPuestaServicio != null
+                            ? DateFormat(DateFormatString).format(evaluacion.fechaPuestaServicio!)
+                            : S.of(context).unknownDate,
+                      ),
+
+
+                      if (evaluacion.isMaqCarga) ...[
+                        SizedBox(height: Dimensions.marginSmall),
+                        Row(
+                          children: [
+                            Expanded(child:
+                              Text(
+                                  S.of(context).elevationMachine,
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondary)
+                              )
+                            ),
+                            Checkbox(
+                              value: true,
+                              activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                              checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                              onChanged: null,
+                            ),
+                          ],
+                        ),
+                      ],
+
+                      if (evaluacion.isMaqMovil) ...[
+                        SizedBox(height: Dimensions.marginSmall),
+                        Row(
+                          children: [
+                            Expanded(child:
+                              Text(
+                                  S.of(context).mobileMachine,
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondary)
+                              )
+                            ),
+                            Checkbox(
+                              value: true,
+                              activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                              checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                              onChanged: null,
+                            ),
+                          ],
+                        ),
+                      ],
+
 
                       // Imágenes
                       const SizedBox(height: Dimensions.marginSmall),

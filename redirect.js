@@ -9,10 +9,10 @@
             // Construir el deeplink
             const deeplink = `eval24://evalapp.com/details?id=${id}&comesFromQR=true`;
 
-            // Esperar 3 segundos antes de realizar la redirección
+            // Esperar 200 milisegundos antes de realizar la redirección
             setTimeout(() => {
                 window.location.href = deeplink;
-            }, 3000);
+            }, 200);
 
             // Mensaje de confirmación para redirección en curso
             setTimeout(() => {
@@ -21,7 +21,7 @@
                     <button onclick="manualRedirect()">Abrir manualmente</button>
                     <p>Si el problema persiste, asegúrate de tener la aplicación instalada.</p>
                 `;
-            }, 3000); // Espera 3 segundos antes de mostrar el mensaje de error
+            }, 200); // Espera 200 milisegundos antes de mostrar el mensaje de error
         } else {
             // Mensaje si no se encuentra un ID en la URL
             document.getElementById('message').innerHTML = `

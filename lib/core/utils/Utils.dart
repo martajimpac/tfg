@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:evaluacionmaquinas/features/data/models/imagen_dm.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../features/presentation/components/dialog/my_loading_dialog.dart';
 import '../../features/presentation/components/dialog/my_ok_dialog.dart';
@@ -177,16 +178,23 @@ class Utils {
 
 
   static Future<bool> hayConexion() async {
-    // Verificar tipo de conectividad (WiFi, móvil o ninguna)
+
+    // Verificar tipo de conectividad (WiFi, Ethernet, Móvil, Ninguna)
     final connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult == ConnectivityResult.none) {
       return false; // No hay conexión a ninguna red
     }
 
-    // Verificar si realmente hay acceso a Internet
+    if(Platform.isWindows){
+      return true;
+    }
+    return await _verificarAccesoInternet();
+  }
+
+  static Future<bool> _verificarAccesoInternet() async {
     try {
-      final result = await InternetAddress.lookup('example.com');
+      final result = await InternetAddress.lookup('google.com');
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } on SocketException catch (_) {
       return false; // Sin acceso a Internet
@@ -231,5 +239,57 @@ class Utils {
 
 
 
+  /// Muestra un mensaje estilo Toast/SnackBar adaptado a la plataforma
+  /// - Android/iOS: Usa FlutterToast (estilo nativo)
+  /// - Windows/macOS/Linux: Usa SnackBar (centrado y con estilo similar)
+  static showAdaptiveToast({
+    required BuildContext context,
+    required String message,
+    ToastGravity gravity = ToastGravity.CENTER,
+    Color backgroundColor = Colors.grey,
+    Color textColor = Colors.white,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      // Para móvil: Toast nativo
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: gravity,
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+      );
+    } else {
+      // Para escritorio: SnackBar personalizado
+      final snackBar = SnackBar(
+        content: Text(message, style: TextStyle(color: textColor)),
+        duration: duration,
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        margin: _calculateMargin(context, gravity),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  /// Calcula el margen para posicionar el SnackBar según el gravity
+  static
+
+  EdgeInsets _calculateMargin(BuildContext context, ToastGravity gravity) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    switch (gravity) {
+      case ToastGravity.TOP:
+        return EdgeInsets.only(top: 20, left: 20, right: 20);
+      case ToastGravity.BOTTOM:
+        return EdgeInsets.only(bottom: 20, left: 20, right: 20);
+      case ToastGravity.CENTER:
+      default:
+        return EdgeInsets.only(
+          bottom: screenHeight * 0.4,
+          left: 20,
+          right: 20,
+        );
+    }
+  }
 
 }

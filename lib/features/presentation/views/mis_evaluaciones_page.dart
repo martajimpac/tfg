@@ -36,6 +36,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint("MARTA MisEvaluaccionesPage initState() llamado");
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _cubitEvaluaciones.getEvaluaciones(context);
   }
@@ -191,16 +192,21 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               : Image.asset('assets/icons/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize, semanticLabel: S.of(context).semanticlabelSortAlphabeticallyAsc),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
-                Fluttertoast.showToast(
-                  msg: sortNameDescendent
-                    ? S.of(context).evaluationsSortedName
-                    : S.of(context).evaluationsSortedNameDescendant,
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  backgroundColor: Colors.grey,
-                  textColor: Colors.white,
-                );
-               _cubitEvaluaciones.updateSorting(context, false);
+                if(_cubitEvaluaciones.evaluaciones.isNotEmpty){
+                  // Con parámetros personalizados:
+                  Utils.showAdaptiveToast(
+                    context: context,
+                    message: sortNameDescendent
+                        ? S.of(context).evaluationsSortedName
+                        : S.of(context).evaluationsSortedNameDescendant,
+                  );
+                  _cubitEvaluaciones.updateSorting(context, false);
+                }else{
+                  Utils.showAdaptiveToast(
+                    context: context,
+                    message:  S.of(context).noEvaluations,
+                  );
+                }
             },
           ),
         ),
@@ -217,16 +223,20 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                 : Image.asset('assets/icons/ic_calendar_up.png', height: 27, width: 27, semanticLabel: S.of(context).semanticlabelSortByCreationDateAsc),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
-              Fluttertoast.showToast(
-                msg: sortDateDescendent
-                  ? S.of(context).evaluationsSortedDate
-                  : S.of(context).evaluationsSortedDateDescendant,
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.grey,
-                textColor: Colors.white,
-              );
-              _cubitEvaluaciones.updateSorting(context, true);
+              if(_cubitEvaluaciones.evaluaciones.isNotEmpty){
+                Utils.showAdaptiveToast(
+                  context: context,
+                  message: sortDateDescendent
+                      ? S.of(context).evaluationsSortedDate
+                      : S.of(context).evaluationsSortedDateDescendant,
+                );
+                _cubitEvaluaciones.updateSorting(context, true);
+              }else{
+                Utils.showAdaptiveToast(
+                  context: context,
+                  message: S.of(context).noEvaluations,
+                );
+              }
             }
           ),
         ),

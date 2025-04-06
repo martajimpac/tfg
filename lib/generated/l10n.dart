@@ -1400,6 +1400,46 @@ class S {
     );
   }
 
+  /// `Load lifting machine`
+  String get elevationMachine {
+    return Intl.message(
+      'Load lifting machine',
+      name: 'elevationMachine',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile machine`
+  String get mobileMachine {
+    return Intl.message(
+      'Mobile machine',
+      name: 'mobileMachine',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The evaluation you are trying to access was created by another user, so it cannot be modified.`
+  String get notCreator {
+    return Intl.message(
+      'The evaluation you are trying to access was created by another user, so it cannot be modified.',
+      name: 'notCreator',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You need to be logged into the application to access the evaluation.`
+  String get loginNeeded {
+    return Intl.message(
+      'You need to be logged into the application to access the evaluation.',
+      name: 'loginNeeded',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Checklist`
   String get checklistTitle {
     return Intl.message(
@@ -1465,6 +1505,16 @@ class S {
     return Intl.message(
       'Generating PDF...',
       name: 'generatingPdf',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saving the anwers...`
+  String get sanvingAnswers {
+    return Intl.message(
+      'Saving the anwers...',
+      name: 'sanvingAnswers',
       desc: '',
       args: [],
     );

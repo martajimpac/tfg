@@ -38,12 +38,16 @@ class EvaluacionesError extends EvaluacionesState {
 
 class EvaluacionesDeleteLoading extends EvaluacionesState {}
 
-class EvaluacionesDeleteSuccess extends EvaluacionesState {}
+class
+EvaluacionesDeleteSuccess extends EvaluacionesState {}
 
 class EvaluacionesDeleteError extends EvaluacionesState {
   final String errorMessage;
 
   const EvaluacionesDeleteError(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
 }
 
 // Define el cubit
@@ -96,9 +100,8 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   }
 
   void updateSorting(BuildContext context, bool sortByDate) {
-    emit(EvaluacionesLoading());
-    if (evaluacionesFiltered.isNotEmpty) {
-
+   if (evaluacionesFiltered.isNotEmpty) {
+      emit(EvaluacionesLoading());
       // Actualizar los criterios de ordenación
       if (sortByDate) {
         if (sortedByDate) {
