@@ -1,20 +1,7 @@
-buildscript {
-    ext.kotlin_version = '1.9.22' // Última versión estable
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 }
 
@@ -22,20 +9,6 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-
-// add These lines from here. in android/build.gradle  (NOT android/app/build.gradle)
-subprojects {
-    afterEvaluate { project ->
-        if (project.plugins.hasPlugin("com.android.application") ||
-                project.plugins.hasPlugin("com.android.library")) {
-            project.android {
-                compileSdkVersion 34
-                buildToolsVersion "34.0.0"
-            }
-        }
-    }
-}
-// to here
 subprojects {
     project.evaluationDependsOn(':app')
 }
