@@ -273,7 +273,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                       Text(
                         (filtro.key == filtroFechaRealizacion || filtro.key == filtroFechaCaducidad)
                             ? "${filtro.key}: ${DateFormat(DateFormatString).format(filtro.value)}"
-                            : "${filtro.key}: ${(filtro.value as CentroDataModel).denominacion}",
+                            : (filtro.key == filtroDenominacion) // Verifica si el filtro es de denominación
+                            ? "${filtro.key}: ${(filtro.value as CentroDataModel).denominacion}"  // Muestra la denominación
+                            : "${filtro.key}: ${(filtro.value as CentroDataModel).denominacion}",  // Aquí puedes ajustar según otros filtros si es necesario
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(width: Dimensions.marginSmall),

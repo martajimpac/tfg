@@ -256,7 +256,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
             secondaryButtonText: S.of(context).cancel,
             onSecondaryButtonTap: (){
               Navigator.of(context).pop();
-            },
+              },
           );
         },
       );
@@ -294,24 +294,24 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
     final id = await SharedPrefs.getUserId();
 
     _cubitInsertarEvaluacion.modificarEvaluacion(
-      context,
-      id,  //idinspector (de supabase)
-      _idEvaluacion!,
-      _idCentro!,
-      _nombreCentro,
-      1, //idtipoeval
-      _fechaRealizacion,
-      DateTime.now(), //fecha modificacion
-      _fechaCaducidad,
-      _fechaFabricacion,
-      _fechaPuestaServicio,
-      _idMaquina!,
-      _denominacionController.text.trim(),
-      _fabricanteController.text.trim(),
-      _numeroSerieController.text.trim(),
-      _isMaqMovil,
-      _isMaqCarga,
-      _imageList,
+        context,
+        id,  //idinspector (de supabase)
+        _idEvaluacion!,
+        _idCentro!,
+        _nombreCentro,
+        1, //idtipoeval
+        _fechaRealizacion,
+        DateTime.now(), //fecha modificacion
+        _fechaCaducidad,
+        _fechaFabricacion,
+        _fechaPuestaServicio,
+        _idMaquina!,
+        _denominacionController.text.trim(),
+        _fabricanteController.text.trim(),
+        _numeroSerieController.text.trim(),
+        _isMaqMovil,
+        _isMaqCarga,
+        _imageList,
     );
   }
 
@@ -434,373 +434,381 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
         onPopInvoked: (bool didPop){
           _showExitDialog(context);
           //GoRouter.of(context).go('/home');
-        }, child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        },
+        child: SafeArea(
+            child:
+            Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
 
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          automaticallyImplyLeading: false,
-          centerTitle: true, // Esto centra el título
-          title: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
-            child: Text(
-              _isModifiying == true
-                  ? S.of(context).modifyEvaluationTitle
-                  : S.of(context).newEvaluationTitle,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: Dimensions.titleTextSize,
-                fontWeight: FontWeight.bold,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              automaticallyImplyLeading: false,
+              centerTitle: true, // Esto centra el título
+              title: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0), // Ajusta el espacio vertical según sea necesario
+                child: Text(
+                  _isModifiying == true
+                      ? S.of(context).modifyEvaluationTitle
+                      : S.of(context).newEvaluationTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: Dimensions.titleTextSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center, // Asegura que el texto esté centrado
+                ),
               ),
-              textAlign: TextAlign.center, // Asegura que el texto esté centrado
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.white, semanticLabel:  S.of(context).semanticlabelClose), // Icono de cruz
+                  onPressed: () {
+                    _showExitDialog(context);
+                  },
+                ),
+              ],
             ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.close, color: Colors.white, semanticLabel:  S.of(context).semanticlabelClose), // Icono de cruz
-              onPressed: () {
-                _showExitDialog(context);
-              },
-            ),
-          ],
-        ),
 
 
-        body: Padding(
-          padding: const EdgeInsets.all(Dimensions.marginSmall), // Puedes ajustar los valores según sea necesario
-          child: Column(
-            children: [
-              //const SizedBox(height: Dimensions.marginMedium),
-              Expanded(
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: <Widget>[
-                    /**********************DATOS EVALUACION***********************/
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(S.of(context).evaluationData, style: Theme.of(context).textTheme.headlineMedium),
-                      ],
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).centerAsterisk),
-                    BlocBuilder<CentrosCubit, CentrosState>(
-                      builder: (context, state) {
-                        if (state is CentrosLoading) {
-                          return const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        } else if (state is CentrosLoaded) {
-                          _centros = state.centros;
-
-                          return CustomDropdownField(
-                            controller: _centrosController,
-                            hintText: S.of(context).hintCenter,
-                            items: _centros,
-                            numItems: 5,
-                            isRed: _isCentroRed,
-                          );
-                        } else if (state is CentrosError) {
-                          return SizedBox(
-                            height: 100,
-                            child: Center(child: Text(state.errorMessage)),
-                          );
-                        } else {  return const SizedBox(); }
-                      },
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).expirationDateAsterisk),
-                    CustomDatePickerScroll(
-                      onDateChanged: (DateTime newDate) {
-                        _fechaCaducidad = newDate;
-
-                        Fluttertoast.showToast(
-                          msg:  Utils.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                        );
-                      },
-                      initialDate: _fechaCaducidad,
-                    ),
-
-                    /********************** DATOS MAQUINA***********************/
-                    const SizedBox(height: Dimensions.marginBig),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(S.of(context).machineData, style: Theme.of(context).textTheme.headlineMedium),
-                      ],
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).denominationAsterisk),
-                    MyTextField(
-                      controller: _denominacionController,
-                      hintText: S.of(context).hintDenomination,
-                      isRed: _isNombreMaquinaRed,
-                      focusNode: _campoDenominacionFocus,
-                      onSubmited: () {
-                        FocusScope.of(context).requestFocus(_campoFabricanteFocus);
-                      },
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).manufacturer),
-                    MyTextField(
-                      controller: _fabricanteController,
-                      hintText: S.of(context).hintManufacturer,
-                      focusNode: _campoFabricanteFocus,
-                      onSubmited: () {
-                        FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
-                      },
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).serialNumberAsterisk),
-                    MyTextField(
-                      controller: _numeroSerieController,
-                      hintText: S.of(context).hintSerialNumber,
-                      isRed: _isNumeroSerieRed,
-                      focusNode: _campoNumeroSerieFocus,
-                      onSubmited: () {
-                        //FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
-                      },
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).manufacturedDateAsterisk),
-                    CustomDatePicker(
-                      onDateChanged: (DateTime? newDate) {
-                        _fechaFabricacion = newDate;
-                      },
-                      selectedDateNotifier: _fechaFabricacionNotifier,
-                      isRed: _isFechasRed,
-                    ),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Text(S.of(context).comissioningDateAsterisk),
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    CustomDatePicker(
-                      onDateChanged: (DateTime? newDate) {
-                        _fechaPuestaServicio = newDate;
-                      },
-                      selectedDateNotifier: _fechaPuestaServicioNotifier,
-                      isRed: _isFechasRed,
-                    ),
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Row(
-                      children: [
-                        Expanded(child: Text(S.of(context).elevationMachine,)),
-                        Checkbox(
-                          value: _isMaqCarga,
-                          activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
-                          checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isMaqCarga = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Row(
-                      children: [
-                        Expanded(child: Text(S.of(context).mobileMachine)),
-                        Checkbox(
-                          activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
-                          checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
-                          value: _isMaqMovil,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isMaqMovil = value!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-
-
-
-                    const SizedBox(height: Dimensions.marginSmall),
-                    Visibility(
-                      visible: !_loadingImage && _imageList.isEmpty,
-                      child: Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
-                        ),
-                        child: Column(
+            body: Padding(
+              padding: const EdgeInsets.all(Dimensions.marginSmall), // Puedes ajustar los valores según sea necesario
+              child: Column(
+                children: [
+                  //const SizedBox(height: Dimensions.marginMedium),
+                  Expanded(
+                    child: ListView(
+                      scrollDirection: Axis.vertical,
+                      children: <Widget>[
+                        /**********************DATOS EVALUACION***********************/
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            IconButton(
-                              icon: Icon(Icons.add_a_photo, semanticLabel: S.of(context).semanticlabelAddImage),
-                              onPressed: _checkImageLimit,
-                              color: Colors.grey,
-                            ),
-                            Text(
-                              S.of(context).addImage,
-                              style: const TextStyle(
-                                fontSize: Dimensions.smallTextSize,
-                                color: Colors.grey,
-                              ),
+                            Text(S.of(context).evaluationData, style: Theme.of(context).textTheme.headlineMedium),
+                          ],
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).centerAsterisk),
+                        BlocBuilder<CentrosCubit, CentrosState>(
+                          builder: (context, state) {
+                            if (state is CentrosLoading) {
+                              return const SizedBox(
+                                height: 100,
+                                child: Center(child: CircularProgressIndicator()),
+                              );
+                            } else if (state is CentrosLoaded) {
+                              _centros = state.centros;
+
+                              return CustomDropdownField(
+                                controller: _centrosController,
+                                hintText: S.of(context).hintCenter,
+                                items: _centros,
+                                numItems: 5,
+                                isRed: _isCentroRed,
+                              );
+                            } else if (state is CentrosError) {
+                              return SizedBox(
+                                height: 100,
+                                child: Center(child: Text(state.errorMessage)),
+                              );
+                            } else {  return const SizedBox(); }
+                          },
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).expirationDateAsterisk),
+                        CustomDatePickerScroll(
+                          onDateChanged: (DateTime newDate) {
+                            _fechaCaducidad = newDate;
+
+                            Fluttertoast.showToast(
+                              msg:  Utils.getDifferenceBetweenDates(context, DateTime.now(), _fechaCaducidad),
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                            );
+                          },
+                          initialDate: _fechaCaducidad,
+                        ),
+
+                        /********************** DATOS MAQUINA***********************/
+                        const SizedBox(height: Dimensions.marginBig),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(S.of(context).machineData, style: Theme.of(context).textTheme.headlineMedium),
+                          ],
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).denominationAsterisk),
+                        MyTextField(
+                          controller: _denominacionController,
+                          hintText: S.of(context).hintDenomination,
+                          isRed: _isNombreMaquinaRed,
+                          focusNode: _campoDenominacionFocus,
+                          onSubmited: () {
+                            FocusScope.of(context).requestFocus(_campoFabricanteFocus);
+                          },
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).manufacturer),
+                        MyTextField(
+                          controller: _fabricanteController,
+                          hintText: S.of(context).hintManufacturer,
+                          focusNode: _campoFabricanteFocus,
+                          onSubmited: () {
+                            FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
+                          },
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).serialNumberAsterisk),
+                        MyTextField(
+                          controller: _numeroSerieController,
+                          hintText: S.of(context).hintSerialNumber,
+                          isRed: _isNumeroSerieRed,
+                          focusNode: _campoNumeroSerieFocus,
+                          onSubmited: () {
+                            //FocusScope.of(context).requestFocus(_campoNumeroSerieFocus);
+                          },
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).manufacturedDateAsterisk),
+                        CustomDatePicker(
+                          onDateChanged: (DateTime? newDate) {
+                            _fechaFabricacion = newDate;
+                          },
+                          selectedDateNotifier: _fechaFabricacionNotifier,
+                          isRed: _isFechasRed,
+                        ),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Text(S.of(context).comissioningDateAsterisk),
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        CustomDatePicker(
+                          onDateChanged: (DateTime? newDate) {
+                            _fechaPuestaServicio = newDate;
+                          },
+                          selectedDateNotifier: _fechaPuestaServicioNotifier,
+                          isRed: _isFechasRed,
+                        ),
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Row(
+                          children: [
+                            Expanded(child: Text(S.of(context).elevationMachine,)),
+                            Checkbox(
+                              value: _isMaqCarga,
+                              activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                              checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isMaqCarga = value!;
+                                });
+                              },
                             ),
                           ],
                         ),
-                      ),
-                    ),
-
-                    // Mostrar un cargando si _loadingImage es verdadero
-                    Visibility(
-                      visible: _loadingImage,
-                      child: SizedBox(
-                        height: 200,
-                        child:  Center(
-                            child: Text(S.of(context).uploadingImage)
-                        ),
-                      ),
-                    ),
-
-                    // Mostrar la lista de imágenes cuando no esté vacía y no se esté cargando
-                    SizedBox(
-                      height: _imageList.isNotEmpty && !_loadingImage ? 200 : 0, // Ajusta la altura según lo necesites
-                      child: _imageList.isNotEmpty && !_loadingImage
-                          ? ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        physics: const ClampingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: _imageList.length + 1, // +1 para el botón más
-                        itemBuilder: (BuildContext context, int index) {
-                          if (index == _imageList.length) {
-                            // Último ítem, mostrar el botón más
-                            return GestureDetector(
-                              onTap: () {
-                                _checkImageLimit();
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Row(
+                          children: [
+                            Expanded(child: Text(S.of(context).mobileMachine)),
+                            Checkbox(
+                              activeColor: Theme.of(context).appBarTheme.iconTheme?.color, // Color del fondo cuando está marcado
+                              checkColor: Theme.of(context).colorScheme.surface,  // Color del check (✓)
+                              value: _isMaqMovil,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isMaqMovil = value!;
+                                });
                               },
-                              child: Container(
-                                margin: const EdgeInsets.all(8.0),
-                                width: 200,
-                                height: 200,
-                                color: Colors.grey[300],
-                                child: Icon(
-                                    Icons.add,
-                                    color: Colors.grey[600],
-                                    size: 48.0, semanticLabel: S.of(context).semanticlabelAddNewImage
-                                ),
-                              ),
-                            );
-                          } else {
-                            // Mostrar la imagen con el botón de eliminar
-                            return Stack(
+                            ),
+                          ],
+                        ),
+
+
+
+                        const SizedBox(height: Dimensions.marginSmall),
+                        Visibility(
+                          visible: !_loadingImage && _imageList.isEmpty,
+                          child: Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              borderRadius: BorderRadius.circular(Dimensions.cornerRadiusButton),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                GestureDetector(
-                                  onLongPress: () {
-                                    setState(() {
-                                      _imageList.removeAt(index);
-                                    });
+                                IconButton(
+                                  icon: Icon(Icons.add_a_photo, semanticLabel: S.of(context).semanticlabelAddImage),
+                                  onPressed: _checkImageLimit,
+                                  color: Colors.grey,
+                                ),
+                                Text(
+                                  S.of(context).addImage,
+                                  style: const TextStyle(
+                                    fontSize: Dimensions.smallTextSize,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Mostrar un cargando si _loadingImage es verdadero
+                        Visibility(
+                          visible: _loadingImage,
+                          child: SizedBox(
+                            height: 200,
+                            child:  Center(
+                                child: Text(S.of(context).uploadingImage)
+                            ),
+                          ),
+                        ),
+
+                        // Mostrar la lista de imágenes cuando no esté vacía y no se esté cargando
+                        SizedBox(
+                          height: _imageList.isNotEmpty && !_loadingImage ? 200 : 0, // Ajusta la altura según lo necesites
+                          child: _imageList.isNotEmpty && !_loadingImage
+                              ? ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            physics: const ClampingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: _imageList.length + 1, // +1 para el botón más
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index == _imageList.length) {
+                                // Último ítem, mostrar el botón más
+                                return GestureDetector(
+                                  onTap: () {
+                                    _checkImageLimit();
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.all(8.0),
                                     width: 200,
                                     height: 200,
-                                    child: Utils.showImage(_imageList[index]),
-                                  ),
-                                ),
-                                Positioned( //cruz para eliminar las imagenes
-                                  top: 16.0,
-                                  right: 16.0,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _imageList.removeAt(index);
-                                      });
-                                    },
-                                    child: Image.asset(
-                                      'assets/icons/ic_close.png',
-                                      height: 25,
-                                      width: 25,
-                                      semanticLabel: S.of(context).semanticlabelDeleteImage,
+                                    color: Colors.grey[300],
+                                    child: Icon(
+                                        Icons.add,
+                                        color: Colors.grey[600],
+                                        size: 48.0, semanticLabel: S.of(context).semanticlabelAddNewImage
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }
-                        },
-                      )
-                          : const SizedBox(),
-                    ),
-                    const SizedBox(height: Dimensions.marginSmall),
-                    MyButton(
-                      adaptableWidth: false,
-                      onTap: () {
-                        setState(() {
-                          _isNumeroSerieRed = false;
-                          _isCentroRed = false;
-                          _isFechasRed = false;
-                          _isNombreMaquinaRed = false;
-                        });
-                        _showDialogCheck(context);
-                      },
-                      text: S.of(context).continuee,
-                    ),
-                    BlocListener<InsertarEvaluacionCubit, InsertarEvaluacionState>(
-                      listener: (context, state) {
-                        // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
-                        if(state is InsertarEvaluacionLoading){
-                          Navigator.of(context).pop(); //cerrar resumen
-                          Utils.showLoadingDialog(context, text: S.of(context).savingEvaluation);
-                        }else if(state is EvaluacionInsertada) {
-
-                          // Crea una copia para evitar problemas con la mutabilidad
-                          List<ImagenDataModel> imagenesCopy = List.from(state.imagenes);
-
-                          Navigator.of(context).pop();
-                          _idEvaluacion = state.evaluacion.ideval;
-                          _idMaquina = state.evaluacion.idmaquina;
-                          _imageList.clear();
-                          _imageList.addAll(imagenesCopy);
-
-
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList)));
-
-                        }else if(state is InsertarEvaluacionError){
-                          Navigator.of(context).pop();
-                          Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
-                            Navigator.of(context).pop();
-                          });
-                        }
-                      }, child: const SizedBox(),
-                    ),
-                    BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
-                        listener: (context, state) {
-                          if(state is EliminarEvaluacionCompletada){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-                          }else if (state is EliminarEvaluacionLoading) {
-                            Utils.showLoadingDialog(context);
-                          } else if (state is EliminarEvaluacionError) {
-                            Navigator.of(context).pop();
-                            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
-                              Navigator.of(context).pop();
+                                );
+                              } else {
+                                // Mostrar la imagen con el botón de eliminar
+                                return Stack(
+                                  children: [
+                                    GestureDetector(
+                                      onLongPress: () {
+                                        setState(() {
+                                          _imageList.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.all(8.0),
+                                        width: 200,
+                                        height: 200,
+                                        child: Utils.showImage(_imageList[index]),
+                                      ),
+                                    ),
+                                    Positioned( //cruz para eliminar las imagenes
+                                      top: 16.0,
+                                      right: 16.0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _imageList.removeAt(index);
+                                          });
+                                        },
+                                        child: Image.asset(
+                                          'assets/icons/ic_close.png',
+                                          height: 25,
+                                          width: 25,
+                                          semanticLabel: S.of(context).semanticlabelDeleteImage,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          )
+                              : const SizedBox(),
+                        ),
+                        const SizedBox(height: Dimensions.marginSmall),
+                        MyButton(
+                          adaptableWidth: false,
+                          onTap: () {
+                            setState(() {
+                              _isNumeroSerieRed = false;
+                              _isCentroRed = false;
+                              _isFechasRed = false;
+                              _isNombreMaquinaRed = false;
                             });
-                          } else {}
-                        },child: const SizedBox()
-                    )
-                  ],
-                ),
+                            _showDialogCheck(context);
+                          },
+                          text: S.of(context).continuee,
+                        ),
+                        BlocListener<InsertarEvaluacionCubit, InsertarEvaluacionState>(
+                          listener: (context, state) {
+                            // Aquí puedes escuchar los cambios en el estado del bloc y reaccionar en consecuencia
+                            if(state is InsertarEvaluacionLoading){
+                              Navigator.of(context).pop(); //cerrar resumen
+                              Utils.showLoadingDialog(context, text: S.of(context).savingEvaluation);
+                            }else if(state is EvaluacionInsertada) {
+
+                              // Crea una copia para evitar problemas con la mutabilidad
+                              List<ImagenDataModel> imagenesCopy = List.from(state.imagenes);
+
+                              Navigator.of(context).pop();
+                              _idEvaluacion = state.evaluacion.ideval;
+                              _idMaquina = state.evaluacion.idmaquina;
+                              _imageList.clear();
+                              _imageList.addAll(imagenesCopy);
+
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => CheckListPage(isModifying: _isModifiying, evaluacion: state.evaluacion, imagenes: _imageList)));
+
+                            }else if(state is InsertarEvaluacionError){
+                              Navigator.of(context).pop();
+                              Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
+                                Navigator.of(context).pop();
+                              });
+                            }
+                          }, child: const SizedBox(),
+                        ),
+                        BlocListener<EliminarEvaluacionCubit, EliminarEvaluacionState>(
+                            listener: (context, state) {
+                              if(state is EliminarEvaluacionCompletada){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+                              }else if (state is EliminarEvaluacionLoading) {
+                                Utils.showLoadingDialog(context);
+                              } else if (state is EliminarEvaluacionError) {
+                                Navigator.of(context).pop();
+                                Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
+                                  Navigator.of(context).pop();
+                                });
+                              } else {}
+                            },child: const SizedBox()
+                        )
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            )
         )
-    )
+        )
     );
   }
+
+
 }
+
+

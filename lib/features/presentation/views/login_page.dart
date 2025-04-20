@@ -50,162 +50,165 @@ class _LoginPageState extends State<LoginPage> {
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop) {},
-    child: Scaffold(
-        extendBodyBehindAppBar: false,  // Esto permite que el contenido se dibuje detrás del AppBar
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Center(
-            child: Text(
-              S.of(context).loginTitle,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+    child: SafeArea(
+        child:
+        Scaffold(
+      extendBodyBehindAppBar: false,  // Esto permite que el contenido se dibuje detrás del AppBar
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            S.of(context).loginTitle,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
           ),
-          elevation: 0,  // Eliminar sombra del AppBar
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         ),
-        body: BlocConsumer<LoginCubit, LoginState>(
-          listener: (context, state) {
-            if (state is LoginSuccess) {
-              _goToHomePage();
-            } else if (state is LoginError) {
-              final errorMessage = state.message;
+        elevation: 0,  // Eliminar sombra del AppBar
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      ),
+      body: BlocConsumer<LoginCubit, LoginState>(
+        listener: (context, state) {
+          if (state is LoginSuccess) {
+            _goToHomePage();
+          } else if (state is LoginError) {
+            final errorMessage = state.message;
 
-                if (errorMessage == S.of(context).errorEmpty) {
-                  Utils.showAdaptiveToast(
-                      context: context,
-                      message: errorMessage,
-                      gravity: ToastGravity.BOTTOM
-                  );
-                } else if (errorMessage == S.of(context).errorAuthenticationNotConfirmed) {
-                  final email = _emailController.text.trim();
-                  final password = _passwordController.text.trim();
-                  _showErrorDialogWithResendOption(errorMessage, email, password);
-                } else {
-                  _showErrorDialog(errorMessage);
-                }
-
-            } else if (state is ConfirmationEmailSent) {
-              Utils.showMyOkDialog(
-                context,
-                S.of(context).emailResent,
-                S.of(context).emailResentDesc,
-                    () {
-                  Navigator.of(context).pop();
-                },
+            if (errorMessage == S.of(context).errorEmpty) {
+              Utils.showAdaptiveToast(
+                  context: context,
+                  message: errorMessage,
+                  gravity: ToastGravity.BOTTOM
               );
-            }else{
+            } else if (errorMessage == S.of(context).errorAuthenticationNotConfirmed) {
+              final email = _emailController.text.trim();
+              final password = _passwordController.text.trim();
+              _showErrorDialogWithResendOption(errorMessage, email, password);
+            } else {
+              _showErrorDialog(errorMessage);
             }
-          },
 
-          builder: (context, state) {
-            final isEmailRed = state is LoginError ? state.isEmailRed : false;
-            final isPasswordRed = state is LoginError ? state.isPasswordRed : false;
+          } else if (state is ConfirmationEmailSent) {
+            Utils.showMyOkDialog(
+              context,
+              S.of(context).emailResent,
+              S.of(context).emailResentDesc,
+                  () {
+                Navigator.of(context).pop();
+              },
+            );
+          }else{
+          }
+        },
 
-            return Stack(
-              children: [
-                // Imagen de fondo que ocupa toda la pantalla
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/images/bg_login.png',  // Asegúrate de que la imagen esté en esta ruta
-                    fit: BoxFit.cover,  // Esto asegura que la imagen cubra toda la pantalla
-                    semanticLabel: "",
-                  ),
+        builder: (context, state) {
+          final isEmailRed = state is LoginError ? state.isEmailRed : false;
+          final isPasswordRed = state is LoginError ? state.isPasswordRed : false;
+
+          return Stack(
+            children: [
+              // Imagen de fondo que ocupa toda la pantalla
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/bg_login.png',  // Asegúrate de que la imagen esté en esta ruta
+                  fit: BoxFit.cover,  // Esto asegura que la imagen cubra toda la pantalla
+                  semanticLabel: "",
                 ),
-                // Contenido de la página
-                SafeArea(
-                  child: Center(
-                    child: Padding(
+              ),
+              // Contenido de la página
+              SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Dimensions.marginMedium),
+                    child: Container(
                       padding: const EdgeInsets.all(Dimensions.marginMedium),
-                      child: Container(
-                        padding: const EdgeInsets.all(Dimensions.marginMedium),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,  // Esto asegura que el contenedor tenga solo la altura necesaria
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(S.of(context).email),
-                            MyLoginTextField(
-                              controller: _emailController,
-                              hintText: S.of(context).hintEmail,
-                              isRed: isEmailRed,
-                              onSubmited: () {
-                                FocusScope.of(context).requestFocus(_passwordFocusNode);
-                              },
-                            ),
-                            const SizedBox(height: Dimensions.marginMedium),
-                            Text(S.of(context).password),
-                            MyLoginTextField(
-                              controller: _passwordController,
-                              hintText: S.of(context).hintPassword,
-                              obscureText: true,
-                              isRed: isPasswordRed,
-                              focusNode: _passwordFocusNode,
-                              onSubmited: () {
-                                if (state is! LoginLoading) {
-                                  login();
-                                }
-                              },
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                                );
-                              },
-                              child: Text(
-                                S.of(context).forgetPassword,
-                                style: TextStyle(
-                                    fontSize: Dimensions.smallTextSize,
-                                    decoration: TextDecoration.underline,
-                                    color: Theme.of(context).colorScheme.onSecondaryContainer
-                                ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        borderRadius: BorderRadius.circular(Dimensions.cornerRadius),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,  // Esto asegura que el contenedor tenga solo la altura necesaria
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(S.of(context).email),
+                          MyLoginTextField(
+                            controller: _emailController,
+                            hintText: S.of(context).hintEmail,
+                            isRed: isEmailRed,
+                            onSubmited: () {
+                              FocusScope.of(context).requestFocus(_passwordFocusNode);
+                            },
+                          ),
+                          const SizedBox(height: Dimensions.marginMedium),
+                          Text(S.of(context).password),
+                          MyLoginTextField(
+                            controller: _passwordController,
+                            hintText: S.of(context).hintPassword,
+                            obscureText: true,
+                            isRed: isPasswordRed,
+                            focusNode: _passwordFocusNode,
+                            onSubmited: () {
+                              if (state is! LoginLoading) {
+                                login();
+                              }
+                            },
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                              );
+                            },
+                            child: Text(
+                              S.of(context).forgetPassword,
+                              style: TextStyle(
+                                  fontSize: Dimensions.smallTextSize,
+                                  decoration: TextDecoration.underline,
+                                  color: Theme.of(context).colorScheme.onSecondaryContainer
                               ),
                             ),
-                            const SizedBox(height: Dimensions.marginMedium),
-                            state is LoginLoading
-                                ? const Center(
-                                      child: CircularProgressIndicator(),
-                                  )
-                                : MyButton(
-                                  adaptableWidth: false,
-                                  onTap: () async {
-                                    // Evitar clics múltiples si ya está cargando
-                                    if (state is! LoginLoading) {
-                                      login();
-                                    }
-                                  },
-                                  text: S.of(context).loginButton,
-                                ),
+                          ),
+                          const SizedBox(height: Dimensions.marginMedium),
+                          state is LoginLoading
+                              ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                              : MyButton(
+                            adaptableWidth: false,
+                            onTap: () async {
+                              // Evitar clics múltiples si ya está cargando
+                              if (state is! LoginLoading) {
+                                login();
+                              }
+                            },
+                            text: S.of(context).loginButton,
+                          ),
 
-                            const SizedBox(height: Dimensions.marginMedium),
-                            MyButton(
-                              adaptableWidth: false,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const RegisterPage()),
-                                );
-                              },
-                              color: Theme.of(context).colorScheme.primary,
-                              text: S.of(context).registerButton,
-                            ),
-                          ],
-                        ),
+                          const SizedBox(height: Dimensions.marginMedium),
+                          MyButton(
+                            adaptableWidth: false,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const RegisterPage()),
+                              );
+                            },
+                            color: Theme.of(context).colorScheme.primary,
+                            text: S.of(context).registerButton,
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
-      )
+              ),
+            ],
+          );
+        },
+      ),
+    )
+    )
     );
   }
 

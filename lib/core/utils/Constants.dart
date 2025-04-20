@@ -3,7 +3,7 @@ int selectedIndexHome = 0;
 const String filtroCentro = "Centro";
 const String filtroFechaRealizacion = "Fecha realización";
 const String filtroFechaCaducidad = "Fecha caducidad";
-const String filtroDenominacion = "Denomincacion";
+const String filtroDenominacion = "Nombre máquina";
 
 //Posibles valores: desarrollo, producción
 enum EntornoVersion { desarrollo, produccion }

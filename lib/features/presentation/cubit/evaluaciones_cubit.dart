@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:equatable/equatable.dart';
 import 'package:evaluacionmaquinas/features/data/models/centro_dm.dart';
 import 'package:flutter/cupertino.dart';
@@ -85,6 +86,18 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       if (filtros[filtroFechaCaducidad] != null) {
         evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) => evaluacion.fechaCaducidad.isBefore(filtros[filtroFechaCaducidad])).toList();
       }
+
+      if (filtros[filtroDenominacion] != null) {
+
+
+        evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) {
+          String normalizedFiltro = removeDiacritics(filtros[filtroDenominacion].toUpperCase()).trim();
+          String normalizadName = removeDiacritics(evaluacion.nombreMaquina.toUpperCase()).trim();
+          // Normalizamos tanto el texto de búsqueda como el valor del filtro
+          return normalizadName == normalizedFiltro;
+        }).toList();
+      }
+
 
       // Ordenar por defecto al iniciar
       evaluacionesFiltered.sort((a, b) {

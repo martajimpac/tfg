@@ -9,6 +9,7 @@ class MyTextField extends StatefulWidget {
   final bool isRed;
   final VoidCallback? onSubmited;
   final FocusNode? focusNode;
+  final Function(String)? onTextChanged;
 
   const MyTextField({
     super.key,
@@ -17,6 +18,7 @@ class MyTextField extends StatefulWidget {
     this.isRed = false,
     this.onSubmited,
     this.focusNode,
+    this.onTextChanged,
   });
 
   @override
@@ -65,7 +67,9 @@ class _MyTextFieldState extends State<MyTextField> {
         focusNode: widget.focusNode,
         controller: widget.controller,
         onChanged: (text) {
-          // Ya no es necesario actualizar _isEmpty aquí porque lo hace el listener.
+          if (widget.onTextChanged != null) {
+            widget.onTextChanged!(text);
+          }
         },
         onSubmitted: (_) {
           if (widget.onSubmited != null) {
