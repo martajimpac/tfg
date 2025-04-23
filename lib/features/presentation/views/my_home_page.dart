@@ -55,36 +55,39 @@ class _MyHomePageState extends State<MyHomePage> {
         SystemNavigator.pop();
         return true; // Cierra la aplicación
       },
-      child: Scaffold(
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
-        ),
-        bottomNavigationBar: _selectedIndex != 1
-            ? CurvedNavigationBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          color: Theme.of(context).colorScheme.primaryContainer,
-          animationDuration: const Duration(milliseconds: 300),
-          items: [
-            Icon(
-              Icons.home,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              semanticLabel: S.of(context).semanticlabelHomepage,
+      child: SafeArea(
+          child:
+          Scaffold(
+            body: Center(
+              child: _widgetOptions.elementAt(_selectedIndex),
             ),
-            Icon(
-              Icons.add,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              semanticLabel: S.of(context).semanticlabelNewEvaluation,
-            ),
-            Icon(
-              Icons.person,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              semanticLabel: S.of(context).semanticlabelProfile,
-            ),
-          ],
-          onTap: _onItemTapped,
-          index: _selectedIndex,
-        )
-            : null,
+            bottomNavigationBar: _selectedIndex != 1
+                ? CurvedNavigationBar(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).colorScheme.primaryContainer,
+              animationDuration: const Duration(milliseconds: 300),
+              items: [
+                Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  semanticLabel: S.of(context).semanticlabelHomepage,
+                ),
+                Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  semanticLabel: S.of(context).semanticlabelNewEvaluation,
+                ),
+                Icon(
+                  Icons.person,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  semanticLabel: S.of(context).semanticlabelProfile,
+                ),
+              ],
+              onTap: _onItemTapped,
+              index: _selectedIndex,
+            )
+                : null,
+          )
       ),
     );
   }

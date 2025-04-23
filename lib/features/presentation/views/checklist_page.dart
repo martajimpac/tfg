@@ -65,97 +65,104 @@ class _CheckListPageState extends State<CheckListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return       Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text(
-          widget.isModifying ? S.of(context).modifyChecklistTitle : S.of(context).checklistTitle,
-          style: const TextStyle(
-              color: Colors.white,
-              fontSize: Dimensions.titleTextSize,
-              fontWeight: FontWeight.bold
+    return SafeArea(
+        child:
+        Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            title: Text(
+              widget.isModifying ? S.of(context).modifyChecklistTitle : S.of(context).checklistTitle,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: Dimensions.titleTextSize,
+                  fontWeight: FontWeight.bold
+              ),
+            ),
           ),
-        ),
-      ),
-      body: Center(
-        child: BlocConsumer<PreguntasCubit, PreguntasState>(
-          builder: (context, state) {
-            if (state is PreguntasLoading) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(state.loadingMessage),
-                    const SizedBox(height: 16),
-                    const CircularProgressIndicator(),
-                  ],
-                ),
-              );
-            } else if (state is PreguntasLoaded) {
+          body: BlocConsumer<PreguntasCubit, PreguntasState>(
+            builder: (context, state) {
               final List<CategoriaPreguntaDataModel> categorias = _cubit.categorias ?? [];
-              final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
-              final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
+              /*bool isLastPage = _currentPageIndex == (categorias.length - 1);
+              bool isLoading = state is PreguntasLoading;*/
 
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   HorizontalCategoryList(
-                    categorias: categorias, // Lista de categorías
-                    currentIndex: _currentPageIndex, // Índice inicial
+                    categorias: categorias,
+                    currentIndex: _currentPageIndex,
+                    enabled: state is PreguntasLoaded,
                     onCategorySelected: (index) {
                       _currentPageIndex = index;
                       _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
                     },
                   ),
-                  _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
+                  Expanded(
+                    child: () {
+                      if (state is PreguntasLoading) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(state.loadingMessage),
+                              const SizedBox(height: 16),
+                              const CircularProgressIndicator(),
+                            ],
+                          ),
+                        );
+                      } else if (state is PreguntasLoaded) {
+                        final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
+                        final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
 
-                  if (_currentPageIndex == (categorias.length - 1))
-                  // Botón "Terminar" si estás en la última página
-                    MyButton(
-                      adaptableWidth: false,
-                      onTap: () {
-                        // Comprobar que todas las preguntas han sido respondidas
-                        _checkAllAnswer(preguntas);
-                      },
-                      text: S.of(context).finish,
-                      roundBorders: false,
-                    )
-                  else
-                  // Botón "Siguiente" si no estás en la última página
-                    MyButton(
-                      adaptableWidth: false,
-                      onTap: () {
-                        _currentPageIndex ++;
-                        _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
-                      },
-                      text: S.of(context).next, // Asumiendo que tienes el texto traducido
-                      roundBorders: false,
-                    )
+                        return Column(
+                          children: [
+                            _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
+                            if (_currentPageIndex == (categorias.length - 1))
+                              MyButton(
+                                adaptableWidth: false,
+                                onTap: () => _checkAllAnswer(preguntas),
+                                text: S.of(context).finish,
+                                roundBorders: false,
+                              )
+                            else
+                              MyButton(
+                                adaptableWidth: false,
+                                onTap: () {
+                                  _currentPageIndex++;
+                                  _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
+                                },
+                                text: S.of(context).next,
+                                roundBorders: false,
+                              ),
+                          ],
+                        );
+                      } else {
+                        return Center(child: Text(S.of(context).defaultError));
+                      }
+                    }(),
+                  )
                 ],
               );
+            },
 
-            }  else {
-              return Text(S.of(context).defaultError);
-            }
-          }, listener: (BuildContext context, PreguntasState state) {
-          if(state is PdfGenerated){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
-          }else if(state is PdfError){
-            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
-          }else if(state is PreguntasError){
-            Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
-          }
-        },
-        ),
-      ),
+            listener: (BuildContext context, PreguntasState state) {
+              if(state is PdfGenerated){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => TerminarPage(pathFichero: state.pathFichero, evaluacion: widget.evaluacion, imagenes: widget.imagenes)));
+              }else if(state is PdfError){
+                Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
+              }else if(state is PreguntasError){
+                Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () => { Navigator.of(context).pop() });
+              }
+            },
+          )
+        )
     );
   }
 

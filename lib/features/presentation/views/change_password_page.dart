@@ -51,121 +51,124 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          S.of(context).changePasswordTitle,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
-      body: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
-        listener: (context, state) {
-          if (state is ChangePasswordSuccess) {
-            // Contraseña cambiada con éxito
-            Utils.showMyOkDialog(
-              context,
-              S.of(context).exito,
-              S.of(context).changePasswordSuccess,
-                  () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            );
-          } else if (state is ChangePasswordError) {
-            final errorMessage = state.message;
+    return SafeArea(
+        child:
+        Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              S.of(context).changePasswordTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          body: BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
+            listener: (context, state) {
+              if (state is ChangePasswordSuccess) {
+                // Contraseña cambiada con éxito
+                Utils.showMyOkDialog(
+                  context,
+                  S.of(context).exito,
+                  S.of(context).changePasswordSuccess,
+                      () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                );
+              } else if (state is ChangePasswordError) {
+                final errorMessage = state.message;
 
-            if (errorMessage == S.of(context).errorEmpty ||
-                errorMessage == S.of(context).errorPasswordsDontMatch) {
-              Utils.showAdaptiveToast(
-                context: context,
-                message: errorMessage,
-                gravity: ToastGravity.BOTTOM
-              );
-            } else {
-              Utils.showMyOkDialog(
-                context,
-                S.of(context).error,
-                state.message,
-                    () {
-                  Navigator.of(context).pop();
-                },
-              );
-            }
-          }
-        },
-        builder: (context, state) {
-          final isCurrentPasswordRed = state is ChangePasswordError ? state.isCurrentPasswordRed : false;
-          final isPasswordRed = state is ChangePasswordError ? state.isNewPasswordRed : false;
-          final isRepeatPasswordRed = state is ChangePasswordError ? state.isConfirmPasswordRed : false;
+                if (errorMessage == S.of(context).errorEmpty ||
+                    errorMessage == S.of(context).errorPasswordsDontMatch) {
+                  Utils.showAdaptiveToast(
+                      context: context,
+                      message: errorMessage,
+                      gravity: ToastGravity.BOTTOM
+                  );
+                } else {
+                  Utils.showMyOkDialog(
+                    context,
+                    S.of(context).error,
+                    state.message,
+                        () {
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }
+              }
+            },
+            builder: (context, state) {
+              final isCurrentPasswordRed = state is ChangePasswordError ? state.isCurrentPasswordRed : false;
+              final isPasswordRed = state is ChangePasswordError ? state.isNewPasswordRed : false;
+              final isRepeatPasswordRed = state is ChangePasswordError ? state.isConfirmPasswordRed : false;
 
-          // Mantener los valores actuales si el estado contiene las contraseñas
-          _currentPasswordController.text = state is ChangePasswordError ? state.currentPassword : _currentPasswordController.text;
-          _newPasswordController.text = state is ChangePasswordError ? state.newPassword : _newPasswordController.text;
-          _confirmPasswordController.text = state is ChangePasswordError ? state.repeatPassword : _confirmPasswordController.text;
+              // Mantener los valores actuales si el estado contiene las contraseñas
+              _currentPasswordController.text = state is ChangePasswordError ? state.currentPassword : _currentPasswordController.text;
+              _newPasswordController.text = state is ChangePasswordError ? state.newPassword : _newPasswordController.text;
+              _confirmPasswordController.text = state is ChangePasswordError ? state.repeatPassword : _confirmPasswordController.text;
 
 
-          return SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(S.of(context).currentPassword),
-                      MyLoginTextField(
-                        controller: _currentPasswordController,
-                        hintText: S.of(context).hintPassword,
-                        isRed: isCurrentPasswordRed,
-                        onSubmited: () {
-                          FocusScope.of(context).requestFocus(_campoPasswordFocus);
-                        },
-                        obscureText: true,
+              return SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      Text(S.of(context).newPassword),
-                      MyLoginTextField(
-                        controller: _newPasswordController,
-                        hintText: S.of(context).hintPassword,
-                        isRed: isPasswordRed,
-                        focusNode: _campoPasswordFocus,
-                        onSubmited: () {
-                          FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
-                        },
-                        obscureText: true,
-                      ),
-                      Text(S.of(context).confirmNewPassword),
-                      MyLoginTextField(
-                          controller: _confirmPasswordController,
-                          hintText: S.of(context).hintPassword,
-                          isRed: isRepeatPasswordRed,
-                          focusNode: _campoRepeatPasswordFocus,
-                          onSubmited: () {
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(S.of(context).currentPassword),
+                          MyLoginTextField(
+                            controller: _currentPasswordController,
+                            hintText: S.of(context).hintPassword,
+                            isRed: isCurrentPasswordRed,
+                            onSubmited: () {
+                              FocusScope.of(context).requestFocus(_campoPasswordFocus);
+                            },
+                            obscureText: true,
+                          ),
+                          Text(S.of(context).newPassword),
+                          MyLoginTextField(
+                            controller: _newPasswordController,
+                            hintText: S.of(context).hintPassword,
+                            isRed: isPasswordRed,
+                            focusNode: _campoPasswordFocus,
+                            onSubmited: () {
+                              FocusScope.of(context).requestFocus(_campoRepeatPasswordFocus);
+                            },
+                            obscureText: true,
+                          ),
+                          Text(S.of(context).confirmNewPassword),
+                          MyLoginTextField(
+                            controller: _confirmPasswordController,
+                            hintText: S.of(context).hintPassword,
+                            isRed: isRepeatPasswordRed,
+                            focusNode: _campoRepeatPasswordFocus,
+                            onSubmited: () {
                               _changePassword(context);
-                          },
-                          obscureText: true,
+                            },
+                            obscureText: true,
+                          ),
+                          const SizedBox(height: 16.0),
+                          MyButton(
+                            adaptableWidth: false,
+                            onTap: () {
+                              _changePassword(context);
+                            },
+                            text: S.of(context).changePasswordButton,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16.0),
-                      MyButton(
-                        adaptableWidth: false,
-                        onTap: () {
-                          _changePassword(context);
-                        },
-                        text: S.of(context).changePasswordButton,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        )
     );
   }
 }

@@ -146,74 +146,77 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Expanded(child:
-            BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
-              builder: (context, state) {
-                if (state is DetallesEvaluacionLoading) {
-                  _isEvaluationLoaded = false;
-                  return Center(
-                    child: Padding(
-                        padding: const EdgeInsets.all(Dimensions.marginMedium),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (_generatingPdf) ...[
-                              Text(S.of(context).generatingPdf),
-                              const SizedBox(height: Dimensions.marginMedium),
-                            ],
-                            const CircularProgressIndicator(),
-                          ],
-                        )
-                    ),
-                  );
-                } else if (state is DetallesEvaluacionLoaded) {
-                  _isEvaluationLoaded = true;
-                  _evaluacion = state.evaluacion;
-                  _imagenes = state.imagenes;
-
-                  if (widget.comesFromQR && !_checkedPermission) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _checkUserPermission();
-                    });
-                    _checkedPermission = true;
-                  }
-
-                  return _buildView();
-                } else if (state is DetallesEvaluacionError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(Dimensions.marginMedium),
-                      child: Text(state.errorMessage),
-                    ),
-                  );
-                } else if (state is DetallesEvaluacionPdfGenerated) {
-                  _isEvaluationLoaded = true;
-                  return _buildView();
-                } else if(state is DetallesEvaluacionPdfError){
-
-                  return const SizedBox();
-                }else{
-                  return const SizedBox();
-                }
-              },
+    return SafeArea(
+        child:
+        Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            appBar: AppBar(
+              title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
+              centerTitle: true,
             ),
-          ),
-        ],
-      ),
-      floatingActionButton:  FloatingButtons(
-        onQRPressed: _onQRPressed,
-        onSharePressed: _sharePdf,
-        onDownloadPressed: _savePdf,
-      )
+            body: Column(
+              children: [
+                Expanded(child:
+                BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
+                  builder: (context, state) {
+                    if (state is DetallesEvaluacionLoading) {
+                      _isEvaluationLoaded = false;
+                      return Center(
+                        child: Padding(
+                            padding: const EdgeInsets.all(Dimensions.marginMedium),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (_generatingPdf) ...[
+                                  Text(S.of(context).generatingPdf),
+                                  const SizedBox(height: Dimensions.marginMedium),
+                                ],
+                                const CircularProgressIndicator(),
+                              ],
+                            )
+                        ),
+                      );
+                    } else if (state is DetallesEvaluacionLoaded) {
+                      _isEvaluationLoaded = true;
+                      _evaluacion = state.evaluacion;
+                      _imagenes = state.imagenes;
+
+                      if (widget.comesFromQR && !_checkedPermission) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _checkUserPermission();
+                        });
+                        _checkedPermission = true;
+                      }
+
+                      return _buildView();
+                    } else if (state is DetallesEvaluacionError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(Dimensions.marginMedium),
+                          child: Text(state.errorMessage),
+                        ),
+                      );
+                    } else if (state is DetallesEvaluacionPdfGenerated) {
+                      _isEvaluationLoaded = true;
+                      return _buildView();
+                    } else if(state is DetallesEvaluacionPdfError){
+
+                      return const SizedBox();
+                    }else{
+                      return const SizedBox();
+                    }
+                  },
+                ),
+                ),
+              ],
+            ),
+            floatingActionButton:  FloatingButtons(
+              onQRPressed: _onQRPressed,
+              onSharePressed: _sharePdf,
+              onDownloadPressed: _savePdf,
+            )
+        )
     );
   }
 

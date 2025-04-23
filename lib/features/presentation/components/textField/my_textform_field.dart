@@ -69,6 +69,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
       child: TextFormField(
         style: const TextStyle(
           fontWeight: FontWeight.bold, // Fuente en negrita
+          fontSize: Dimensions.smallTextSize
         ),
         focusNode: widget.focusNode,
         controller: widget.controller,

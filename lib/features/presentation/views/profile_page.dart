@@ -85,14 +85,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       SizedBox(
                         height: h / 4,
-                        child: Positioned.fill(
-                          child: Image.asset(
-                            'assets/images/bg_profile.png',
-                            fit: BoxFit.fitHeight,
-                            semanticLabel: S.of(context).semanticlabelProfilePicture,
-                          ),
+                        child: Image.asset(
+                          'assets/images/bg_profile.png',
+                          fit: BoxFit.fitHeight,
+                          semanticLabel: S.of(context).semanticlabelProfilePicture,
                         ),
                       ),
+
                       Positioned(
                         bottom: -40,
                         child: CircleAvatar(

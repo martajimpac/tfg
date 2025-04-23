@@ -30,53 +30,56 @@ class _OfflinePageState extends State<OfflinePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          S.of(context).pdf,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
-      body: _pdfFiles.isEmpty
-          ? Center(
-        child: Text(
-          S.of(context).noPdfAvaliable, // Mensaje cuando no hay archivos
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      )
-          : ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: _pdfFiles.length,
-        itemBuilder: (BuildContext context, int index) {
-          final pdf = _pdfFiles[index];
-          return Card(
-            margin: const EdgeInsets.all(Dimensions.marginSmall),
-            elevation: 2,
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: ListTile(
-              leading: Icon(
-                Icons.picture_as_pdf,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: Text(
-                "evaluacion $index",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-              onTap: () {
-                // Navegar a la página de ampliación del PDF
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PdfPage(filePath: pdf.path),
-                  ),
-                );
-              },
+    return SafeArea(
+        child:
+        Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              S.of(context).pdf,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-          );
-        },
-      ),
+          ),
+          body: _pdfFiles.isEmpty
+              ? Center(
+            child: Text(
+              S.of(context).noPdfAvaliable, // Mensaje cuando no hay archivos
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          )
+              : ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: _pdfFiles.length,
+            itemBuilder: (BuildContext context, int index) {
+              final pdf = _pdfFiles[index];
+              return Card(
+                margin: const EdgeInsets.all(Dimensions.marginSmall),
+                elevation: 2,
+                color: Theme.of(context).colorScheme.onPrimary,
+                child: ListTile(
+                  leading: Icon(
+                    Icons.picture_as_pdf,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    "evaluacion $index",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    // Navegar a la página de ampliación del PDF
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PdfPage(filePath: pdf.path),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        )
     );
   }
 }

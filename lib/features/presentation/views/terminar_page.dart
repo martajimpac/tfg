@@ -69,88 +69,91 @@ class _TerminarPageState extends State<TerminarPage> {
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            S.of(context).evaluationFinished,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: Dimensions.titleTextSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            Center(
-              child: TabBar(
-                indicator: CircleTabIndicator(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  radius: 4,
-                ),
-                labelColor: Theme.of(context).colorScheme.primaryContainer,
-                dividerColor: Colors.transparent,
-                isScrollable: false, // Hace que los tabs estén centrados
-                labelPadding: const EdgeInsets.only(left: 20, right: 20),
-                tabs: [
-                  Tab(text: S.of(context).summary),
-                  Tab(text: S.of(context).pdf),
-                ],
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  TabEvaluacion(evaluacion: widget.evaluacion, imagenes: widget.imagenes),
-                  TabPdf(
-                    filePath: widget.pathFichero,
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(Dimensions.marginMedium),
-              child: MyButton(
-                adaptableWidth: false,
-                onTap: () {
-
-                  //Limpiar los datos del cubit de preguntas
-                  final preguntasCubit = context.read<PreguntasCubit>();
-                  preguntasCubit.clearCache();
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-
-                      builder: (context) => const MyHomePage(),
-                    ),
-                  );
+      child: SafeArea(
+          child:
+          Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white, semanticLabel: S.of(context).semanticlabelBack),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
-                text: S.of(context).finish,
+              ),
+              title: Text(
+                S.of(context).evaluationFinished,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: Dimensions.titleTextSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ],
-        ),
-        floatingActionButton: FloatingButtons(
-          onSharePressed: () async {
-            _sharePdf();
-          },
-          onDownloadPressed: () {
-            _savePdf();
-          },
-          onQRPressed: () {
-            _onQRPressed();
-          },
-        ),
+            body: Column(
+              children: [
+                Center(
+                  child: TabBar(
+                    indicator: CircleTabIndicator(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      radius: 4,
+                    ),
+                    labelColor: Theme.of(context).colorScheme.primaryContainer,
+                    dividerColor: Colors.transparent,
+                    isScrollable: false, // Hace que los tabs estén centrados
+                    labelPadding: const EdgeInsets.only(left: 20, right: 20),
+                    tabs: [
+                      Tab(text: S.of(context).summary),
+                      Tab(text: S.of(context).pdf),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      TabEvaluacion(evaluacion: widget.evaluacion, imagenes: widget.imagenes),
+                      TabPdf(
+                        filePath: widget.pathFichero,
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(Dimensions.marginMedium),
+                  child: MyButton(
+                    adaptableWidth: false,
+                    onTap: () {
+
+                      //Limpiar los datos del cubit de preguntas
+                      final preguntasCubit = context.read<PreguntasCubit>();
+                      preguntasCubit.clearCache();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+
+                          builder: (context) => const MyHomePage(),
+                        ),
+                      );
+                    },
+                    text: S.of(context).finish,
+                  ),
+                ),
+              ],
+            ),
+            floatingActionButton: FloatingButtons(
+              onSharePressed: () async {
+                _sharePdf();
+              },
+              onDownloadPressed: () {
+                _savePdf();
+              },
+              onQRPressed: () {
+                _onQRPressed();
+              },
+            ),
+          )
       ),
     );
   }

@@ -45,101 +45,103 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          S.of(context).editProfile,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, semanticLabel: S.of(context).semanticlabelBack),
-          onPressed: () {
-            //FocusScope.of(context).unfocus();
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: BlocConsumer<EditProfileCubit, EditProfileState>(
-        listener: (context, state) async {
-          if (state is EditProfileSuccess) {
-            await SharedPrefs.updateUserName(state.newUserName);
-
-            // Datos del usuario modificados con éxito
-            Utils.showMyOkDialog(
-              context,
-              S.of(context).exito,
-              S.of(context).successUpdatingUser,
-                  () {
-                Navigator.of(context).pop(); // Navega hacia atrás
-                Navigator.of(context).pop(); // Navega hacia atrás
+    return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              S.of(context).editProfile,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, semanticLabel: S.of(context).semanticlabelBack),
+              onPressed: () {
+                //FocusScope.of(context).unfocus();
+                Navigator.of(context).pop();
               },
-            );
-          } else if (state is EditProfileError) {
-            final errorMessage = state.errorMessage;
+            ),
+          ),
+          body: BlocConsumer<EditProfileCubit, EditProfileState>(
+            listener: (context, state) async {
+              if (state is EditProfileSuccess) {
+                await SharedPrefs.updateUserName(state.newUserName);
 
-            if (errorMessage == S.of(context).errorEmpty) {
-              Utils.showAdaptiveToast(
-                  context: context,
-                  message: errorMessage,
-                  gravity: ToastGravity.BOTTOM
-              );
-            } else {
-              Utils.showMyOkDialog(
-                context,
-                S.of(context).error,
-                state.errorMessage,
-                    () {
-                  Navigator.of(context).pop();
-                },
-              );
-            }
-          }
+                // Datos del usuario modificados con éxito
+                Utils.showMyOkDialog(
+                  context,
+                  S.of(context).exito,
+                  S.of(context).successUpdatingUser,
+                      () {
+                    Navigator.of(context).pop(); // Navega hacia atrás
+                    Navigator.of(context).pop(); // Navega hacia atrás
+                  },
+                );
+              } else if (state is EditProfileError) {
+                final errorMessage = state.errorMessage;
 
-        },
-        builder: (context, state) {
-          final isUserNameRed = state is EditProfileError ? state.isNameRed : false;
-          final userName = state is EditProfileLoaded ? state.userName : "";
-          _userNameController.text = userName;
+                if (errorMessage == S.of(context).errorEmpty) {
+                  Utils.showAdaptiveToast(
+                      context: context,
+                      message: errorMessage,
+                      gravity: ToastGravity.BOTTOM
+                  );
+                } else {
+                  Utils.showMyOkDialog(
+                    context,
+                    S.of(context).error,
+                    state.errorMessage,
+                        () {
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }
+              }
 
-          return SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(S.of(context).name),
-                      MyLoginTextField(
-                        controller: _userNameController,
-                        hintText: S.of(context).hintName,
-                        isRed: isUserNameRed,
-                        onSubmited: () {
-                          _updateUser(context);
-                        },
+            },
+            builder: (context, state) {
+              final isUserNameRed = state is EditProfileError ? state.isNameRed : false;
+              final userName = state is EditProfileLoaded ? state.userName : "";
+              _userNameController.text = userName;
+
+              return SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      SizedBox(height: Dimensions.marginMedium),
-                      MyButton(
-                        adaptableWidth: false,
-                        onTap: () {
-                          _updateUser(context);
-                        },
-                        text: S.of(context).modify,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(S.of(context).name),
+                          MyLoginTextField(
+                            controller: _userNameController,
+                            hintText: S.of(context).hintName,
+                            isRed: isUserNameRed,
+                            onSubmited: () {
+                              _updateUser(context);
+                            },
+                          ),
+                          SizedBox(height: Dimensions.marginMedium),
+                          MyButton(
+                            adaptableWidth: false,
+                            onTap: () {
+                              _updateUser(context);
+                            },
+                            text: S.of(context).modify,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        )
     );
   }
 }

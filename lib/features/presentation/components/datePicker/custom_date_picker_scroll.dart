@@ -64,7 +64,7 @@ class _CustomDatePickerState extends State<CustomDatePickerScroll> {
                 ),
               ),
               GestureDetector(
-                child: _showDatePicker ? Text(S.of(context).save, style: const TextStyle(color: Colors.red),) : Text(S.of(context).modify),
+                child: _showDatePicker ? Text(S.of(context).save, style: TextStyle(color: Theme.of(context).colorScheme.primaryContainer),) : Text(S.of(context).modify),
                 onTap: () {
                   setState(() {
                     if(_showDatePicker){

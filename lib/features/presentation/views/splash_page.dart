@@ -42,17 +42,20 @@ class _SplashPageState extends State<SplashPage> {
           _loginError();
         }
       },
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Image.asset(
-              'assets/images/splash.png',
-              fit: BoxFit.cover,
-              semanticLabel: S.of(context).semanticlabelWelcomeScreen,
+      child: SafeArea(
+          child:
+          Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/splash.png',
+                  fit: BoxFit.cover,
+                  semanticLabel: S.of(context).semanticlabelWelcomeScreen,
+                ),
+              ],
             ),
-          ],
-        ),
+          )
       ),
     );
   }
