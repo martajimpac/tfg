@@ -31,15 +31,13 @@ class PreguntasLoading extends PreguntasState {
 }
 
 class PreguntasLoaded extends PreguntasState {
-  final List<PreguntaDataModel> preguntasPorPagina;
-  final CategoriaPreguntaDataModel categoria;
   final int idEval;
   final int pageIndex;
 
-  const PreguntasLoaded(this.preguntasPorPagina, this.categoria, this.idEval, this.pageIndex);
+  const PreguntasLoaded(this.idEval, this.pageIndex);
 
   @override
-  List<Object> get props => [preguntasPorPagina, categoria, idEval, pageIndex];
+  List<Object> get props => [idEval, pageIndex];
 }
 
 class PreguntasError extends PreguntasState {
@@ -184,25 +182,36 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       await _getRespuestas(evaluacion.ideval,  evaluacion.isMaqMovil, evaluacion.isMaqCarga);
 
       _isMaqCarga = evaluacion.isMaqCarga;
-      _isMaqCarga = evaluacion.isMaqMovil;
+      _isMaqMovil = evaluacion.isMaqMovil;
 
       if (categorias.isEmpty || pageIndex < 0 || pageIndex >= categorias.length) {
         debugPrint("MARTA: Índice de página fuera de rango o categorías vacías.");
       }
 
 
-      final categoria = categorias[pageIndex];
+      /*final categoria = categorias[pageIndex];
       final preguntasPagina = preguntas.where(
             (pregunta) => pregunta.idCategoria == categoria.idcat,
-      ).toList();
+      ).toList();*/
 
 
+      //debugPrint("MARTA: $categoria ${preguntasPagina.map((t) => t.idRespuestaSeleccionada).toList()}");
 
 
-      emit(PreguntasLoaded(preguntasPagina, categoria, evaluacion.ideval, pageIndex));
+      emit(PreguntasLoaded(evaluacion.ideval, pageIndex));
 
     } catch (e) {
       emit(PreguntasError(S.of(context).cubitQuestionsError));
+    }
+  }
+
+  void cambiarCategoria(int nuevoIndex) {
+    final currentState = state;
+    if (currentState is PreguntasLoaded) {
+      emit(PreguntasLoaded(
+        currentState.idEval,
+        nuevoIndex,
+      ));
     }
   }
 
@@ -238,7 +247,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         } else {
           emit(PdfGenerated(pathFichero));
 
-          emit(PreguntasLoaded(loadedState.preguntasPorPagina, loadedState.categoria, _idEvalacionActual!, loadedState.pageIndex));
+          emit(PreguntasLoaded(_idEvalacionActual!, loadedState.pageIndex));
 
         }
       } catch (e) {
@@ -280,7 +289,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
   }
 
 
-  void resetCubit() { //todo revisa si hace falta
+  void resetCubit() {
     emit(const PreguntasLoading(""));
   }
 }

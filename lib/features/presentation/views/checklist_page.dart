@@ -101,7 +101,7 @@ class _CheckListPageState extends State<CheckListPage> {
                     enabled: state is PreguntasLoaded,
                     onCategorySelected: (index) {
                       _currentPageIndex = index;
-                      _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
+                      _cubit.cambiarCategoria(index);
                     },
                   ),
                   Expanded(
@@ -121,9 +121,17 @@ class _CheckListPageState extends State<CheckListPage> {
                         final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
                         final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
 
+                        final CategoriaPreguntaDataModel? category = _cubit.categorias?.firstWhere(
+                              (it) => it.idcat == (state.pageIndex + 1),
+                        );
+
+                        final List<PreguntaDataModel> preguntasPorPagina = category == null
+                            ? []
+                            : preguntas.where((pregunta) => pregunta.idCategoria == category.idcat).toList();
+
                         return Column(
                           children: [
-                            _buildQuestionsList(context, _currentPageIndex, state.preguntasPorPagina, state.categoria, respuestas),
+                            _buildQuestionsList(context, _currentPageIndex, preguntasPorPagina, category!, respuestas),
                             if (_currentPageIndex == (categorias.length - 1))
                               MyButton(
                                 adaptableWidth: false,
