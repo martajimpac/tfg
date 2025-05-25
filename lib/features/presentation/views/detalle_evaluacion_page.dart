@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
 import '../../../core/utils/Utils.dart';
@@ -27,7 +25,8 @@ class DetalleEvaluacionPage extends StatefulWidget {
   final int idEvaluacion;
   final bool comesFromQR;
 
-  const DetalleEvaluacionPage({super.key, required this.idEvaluacion, this.comesFromQR = false});
+  const DetalleEvaluacionPage(
+      {super.key, required this.idEvaluacion, this.comesFromQR = false});
 
   @override
   _DetalleEvaluacionPageState createState() => _DetalleEvaluacionPageState();
@@ -40,7 +39,6 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   bool _isEvaluationLoaded = false;
   bool _showModifyButton = true;
   bool _checkedPermission = false;
-
 
   Future<void> _sharePdf() async {
     if (_isEvaluationLoaded) {
@@ -55,7 +53,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   }
 
   Future<void> _savePdf() async {
-    if(_isEvaluationLoaded){
+    if (_isEvaluationLoaded) {
       File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
 
       if (file != null) {
@@ -76,9 +74,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
         context,
         S.of(context).error,
         S.of(context).notCreator,
-            () => {
-          Navigator.of(context).pop()
-        },
+        () => {Navigator.of(context).pop()},
         buttonText: S.of(context).accept,
       );
     } else if (id == "") {
@@ -86,7 +82,7 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
         context,
         S.of(context).error,
         S.of(context).loginNeeded,
-            () => {
+        () => {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -104,9 +100,10 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
       context,
       S.of(context).error,
       S.of(context).notGenerated,
-          () {
+      () {
         Navigator.of(context).pop();
-        BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+        BlocProvider.of<DetallesEvaluacionCubit>(context)
+            .generatePdf(context, _evaluacion);
       },
       buttonText: S.of(context).generate,
     );
@@ -114,16 +111,15 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
 
   Future<String?> _checkIfFileExist() async {
     File? file = await checkIfFileExistAndReturnFile(_evaluacion.ideval);
-    if(file != null){
+    if (file != null) {
       return file.path;
-    }else{
+    } else {
       return null;
-
     }
   }
 
   void _onQRPressed() {
-    if(_isEvaluationLoaded){
+    if (_isEvaluationLoaded) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -139,85 +135,84 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<DetallesEvaluacionCubit>(context).getDetallesEvaluacion(context, widget.idEvaluacion);
+    BlocProvider.of<DetallesEvaluacionCubit>(context)
+        .getDetallesEvaluacion(context, widget.idEvaluacion);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child:
-        Scaffold(
+        child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: AppBar(
-              title: Text(S.of(context).evaluationsDetailsTitle, style: Theme.of(context).textTheme.titleMedium),
+              title: Text(S.of(context).evaluationsDetailsTitle,
+                  style: Theme.of(context).textTheme.titleMedium),
               centerTitle: true,
             ),
             body: Column(
               children: [
-                Expanded(child:
-                BlocBuilder<DetallesEvaluacionCubit, DetallesEvaluacionState>(
-                  builder: (context, state) {
-                    if (state is DetallesEvaluacionLoading) {
-                      _isEvaluationLoaded = false;
-                      return Center(
-                        child: Padding(
-                            padding: const EdgeInsets.all(Dimensions.marginMedium),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                if (_generatingPdf) ...[
-                                  Text(S.of(context).generatingPdf),
-                                  const SizedBox(height: Dimensions.marginMedium),
+                Expanded(
+                  child: BlocBuilder<DetallesEvaluacionCubit,
+                      DetallesEvaluacionState>(
+                    builder: (context, state) {
+                      if (state is DetallesEvaluacionLoading) {
+                        _isEvaluationLoaded = false;
+                        return Center(
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.all(Dimensions.marginMedium),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  if (_generatingPdf) ...[
+                                    Text(S.of(context).generatingPdf),
+                                    const SizedBox(
+                                        height: Dimensions.marginMedium),
+                                  ],
+                                  const CircularProgressIndicator(),
                                 ],
-                                const CircularProgressIndicator(),
-                              ],
-                            )
-                        ),
-                      );
-                    } else if (state is DetallesEvaluacionLoaded) {
-                      _isEvaluationLoaded = true;
-                      _evaluacion = state.evaluacion;
-                      _imagenes = state.imagenes;
+                              )),
+                        );
+                      } else if (state is DetallesEvaluacionLoaded) {
+                        _isEvaluationLoaded = true;
+                        _evaluacion = state.evaluacion;
+                        _imagenes = state.imagenes;
 
-                      if (widget.comesFromQR && !_checkedPermission) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _checkUserPermission();
-                        });
-                        _checkedPermission = true;
+                        if (widget.comesFromQR && !_checkedPermission) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _checkUserPermission();
+                          });
+                          _checkedPermission = true;
+                        }
+
+                        return _buildView();
+                      } else if (state is DetallesEvaluacionError) {
+                        return Center(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.all(Dimensions.marginMedium),
+                            child: Text(state.errorMessage),
+                          ),
+                        );
+                      } else if (state is DetallesEvaluacionPdfGenerated) {
+                        _isEvaluationLoaded = true;
+                        return _buildView();
+                      } else if (state is DetallesEvaluacionPdfError) {
+                        return const SizedBox();
+                      } else {
+                        return const SizedBox();
                       }
-
-                      return _buildView();
-                    } else if (state is DetallesEvaluacionError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(Dimensions.marginMedium),
-                          child: Text(state.errorMessage),
-                        ),
-                      );
-                    } else if (state is DetallesEvaluacionPdfGenerated) {
-                      _isEvaluationLoaded = true;
-                      return _buildView();
-                    } else if(state is DetallesEvaluacionPdfError){
-
-                      return const SizedBox();
-                    }else{
-                      return const SizedBox();
-                    }
-                  },
-                ),
+                    },
+                  ),
                 ),
               ],
             ),
-            floatingActionButton:  FloatingButtons(
+            floatingActionButton: FloatingButtons(
               onQRPressed: _onQRPressed,
               onSharePressed: _sharePdf,
               onDownloadPressed: _savePdf,
-            )
-        )
-    );
+            )));
   }
 
   Widget _buildView() {
@@ -248,7 +243,8 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                 TabEvaluacion(evaluacion: _evaluacion, imagenes: _imagenes),
                 FutureBuilder<String?>(
                   future: _checkIfFileExist(),
-                  builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String?> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
@@ -266,7 +262,8 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                             children: [
                               Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: Text(
                                     S.of(context).notGenerated,
                                     textAlign: TextAlign.center,
@@ -278,7 +275,9 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
                                 adaptableWidth: true,
                                 onTap: () {
                                   _generatingPdf = true;
-                                  BlocProvider.of<DetallesEvaluacionCubit>(context).generatePdf(context, _evaluacion);
+                                  BlocProvider.of<DetallesEvaluacionCubit>(
+                                          context)
+                                      .generatePdf(context, _evaluacion);
                                 },
                                 text: S.of(context).generate,
                               ),
@@ -294,7 +293,8 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
           ),
           if (_showModifyButton)
             Padding(
-              padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0, Dimensions.marginMedium, Dimensions.marginMedium),
+              padding: const EdgeInsets.fromLTRB(Dimensions.marginMedium, 0,
+                  Dimensions.marginMedium, Dimensions.marginMedium),
               child: MyButton(
                 adaptableWidth: false,
                 onTap: () {
@@ -316,4 +316,3 @@ class _DetalleEvaluacionPageState extends State<DetalleEvaluacionPage> {
     );
   }
 }
-

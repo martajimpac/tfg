@@ -13,19 +13,16 @@ abstract class EliminarEvaluacionState extends Equatable {
   List<Object> get props => [];
 }
 
-class EliminarEvaluacionInicial extends EliminarEvaluacionState {
-}
+class EliminarEvaluacionInicial extends EliminarEvaluacionState {}
 
-class EliminarEvaluacionLoading extends EliminarEvaluacionState {
-}
+class EliminarEvaluacionLoading extends EliminarEvaluacionState {}
 
-class EliminarEvaluacionCompletada extends EliminarEvaluacionState {
-}
+class EliminarEvaluacionCompletada extends EliminarEvaluacionState {}
 
 class EliminarEvaluacionError extends EliminarEvaluacionState {
   final String errorMessage;
 
-  EliminarEvaluacionError(this.errorMessage);
+  const EliminarEvaluacionError(this.errorMessage);
 
   @override
   List<Object> get props => [errorMessage];
@@ -33,9 +30,11 @@ class EliminarEvaluacionError extends EliminarEvaluacionState {
 
 class EliminarEvaluacionCubit extends Cubit<EliminarEvaluacionState> {
   final RepositorioDBSupabase repositorio;
-  EliminarEvaluacionCubit(this.repositorio) : super(EliminarEvaluacionInicial());
+  EliminarEvaluacionCubit(this.repositorio)
+      : super(EliminarEvaluacionInicial());
 
-  Future<void> eliminarEvaluacion(BuildContext context, idEvaluacion, int idMaquina) async {
+  Future<void> eliminarEvaluacion(
+      BuildContext context, idEvaluacion, int idMaquina) async {
     emit(EliminarEvaluacionLoading());
     try {
       await repositorio.eliminarEvaluacion(idEvaluacion);
@@ -44,7 +43,8 @@ class EliminarEvaluacionCubit extends Cubit<EliminarEvaluacionState> {
       emit(EliminarEvaluacionCompletada());
     } catch (e) {
       emit(EliminarEvaluacionError(S.of(context).cubitDeleteEvaluationError));
-      emit(EliminarEvaluacionInicial()); // Opcional: Resetear estado después del error
+      emit(
+          EliminarEvaluacionInicial()); // Opcional: Resetear estado después del error
     }
   }
 }

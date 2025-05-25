@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/dimensions.dart';
@@ -17,7 +15,6 @@ import 'change_password_page.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
 
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -28,13 +25,11 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late EvaluacionesCubit _cubitEvaluaciones;
 
-
   @override
   void initState() {
     super.initState();
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
   }
-
 
   Future<void> _signOutUser() async {
     try {
@@ -44,9 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return; // Verifica si el widget sigue montado
 
       Utils.showAdaptiveToast(
-          context: context,
-          message:  S.of(context).sessionClosedSuccess
-      );
+          context: context, message: S.of(context).sessionClosedSuccess);
 
       Navigator.pushReplacement(
         context,
@@ -56,9 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return; // Verifica nuevamente si el widget sigue montado
 
       Utils.showAdaptiveToast(
-          context: context,
-          message:  S.of(context).sessionCloseError
-      );
+          context: context, message: S.of(context).sessionCloseError);
     }
   }
 
@@ -88,21 +79,22 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Image.asset(
                           'assets/images/bg_profile.png',
                           fit: BoxFit.fitHeight,
-                          semanticLabel: S.of(context).semanticlabelProfilePicture,
+                          semanticLabel:
+                              S.of(context).semanticlabelProfilePicture,
                         ),
                       ),
-
                       Positioned(
                         bottom: -40,
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          backgroundImage: const AssetImage('assets/images/default_user.png'),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          backgroundImage: const AssetImage(
+                              'assets/images/default_user.png'),
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 50),
                   Text(
                     userName,
@@ -113,9 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   BlocBuilder<EvaluacionesCubit, EvaluacionesState>(
-
                     builder: (context, state) {
-
                       final numEval = _cubitEvaluaciones.evaluaciones.length;
 
                       return Row(
@@ -125,7 +115,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(width: Dimensions.marginSmall),
                           Text(
                             "$numEval",
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ],
                       );
@@ -135,25 +126,31 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () async {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const ChangePasswordPage()),
                       );
                     },
                     text: S.of(context).changePasswordButton,
-                    icon: Icon(Icons.lock, color: Colors.white, semanticLabel: S.of(context).semanticlabelChangePassword),
+                    icon: Icon(Icons.lock,
+                        color: Colors.white,
+                        semanticLabel:
+                            S.of(context).semanticlabelChangePassword),
                   ),
-
                   MyButtonCard(
                     onTap: () async {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const EditProfilePage()),
                       ).then((_) {
                         // Volver a cargar el nombre de usuario
                         setState(() {});
                       });
                     },
                     text: S.of(context).editProfile,
-                    icon: Icon(Icons.person_outline, color: Colors.white, semanticLabel: S.of(context).editProfile),
+                    icon: Icon(Icons.person_outline,
+                        color: Colors.white,
+                        semanticLabel: S.of(context).editProfile),
                   ),
                   MyButtonCard(
                     onTap: () async {
@@ -178,7 +175,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                     text: S.of(context).logout,
-                    icon: Icon(Icons.logout, color: Colors.white, semanticLabel: S.of(context).semanticlabelLogout),
+                    icon: Icon(Icons.logout,
+                        color: Colors.white,
+                        semanticLabel: S.of(context).semanticlabelLogout),
                     iconContainerColor: Colors.red,
                   ),
                   const SizedBox(height: Dimensions.marginBig),
@@ -187,7 +186,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(S.of(context).darkMode, style: Theme.of(context).textTheme.bodyMedium),
+                          Text(S.of(context).darkMode,
+                              style: Theme.of(context).textTheme.bodyMedium),
                           const SizedBox(width: Dimensions.marginSmall),
                           CupertinoSwitch(
                             activeTrackColor: Colors.grey.shade400,

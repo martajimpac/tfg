@@ -25,7 +25,6 @@ class EvaluacionesLoading extends EvaluacionesState {}
 
 class EvaluacionesLoaded extends EvaluacionesState {
   const EvaluacionesLoaded();
-
 }
 
 class EvaluacionesError extends EvaluacionesState {
@@ -39,8 +38,7 @@ class EvaluacionesError extends EvaluacionesState {
 
 class EvaluacionesDeleteLoading extends EvaluacionesState {}
 
-class
-EvaluacionesDeleteSuccess extends EvaluacionesState {}
+class EvaluacionesDeleteSuccess extends EvaluacionesState {}
 
 class EvaluacionesDeleteError extends EvaluacionesState {
   final String errorMessage;
@@ -75,27 +73,37 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       if (filtros[filtroCentro] != null) {
         if (filtros[filtroCentro] is CentroDataModel) {
           final centro = filtros[filtroCentro] as CentroDataModel;
-          evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) => evaluacion.idCentro == centro.idCentro).toList();
+          evaluacionesFiltered = evaluacionesFiltered
+              .where((evaluacion) => evaluacion.idCentro == centro.idCentro)
+              .toList();
         }
       }
 
       if (filtros[filtroFechaRealizacion] != null) {
-        evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) => evaluacion.fechaRealizacion.isAfter(filtros[filtroFechaRealizacion])).toList();
+        evaluacionesFiltered = evaluacionesFiltered
+            .where((evaluacion) => evaluacion.fechaRealizacion
+                .isAfter(filtros[filtroFechaRealizacion]))
+            .toList();
       }
 
       if (filtros[filtroFechaCaducidad] != null) {
-        evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) => evaluacion.fechaCaducidad.isBefore(filtros[filtroFechaCaducidad])).toList();
+        evaluacionesFiltered = evaluacionesFiltered
+            .where((evaluacion) => evaluacion.fechaCaducidad
+                .isBefore(filtros[filtroFechaCaducidad]))
+            .toList();
       }
 
       if (filtros[filtroDenominacion] != null) {
         evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) {
-          String normalizedFiltro = removeDiacritics(filtros[filtroDenominacion].toUpperCase()).trim();
-          String normalizadName = removeDiacritics(evaluacion.nombreMaquina.toUpperCase()).trim();
+          String normalizedFiltro =
+              removeDiacritics(filtros[filtroDenominacion].toUpperCase())
+                  .trim();
+          String normalizadName =
+              removeDiacritics(evaluacion.nombreMaquina.toUpperCase()).trim();
           // Normalizamos tanto el texto de búsqueda como el valor del filtro
           return normalizadName.contains(normalizedFiltro);
         }).toList();
       }
-
 
       // Ordenar por defecto al iniciar
       evaluacionesFiltered.sort((a, b) {
@@ -111,7 +119,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   }
 
   void updateSorting(BuildContext context, bool sortByDate) {
-   if (evaluacionesFiltered.isNotEmpty) {
+    if (evaluacionesFiltered.isNotEmpty) {
       emit(EvaluacionesLoading());
       // Actualizar los criterios de ordenación
       if (sortByDate) {
@@ -163,14 +171,15 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
 
   Map<String, dynamic> filtrosGuardados = {};
 
-  /** Metodo que guarda una copia de los filtros aplicados actualmente **/
+  /// Metodo que guarda una copia de los filtros aplicados actualmente *
   void saveCurrentFilters() {
     // Guardar una copia de los filtros actuales
     filtrosGuardados = Map.from(filtros);
 
     debugPrint("Filtros guardados temporalmente.");
   }
-  /** Metodo que resetea los filtros al estado en el que estaban cuando se guardo la copia **/
+
+  /// Metodo que resetea los filtros al estado en el que estaban cuando se guardo la copia *
   void resetFilters(BuildContext context) {
     // Restaurar los filtros guardados
     filtros.clear();
@@ -182,7 +191,8 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
     debugPrint("Filtros restaurados exitosamente.");
   }
 
-  Future<void> eliminarEvaluacion(BuildContext context, int idEvaluacion, int idMaquina) async {
+  Future<void> eliminarEvaluacion(
+      BuildContext context, int idEvaluacion, int idMaquina) async {
     emit(EvaluacionesDeleteLoading());
 
     try {
@@ -192,7 +202,9 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       await deleteFileFromIdEval(idEvaluacion);
 
       // Filtrar la evaluación eliminada de la lista
-      evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) => evaluacion.ideval != idEvaluacion).toList();
+      evaluacionesFiltered = evaluacionesFiltered
+          .where((evaluacion) => evaluacion.ideval != idEvaluacion)
+          .toList();
 
       // Emitir el estado con las evaluaciones actualizadas
       emit(EvaluacionesDeleteSuccess());

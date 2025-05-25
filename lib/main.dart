@@ -1,14 +1,12 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/utils/Constants.dart';
 import 'features/data/repository/repositorio_autenticacion.dart';
 import 'features/data/repository/repositorio_db_supabase.dart';
 import 'features/presentation/cubit/auto_login_cubit.dart';
@@ -31,7 +29,6 @@ import 'features/presentation/views/reset_password_page.dart';
 import 'features/presentation/views/splash_page.dart';
 import 'generated/l10n.dart';
 
-
 part 'core/enrutamiento/rutas.dart';
 
 void main() async {
@@ -44,7 +41,7 @@ void main() async {
   Supabase supabase = await Supabase.initialize(
     url: 'https://mhxryaquargzfumndwgq.supabase.co',
     anonKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oeHJ5YXF1YXJnemZ1bW5kd2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2NTc0NjgsImV4cCI6MjAxNTIzMzQ2OH0.zuNF8ECVgZPasigxX0cxT1bph-NueCGaJA9kDTPmdZ8',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oeHJ5YXF1YXJnemZ1bW5kd2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2NTc0NjgsImV4cCI6MjAxNTIzMzQ2OH0.zuNF8ECVgZPasigxX0cxT1bph-NueCGaJA9kDTPmdZ8',
   );
 
   /// Se inicializa el bloc observer para que muestre los eventos de los blocs
@@ -83,7 +80,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  //Para permitir cambiar el locale de la app
+  //Para permitir cambiar el locale de la appA
   Locale? _locale;
 
   void setLocale(Locale locale) {
@@ -106,28 +103,51 @@ class _MyAppState extends State<MyApp> {
     initialization(widget.supabase);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (context) => SupabaseAuthRepository(widget.supabase)),
-        RepositoryProvider(create: (context) => RepositorioDBSupabase(widget.supabase)),
+        RepositoryProvider(
+            create: (context) => SupabaseAuthRepository(widget.supabase)),
+        RepositoryProvider(
+            create: (context) => RepositorioDBSupabase(widget.supabase)),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => AutoLoginCubit(context.read<SupabaseAuthRepository>())),
-          BlocProvider(create: (context) => LoginCubit(context.read<SupabaseAuthRepository>())),
-          BlocProvider(create: (context) => RegisterCubit(context.read<SupabaseAuthRepository>())),
-          BlocProvider(create: (context) => ChangePasswordCubit(context.read<SupabaseAuthRepository>())),
-          BlocProvider(create: (context) => EditProfileCubit(context.read<SupabaseAuthRepository>())),
-          BlocProvider(create: (context) => CentrosCubit(context.read<RepositorioDBSupabase>())),
-          BlocProvider(create: (context) => PreguntasCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) =>
+                  AutoLoginCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(
+              create: (context) =>
+                  LoginCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(
+              create: (context) =>
+                  RegisterCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(
+              create: (context) =>
+                  ChangePasswordCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(
+              create: (context) =>
+                  EditProfileCubit(context.read<SupabaseAuthRepository>())),
+          BlocProvider(
+              create: (context) =>
+                  CentrosCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) =>
+                  PreguntasCubit(context.read<RepositorioDBSupabase>())),
           BlocProvider(create: (context) => SettingsCubit()),
-          BlocProvider(create: (context) => InsertarEvaluacionCubit(context.read<RepositorioDBSupabase>())),
-          BlocProvider(create: (context) => EvaluacionesCubit(context.read<RepositorioDBSupabase>())),
-          BlocProvider(create: (context) => DetallesEvaluacionCubit(context.read<RepositorioDBSupabase>())),
-          BlocProvider(create: (context) => EliminarEvaluacionCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) => InsertarEvaluacionCubit(
+                  context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) =>
+                  EvaluacionesCubit(context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) => DetallesEvaluacionCubit(
+                  context.read<RepositorioDBSupabase>())),
+          BlocProvider(
+              create: (context) => EliminarEvaluacionCubit(
+                  context.read<RepositorioDBSupabase>())),
         ],
         child: Builder(
           builder: (context) {
@@ -151,7 +171,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
 }
-
-

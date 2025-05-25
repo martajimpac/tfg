@@ -1,18 +1,13 @@
-import 'dart:io';
-
 import 'package:evaluacionmaquinas/features/presentation/cubit/auto_login_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';  // Asegúrate de importar Flutter Bloc
+import 'package:flutter_bloc/flutter_bloc.dart'; // Asegúrate de importar Flutter Bloc
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/utils/Utils.dart';
 import '../../../generated/l10n.dart';
 import '../components/dialog/my_two_buttons_dialog.dart';
-import '../cubit/login_cubit.dart';
 import 'my_home_page.dart';
 import 'offline_page.dart';
-
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -27,7 +22,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) { //TODO VOLVER A USAR BLOC PROVIDER
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AutoLoginCubit>().autologin();
     });
   }
@@ -43,8 +38,7 @@ class _SplashPageState extends State<SplashPage> {
         }
       },
       child: SafeArea(
-          child:
-          Scaffold(
+          child: Scaffold(
             body: Stack(
               fit: StackFit.expand,
               children: <Widget>[
@@ -55,8 +49,7 @@ class _SplashPageState extends State<SplashPage> {
                 ),
               ],
             ),
-          )
-      ),
+          )),
     );
   }
 
@@ -77,36 +70,32 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _loginError() async {
-    if(await Utils.hayConexion()){
+    if (await Utils.hayConexion()) {
       _navigateToLoginPage();
-    }else{
+    } else {
       showNoConnectionDialog(context);
     }
   }
 
-  void showNoConnectionDialog(BuildContext context){
+  void showNoConnectionDialog(BuildContext context) {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return  MyTwoButtonsDialog(
+          return MyTwoButtonsDialog(
             title: S.of(context).error,
             desc: S.of(context).noInternetConexion,
             primaryButtonText: S.of(context).continuee,
             secondaryButtonText: S.of(context).retryTitle,
             onPrimaryButtonTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OfflinePage())
-              );
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const OfflinePage()));
             },
             onSecondaryButtonTap: () {
               Navigator.of(context).pop();
               context.read<AutoLoginCubit>().autologin();
             },
           );
-        }
-    );
+        });
   }
-
 }

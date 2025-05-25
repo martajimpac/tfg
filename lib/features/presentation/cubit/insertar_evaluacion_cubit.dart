@@ -9,8 +9,6 @@ import '../../data/models/evaluacion_details_dm.dart';
 import '../../data/models/imagen_dm.dart';
 import '../../data/repository/repositorio_db_supabase.dart';
 
-
-
 // Define los estados para el cubit
 abstract class InsertarEvaluacionState extends Equatable {
   const InsertarEvaluacionState();
@@ -26,7 +24,7 @@ class InsertarEvaluacionLoading extends InsertarEvaluacionState {}
 class EvaluacionInsertada extends InsertarEvaluacionState {
   final EvaluacionDetailsDataModel evaluacion;
   final List<ImagenDataModel> imagenes;
-  EvaluacionInsertada(this.evaluacion, this.imagenes);
+  const EvaluacionInsertada(this.evaluacion, this.imagenes);
 
   @override
   List<Object> get props => [evaluacion, imagenes];
@@ -35,7 +33,7 @@ class EvaluacionInsertada extends InsertarEvaluacionState {
 class InsertarEvaluacionError extends InsertarEvaluacionState {
   final String errorMessage;
 
-  InsertarEvaluacionError(this.errorMessage);
+  const InsertarEvaluacionError(this.errorMessage);
 
   @override
   List<Object> get props => [errorMessage];
@@ -48,10 +46,17 @@ class CamposCheckError extends InsertarEvaluacionState {
   bool isNombreMaquinaRed = false;
   bool isNumeroSerieRed = false;
 
-  CamposCheckError(this.errorMessage, this.isFechasRed, this.isCentroRed, this.isNombreMaquinaRed, this.isNumeroSerieRed);
+  CamposCheckError(this.errorMessage, this.isFechasRed, this.isCentroRed,
+      this.isNombreMaquinaRed, this.isNumeroSerieRed);
 
   @override
-  List<Object> get props => [errorMessage, isFechasRed, isCentroRed, isNombreMaquinaRed, isNumeroSerieRed];
+  List<Object> get props => [
+        errorMessage,
+        isFechasRed,
+        isCentroRed,
+        isNombreMaquinaRed,
+        isNumeroSerieRed
+      ];
 }
 
 class CamposCheckSuccess extends InsertarEvaluacionState {}
@@ -59,10 +64,8 @@ class CamposCheckSuccess extends InsertarEvaluacionState {}
 // Define el cubit
 class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
   final RepositorioDBSupabase repositorio;
-  InsertarEvaluacionCubit(this.repositorio) : super(InsertarEvaluacionInicial());
-
-
-
+  InsertarEvaluacionCubit(this.repositorio)
+      : super(InsertarEvaluacionInicial());
 
   Future<void> insertarEvaluacion(
       BuildContext context,
@@ -83,7 +86,8 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
     emit(InsertarEvaluacionLoading());
 
     try {
-      final idMaquina = await repositorio.insertarMaquina(nombreMaquina, fabricante, numeroSerie, isMaqMovil, isMaqCarga);
+      final idMaquina = await repositorio.insertarMaquina(
+          nombreMaquina, fabricante, numeroSerie, isMaqMovil, isMaqCarga);
 
       final idEvaluacion = await repositorio.insertarEvaluacion(
           idMaquina,
@@ -93,10 +97,8 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaRealizacion,
           fechaCaducidad,
           fechaFabricacion,
-          fechaPuestaServicio
-      );
-      EvaluacionDetailsDataModel evaluacion =
-        EvaluacionDetailsDataModel(
+          fechaPuestaServicio);
+      EvaluacionDetailsDataModel evaluacion = EvaluacionDetailsDataModel(
           ideval: idEvaluacion,
           idinspector: idInspector,
           idcentro: idCentro,
@@ -112,19 +114,17 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fabricante: fabricante,
           numeroSerie: numeroSerie,
           isMaqCarga: isMaqCarga,
-          isMaqMovil: isMaqMovil
-        );
+          isMaqMovil: isMaqMovil);
       //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenes, idEvaluacion); //TODO IMAGENES
-      final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
+      final listImagenesIds =
+          await repositorio.insertarImagenes(imagenes, idEvaluacion);
       emit(EvaluacionInsertada(evaluacion, listImagenesIds));
 
       emit(InsertarEvaluacionInicial());
     } catch (e) {
       emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsError));
     }
-
   }
-
 
   Future<void> modificarEvaluacion(
       BuildContext context,
@@ -145,11 +145,11 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       bool isMaqMovil,
       bool isMaqCarga,
       List<ImagenDataModel> imagenes) async {
-
     emit(InsertarEvaluacionLoading());
 
     try {
-      await repositorio.modificarMaquina(idMaquina, nombreMaquina, fabricante, numeroSerie, isMaqMovil, isMaqCarga);
+      await repositorio.modificarMaquina(idMaquina, nombreMaquina, fabricante,
+          numeroSerie, isMaqMovil, isMaqCarga);
 
       await repositorio.modificarEvaluacion(
           idEvaluacion,
@@ -158,20 +158,26 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fechaModificacion,
           fechaCaducidad,
           fechaFabricacion,
-          fechaPuestaServicio
-      );
+          fechaPuestaServicio);
 
       ///ELIMINAR IMAGENES
       //si algun id de las imagenes anteriores no está en los ids de imagenes nuevas hay que eliminar esa imagen
-      List<int?> idsNuevasImagenes = imagenes.map((imageModel) => imageModel.idimg).toList();
-      List<int> idsImagenesAnteriores = await repositorio.getIdsImagenesEvaluacion(idEvaluacion);
-      List<int> idsImagesToDelete = idsImagenesAnteriores.where((id) => !idsNuevasImagenes.contains(id)).toList();
+      List<int?> idsNuevasImagenes =
+          imagenes.map((imageModel) => imageModel.idimg).toList();
+      List<int> idsImagenesAnteriores =
+          await repositorio.getIdsImagenesEvaluacion(idEvaluacion);
+      List<int> idsImagesToDelete = idsImagenesAnteriores
+          .where((id) => !idsNuevasImagenes.contains(id))
+          .toList();
       await repositorio.eliminarImagenes(idsImagesToDelete);
 
       ///AÑADIR NUEVAS
       //si las imagenes no tienen id las insertamos porque significa que no estan insertadas aún
-      List<ImagenDataModel> imagenesInsertar = imagenes.where((imagen) => imagen.idimg == null).toList();
-      final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion); //TODO IMAGENES
+      List<ImagenDataModel> imagenesInsertar =
+          imagenes.where((imagen) => imagen.idimg == null).toList();
+      final listImagenesIds = await repositorio.insertarImagenesUrl(
+          imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(),
+          idEvaluacion); //TODO IMAGENES
       //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion);
 
       // Actualizar los ids de las imagenes que acabamos de eliminar
@@ -181,8 +187,7 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
       imagenes.addAll(listImagenesIds);
 
       //creamos el objeto evaluación
-      EvaluacionDetailsDataModel evaluacion =
-      EvaluacionDetailsDataModel(
+      EvaluacionDetailsDataModel evaluacion = EvaluacionDetailsDataModel(
           ideval: idEvaluacion,
           idinspector: idInspector,
           idcentro: idCentro,
@@ -198,11 +203,11 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           fabricante: fabricante,
           numeroSerie: numeroSerie,
           isMaqCarga: isMaqCarga,
-          isMaqMovil: isMaqMovil
-      );
+          isMaqMovil: isMaqMovil);
       emit(EvaluacionInsertada(evaluacion, imagenes));
     } catch (e) {
-      emit(InsertarEvaluacionError(S.of(context).cubitInsertEvaluationsModifyError));
+      emit(InsertarEvaluacionError(
+          S.of(context).cubitInsertEvaluationsModifyError));
     }
   }
 
@@ -274,4 +279,3 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
     }
   }*/
 }
-

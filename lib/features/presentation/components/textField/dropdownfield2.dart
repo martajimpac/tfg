@@ -26,7 +26,7 @@ class DropDownField extends FormField<String> {
   final TextEditingController? controller;
 
   DropDownField({
-    Key? key,
+    super.key,
     required BuildContext context, // 'BuildContext' no puede estar en minúscula
     this.controller,
     this.value,
@@ -41,106 +41,109 @@ class DropDownField extends FormField<String> {
     this.inputFormatters,
     this.items,
     this.textStyle = const TextStyle(
-        fontWeight: FontWeight.bold, color: Colors.black, fontSize: 14.0), // Cambiado el color a negro
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+        fontSize: 14.0), // Cambiado el color a negro
     this.setter,
     this.onValueChanged,
     this.itemsVisibleInDropdown = 3,
     this.enabled = true,
     this.strict = true,
   }) : super(
-    key: key,
-    initialValue: controller?.text ?? (value ?? ''),
-    onSaved: setter,
-    builder: (FormFieldState<String> field) {
-      final DropDownFieldState state = field as DropDownFieldState;
-      final ScrollController scrollController = ScrollController();
-      final InputDecoration effectiveDecoration = InputDecoration(
-          border: InputBorder.none,
-          filled: true,
-          icon: icon,
-          suffixIcon: IconButton(
-              icon: Icon(Icons.arrow_drop_down,
-                  size: 30.0,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  semanticLabel: S.of(context).semanticlabelShowCenters
-              ),
-              onPressed: () {
-                SystemChannels.textInput.invokeMethod('TextInput.hide');
-                state.setState(() {
-                  state._showdropdown = !state._showdropdown;
-                });
-              }),
-          hintStyle: hintStyle,
-          labelStyle: labelStyle,
-          hintText: hintText,
-          labelText: labelText);
+          initialValue: controller?.text ?? (value ?? ''),
+          onSaved: setter,
+          builder: (FormFieldState<String> field) {
+            final DropDownFieldState state = field as DropDownFieldState;
+            final ScrollController scrollController = ScrollController();
+            final InputDecoration effectiveDecoration = InputDecoration(
+                border: InputBorder.none,
+                filled: true,
+                icon: icon,
+                suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_drop_down,
+                        size: 30.0,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        semanticLabel: S.of(context).semanticlabelShowCenters),
+                    onPressed: () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      state.setState(() {
+                        state._showdropdown = !state._showdropdown;
+                      });
+                    }),
+                hintStyle: hintStyle,
+                labelStyle: labelStyle,
+                hintText: hintText,
+                labelText: labelText);
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: TextFormField(
-                  controller: state._effectiveController,
-                  decoration: effectiveDecoration.copyWith(
-                    errorText: field.errorText,
-                    fillColor: Theme.of(context).colorScheme.onPrimary,
-                    filled: true,
-                    contentPadding: EdgeInsets.all(14)
-                  ),
-                  style: textStyle,
-                  textAlign: TextAlign.start,
-                  autofocus: false,
-                  obscureText: false,
-                  maxLines: 1,
-                  validator: (String? newValue) {
-                    if (required && (newValue == null || newValue.isEmpty)) {
-                      return 'This field cannot be empty!';
-                    }
-                    if (items != null && strict &&
-                        newValue != null && newValue.isNotEmpty &&
-                        !items.contains(newValue)) {
-                      return 'Invalid value in this field!';
-                    }
-                    return null;
-                  },
-                  onSaved: setter,
-                  enabled: enabled,
-                  inputFormatters: inputFormatters,
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextFormField(
+                        controller: state._effectiveController,
+                        decoration: effectiveDecoration.copyWith(
+                            errorText: field.errorText,
+                            fillColor: Theme.of(context).colorScheme.onPrimary,
+                            filled: true,
+                            contentPadding: EdgeInsets.all(14)),
+                        style: textStyle,
+                        textAlign: TextAlign.start,
+                        autofocus: false,
+                        obscureText: false,
+                        maxLines: 1,
+                        validator: (String? newValue) {
+                          if (required &&
+                              (newValue == null || newValue.isEmpty)) {
+                            return 'This field cannot be empty!';
+                          }
+                          if (items != null &&
+                              strict &&
+                              newValue != null &&
+                              newValue.isNotEmpty &&
+                              !items.contains(newValue)) {
+                            return 'Invalid value in this field!';
+                          }
+                          return null;
+                        },
+                        onSaved: setter,
+                        enabled: enabled,
+                        inputFormatters: inputFormatters,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close,
+                          semanticLabel: S.of(context).semanticlabelClose),
+                      onPressed: () {
+                        if (!enabled) return;
+                        state.clearValue();
+                      },
+                    )
+                  ],
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.close, semanticLabel:  S.of(context).semanticlabelClose),
-                onPressed: () {
-                  if (!enabled) return;
-                  state.clearValue();
-                },
-              )
-            ],
-          ),
-          if (state._showdropdown)
-            Container(
-              alignment: Alignment.topCenter,
-              height: itemsVisibleInDropdown * 48.0,
-              width: MediaQuery.of(field.context).size.width,
-              child: ListView(
-                cacheExtent: 0.0,
-                scrollDirection: Axis.vertical,
-                controller: scrollController,
-                padding: EdgeInsets.only(left: 40.0),
-                children: items?.isNotEmpty ?? false
-                    ? ListTile.divideTiles(
-                    context: field.context,
-                    tiles: state._getChildren(state._items!))
-                    .toList()
-                    : [],
-              ),
-            ),
-        ],
-      );
-    },
-  );
+                if (state._showdropdown)
+                  Container(
+                    alignment: Alignment.topCenter,
+                    height: itemsVisibleInDropdown * 48.0,
+                    width: MediaQuery.of(field.context).size.width,
+                    child: ListView(
+                      cacheExtent: 0.0,
+                      scrollDirection: Axis.vertical,
+                      controller: scrollController,
+                      padding: EdgeInsets.only(left: 40.0),
+                      children: items?.isNotEmpty ?? false
+                          ? ListTile.divideTiles(
+                                  context: field.context,
+                                  tiles: state._getChildren(state._items!))
+                              .toList()
+                          : [],
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
 
   @override
   DropDownFieldState createState() => DropDownFieldState();
@@ -153,7 +156,8 @@ class DropDownFieldState extends FormFieldState<String> {
 
   @override
   DropDownField get widget => super.widget as DropDownField;
-  TextEditingController? get _effectiveController => widget.controller ?? _controller;
+  TextEditingController? get _effectiveController =>
+      widget.controller ?? _controller;
 
   List<String>? get _items => widget.items;
 
@@ -162,7 +166,7 @@ class DropDownFieldState extends FormFieldState<String> {
       _effectiveController!.text = '';
     });
     if (widget.onValueChanged != null) {
-      widget.onValueChanged!('');  // Llamamos a onChanged con el valor vacío
+      widget.onValueChanged!(''); // Llamamos a onChanged con el valor vacío
     }
   }
 
@@ -174,7 +178,8 @@ class DropDownFieldState extends FormFieldState<String> {
       widget.controller?.addListener(_handleControllerChanged);
 
       if (oldWidget.controller != null && widget.controller == null) {
-        _controller = TextEditingController.fromValue(oldWidget.controller!.value);
+        _controller =
+            TextEditingController.fromValue(oldWidget.controller!.value);
       }
       if (widget.controller != null) {
         setValue(widget.controller!.text);

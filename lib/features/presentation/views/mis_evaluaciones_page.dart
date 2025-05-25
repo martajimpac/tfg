@@ -1,8 +1,6 @@
-
 import 'package:evaluacionmaquinas/features/data/models/centro_dm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/dimensions.dart';
 import '../../../core/utils/Constants.dart';
@@ -30,9 +28,6 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
 
   bool _showDeleteIcons = false;
 
-
-
-
   @override
   void initState() {
     super.initState();
@@ -41,99 +36,106 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     _cubitEvaluaciones.getEvaluaciones(context);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop){
+      onPopInvoked: (bool didPop) {
         setState(() {
           _showDeleteIcons = false;
         });
-      }, child: SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            _showDeleteIcons ? S.of(context).deleteEvaluations : S.of(context).myEvaluationsTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-
-          actions: [
-          Visibility(
-              visible: _showDeleteIcons,
-              child: IconButton(
-              icon: Icon(Icons.close, semanticLabel: S.of(context).semanticlabelClose), // Icono de cruz
-              onPressed: () {
-                setState(() {
-                  _showDeleteIcons = false;
-                });
-              },
-            ),
-          )
-        ],
-          automaticallyImplyLeading: false,
-            centerTitle: true
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body:  BlocConsumer<EvaluacionesCubit, EvaluacionesState>(
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+              title: Text(
+                _showDeleteIcons
+                    ? S.of(context).deleteEvaluations
+                    : S.of(context).myEvaluationsTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              actions: [
+                Visibility(
+                  visible: _showDeleteIcons,
+                  child: IconButton(
+                    icon: Icon(Icons.close,
+                        semanticLabel:
+                            S.of(context).semanticlabelClose), // Icono de cruz
+                    onPressed: () {
+                      setState(() {
+                        _showDeleteIcons = false;
+                      });
+                    },
+                  ),
+                )
+              ],
+              automaticallyImplyLeading: false,
+              centerTitle: true),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: BlocConsumer<EvaluacionesCubit, EvaluacionesState>(
             listener: (context, state) {
-              if(state is EvaluacionesDeleteSuccess){
+              if (state is EvaluacionesDeleteSuccess) {
                 _closeLoadingDialog(context);
                 _showDeleteSuccessDialog(context);
                 setState(() {
-                  if(_cubitEvaluaciones.evaluacionesFiltered.isEmpty){
+                  if (_cubitEvaluaciones.evaluacionesFiltered.isEmpty) {
                     _showDeleteIcons = false;
                   }
                 });
-              }else if (state is EvaluacionesDeleteLoading) {
-                _showLoadingDialog(context, myText: S.of(context).deletingEvaluation);
+              } else if (state is EvaluacionesDeleteLoading) {
+                _showLoadingDialog(context,
+                    myText: S.of(context).deletingEvaluation);
               } else if (state is EvaluacionesDeleteError) {
                 _closeLoadingDialog(context);
-                Utils.showMyOkDialog(context, S.of(context).error, state.errorMessage, () {
+                Utils.showMyOkDialog(
+                    context, S.of(context).error, state.errorMessage, () {
                   Navigator.of(context).pop();
                 });
               }
             },
+            builder: (context, state) {
+              List<EvaluacionDataModel> evaluaciones =
+                  _cubitEvaluaciones.evaluacionesFiltered;
+              final filtros = _cubitEvaluaciones.filtros;
 
-          builder: (context, state) {
+              return Column(
+                children: [
+                  _buildSortingAndFilterRow(
+                      context,
+                      _cubitEvaluaciones.sortedByDate,
+                      _cubitEvaluaciones.sortDateDescendent,
+                      _cubitEvaluaciones.sortNameDescendent),
+                  _buildFiltrosList(context, filtros),
 
-            List<EvaluacionDataModel> evaluaciones = _cubitEvaluaciones.evaluacionesFiltered;
-            final filtros = _cubitEvaluaciones.filtros;
+                  // Mostrar el estado de carga si es necesario
+                  if (state is EvaluacionesLoading)
+                    Expanded(
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
 
-            return Column(
-              children: [
-                _buildSortingAndFilterRow(context, _cubitEvaluaciones.sortedByDate, _cubitEvaluaciones.sortDateDescendent, _cubitEvaluaciones.sortNameDescendent),
-                _buildFiltrosList(context, filtros),
-
-                // Mostrar el estado de carga si es necesario
-                if (state is EvaluacionesLoading)
-                  Expanded(
-                    child: const Center(child: CircularProgressIndicator()),
-                  )
-
-                // Mostrar el error si hay un fallo
-                else if (state is EvaluacionesError)
-                  Expanded(
-                    child: Center(
-                      child: EmptyView(
-                        customText: state.errorMessage,
-                        onRetry: () {
-                          _cubitEvaluaciones.getEvaluaciones(context);
-                        },
-                        showRetryButton: false,
+                  // Mostrar el error si hay un fallo
+                  else if (state is EvaluacionesError)
+                    Expanded(
+                      child: Center(
+                        child: EmptyView(
+                          customText: state.errorMessage,
+                          onRetry: () {
+                            _cubitEvaluaciones.getEvaluaciones(context);
+                          },
+                          showRetryButton: false,
+                        ),
                       ),
-                    ),
-                  )
+                    )
 
-                // Mostrar la lista de evaluaciones
-                else
-                  _buildEvaluationsList(context, evaluaciones),
-              ],
-            );
-          },
+                  // Mostrar la lista de evaluaciones
+                  else
+                    _buildEvaluationsList(context, evaluaciones),
+                ],
+              );
+            },
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -148,7 +150,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
           secondaryButtonText: S.of(context).cancel,
           onPrimaryButtonTap: () {
             Navigator.of(context).pop();
-            _cubitEvaluaciones.eliminarEvaluacion(context, idEvaluacion, idMaquina);
+            _cubitEvaluaciones.eliminarEvaluacion(
+                context, idEvaluacion, idMaquina);
           },
           onSecondaryButtonTap: () {
             Navigator.of(context).pop();
@@ -158,9 +161,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     );
   }
 
-
-
-  Widget _buildSortingAndFilterRow(BuildContext context, bool sortedByDate, bool sortDateDescendent, bool sortNameDescendent) {
+  Widget _buildSortingAndFilterRow(BuildContext context, bool sortedByDate,
+      bool sortDateDescendent, bool sortNameDescendent) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -171,11 +173,13 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             color: Theme.of(context).colorScheme.primaryContainer,
           ),
           child: IconButton(
-            icon: Icon(Icons.filter_alt, semanticLabel: S.of(context).semanticlabelFilters),
+            icon: Icon(Icons.filter_alt,
+                semanticLabel: S.of(context).semanticlabelFilters),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
               _cubitEvaluaciones.saveCurrentFilters();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const FiltrosPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const FiltrosPage()));
             },
           ),
         ),
@@ -184,29 +188,39 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: (!sortedByDate) ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.primaryContainer,
+            color: (!sortedByDate)
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Theme.of(context).colorScheme.primaryContainer,
           ),
           child: IconButton(
-             icon:  (sortNameDescendent)
-              ? Image.asset('assets/icons/ic_sort_down.png', height: Dimensions.iconSize, width: Dimensions.iconSize, semanticLabel: S.of(context).semanticlabelSortAlphabeticallyDesc)
-              : Image.asset('assets/icons/ic_sort_up.png', height: Dimensions.iconSize, width: Dimensions.iconSize, semanticLabel: S.of(context).semanticlabelSortAlphabeticallyAsc),
+            icon: (sortNameDescendent)
+                ? Image.asset('assets/icons/ic_sort_down.png',
+                    height: Dimensions.iconSize,
+                    width: Dimensions.iconSize,
+                    semanticLabel:
+                        S.of(context).semanticlabelSortAlphabeticallyDesc)
+                : Image.asset('assets/icons/ic_sort_up.png',
+                    height: Dimensions.iconSize,
+                    width: Dimensions.iconSize,
+                    semanticLabel:
+                        S.of(context).semanticlabelSortAlphabeticallyAsc),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
-                if(_cubitEvaluaciones.evaluaciones.isNotEmpty){
-                  // Con parámetros personalizados:
-                  Utils.showAdaptiveToast(
-                    context: context,
-                    message: sortNameDescendent
-                        ? S.of(context).evaluationsSortedName
-                        : S.of(context).evaluationsSortedNameDescendant,
-                  );
-                  _cubitEvaluaciones.updateSorting(context, false);
-                }else{
-                  Utils.showAdaptiveToast(
-                    context: context,
-                    message:  S.of(context).noEvaluations,
-                  );
-                }
+              if (_cubitEvaluaciones.evaluaciones.isNotEmpty) {
+                // Con parámetros personalizados:
+                Utils.showAdaptiveToast(
+                  context: context,
+                  message: sortNameDescendent
+                      ? S.of(context).evaluationsSortedName
+                      : S.of(context).evaluationsSortedNameDescendant,
+                );
+                _cubitEvaluaciones.updateSorting(context, false);
+              } else {
+                Utils.showAdaptiveToast(
+                  context: context,
+                  message: S.of(context).noEvaluations,
+                );
+              }
             },
           ),
         ),
@@ -215,39 +229,44 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: (sortedByDate) ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.primaryContainer,
+            color: (sortedByDate)
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Theme.of(context).colorScheme.primaryContainer,
           ),
           child: IconButton(
-            icon: (sortDateDescendent)
-                ? Image.asset('assets/icons/ic_calendar_down.png', height: 27, width: 27, semanticLabel: S.of(context).semanticlabelSortByCreationDateDesc)
-                : Image.asset('assets/icons/ic_calendar_up.png', height: 27, width: 27, semanticLabel: S.of(context).semanticlabelSortByCreationDateAsc),
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-            onPressed: () {
-              if(_cubitEvaluaciones.evaluaciones.isNotEmpty){
-                Utils.showAdaptiveToast(
-                  context: context,
-                  message: sortDateDescendent
-                      ? S.of(context).evaluationsSortedDate
-                      : S.of(context).evaluationsSortedDateDescendant,
-                );
-                _cubitEvaluaciones.updateSorting(context, true);
-              }else{
-                Utils.showAdaptiveToast(
-                  context: context,
-                  message: S.of(context).noEvaluations,
-                );
-              }
-            }
-          ),
+              icon: (sortDateDescendent)
+                  ? Image.asset('assets/icons/ic_calendar_down.png',
+                      height: 27,
+                      width: 27,
+                      semanticLabel:
+                          S.of(context).semanticlabelSortByCreationDateDesc)
+                  : Image.asset('assets/icons/ic_calendar_up.png',
+                      height: 27,
+                      width: 27,
+                      semanticLabel:
+                          S.of(context).semanticlabelSortByCreationDateAsc),
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              onPressed: () {
+                if (_cubitEvaluaciones.evaluaciones.isNotEmpty) {
+                  Utils.showAdaptiveToast(
+                    context: context,
+                    message: sortDateDescendent
+                        ? S.of(context).evaluationsSortedDate
+                        : S.of(context).evaluationsSortedDateDescendant,
+                  );
+                  _cubitEvaluaciones.updateSorting(context, true);
+                } else {
+                  Utils.showAdaptiveToast(
+                    context: context,
+                    message: S.of(context).noEvaluations,
+                  );
+                }
+              }),
         ),
         const SizedBox(width: Dimensions.marginSmall),
       ],
     );
   }
-
-
-
-
 
   Widget _buildFiltrosList(BuildContext context, Map<String, dynamic> filtros) {
     return SizedBox(
@@ -261,7 +280,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 4.0),
                   margin: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
@@ -271,11 +291,13 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        (filtro.key == filtroFechaRealizacion || filtro.key == filtroFechaCaducidad)
+                        (filtro.key == filtroFechaRealizacion ||
+                                filtro.key == filtroFechaCaducidad)
                             ? "${filtro.key}: ${DateFormat(DateFormatString).format(filtro.value)}"
-                            : (filtro.key == filtroCentro) // Verifica si el filtro es de centro
-                            ? "${filtro.key}: ${(filtro.value as CentroDataModel).denominacion}"
-                            : "${filtro.key}: ${(filtro.value as String)}",
+                            : (filtro.key ==
+                                    filtroCentro) // Verifica si el filtro es de centro
+                                ? "${filtro.key}: ${(filtro.value as CentroDataModel).denominacion}"
+                                : "${filtro.key}: ${(filtro.value as String)}",
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(width: Dimensions.marginSmall),
@@ -285,7 +307,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                         },
                         child: Icon(
                           Icons.close,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                           size: 20.0,
                           semanticLabel: S.of(context).semanticlabelClose,
                         ),
@@ -300,22 +323,19 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     );
   }
 
-
-  Widget _buildEvaluationsList(BuildContext context, List<EvaluacionDataModel> evaluaciones) {
-
+  Widget _buildEvaluationsList(
+      BuildContext context, List<EvaluacionDataModel> evaluaciones) {
     if (evaluaciones.isEmpty) {
       return Expanded(
-          child:const Center(
-            child: EmptyView(
-              showRetryButton: false,
-            ),
+        child: const Center(
+          child: EmptyView(
+            showRetryButton: false,
           ),
+        ),
       );
-    } else{
+    } else {
       return Expanded(
-        child:
-
-        GestureDetector(
+        child: GestureDetector(
           // Detecta un clic largo en la lista
           onLongPress: () {
             setState(() {
@@ -328,11 +348,12 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
               final evaluacion = evaluaciones[index];
               return GestureDetector(
                 onTap: () {
-                  if(!_showDeleteIcons){
+                  if (!_showDeleteIcons) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetalleEvaluacionPage(idEvaluacion: evaluaciones[index].ideval),
+                        builder: (context) => DetalleEvaluacionPage(
+                            idEvaluacion: evaluaciones[index].ideval),
                       ),
                     );
                   }
@@ -349,7 +370,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                             children: [
                               Text(
                                 evaluacion.nombreMaquina,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
@@ -360,45 +382,70 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(evaluacion.centro, style: TextStyle( color: Theme.of(context).colorScheme.onSecondary)),
+                                  Text(evaluacion.centro,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary)),
                                 ],
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(DateFormat(DateFormatString).format(evaluacion.fechaRealizacion), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
+                                  Text(
+                                      DateFormat(DateFormatString)
+                                          .format(evaluacion.fechaRealizacion),
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary)),
                                   const Text(" - "),
-                                  Text(DateFormat(DateFormatString).format(evaluacion.fechaCaducidad), style: TextStyle(color:  Theme.of(context).colorScheme.onSecondary)),
+                                  Text(
+                                      DateFormat(DateFormatString)
+                                          .format(evaluacion.fechaCaducidad),
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary)),
                                 ],
                               ),
                               const SizedBox(height: Dimensions.marginSmall),
-                              CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
+                              CaducidadIndicator(
+                                  fechaCaducidad: evaluacion.fechaCaducidad)
                             ],
                           ),
-                        )
-                    ),
+                        )),
                     Positioned.fill(
                       child: Container(
-                        color: _showDeleteIcons? Theme.of(context).colorScheme.surface.withOpacity(0.5) : Colors.transparent,
+                        color: _showDeleteIcons
+                            ? Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.5)
+                            : Colors.transparent,
                       ),
                     ),
                     Positioned(
                       top: 10,
                       right: 10,
-                      child: _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
-                          ? IconButton(
-                        icon: Image.asset(
-                          'assets/icons/ic_close_transparent.png',
-                          height: 40, // Ajusta el tamaño de la imagen según sea necesario
-                          width: 40,
-                          color: Colors.red,
-                          semanticLabel: S.of(context).semanticlabelDelete,
-                        ),
-                        onPressed: () {
-                          _eliminarEvaluacion(evaluacion.ideval, evaluacion.idMaquina);
-                        },
-                      )
-                          : const SizedBox(),
+                      child:
+                          _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
+                              ? IconButton(
+                                  icon: Image.asset(
+                                    'assets/icons/ic_close_transparent.png',
+                                    height:
+                                        40, // Ajusta el tamaño de la imagen según sea necesario
+                                    width: 40,
+                                    color: Colors.red,
+                                    semanticLabel:
+                                        S.of(context).semanticlabelDelete,
+                                  ),
+                                  onPressed: () {
+                                    _eliminarEvaluacion(evaluacion.ideval,
+                                        evaluacion.idMaquina);
+                                  },
+                                )
+                              : const SizedBox(),
                     ),
                   ],
                 ),
@@ -406,11 +453,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             },
           ),
         ),
-
       );
     }
   }
-
 
   static bool isDialogOpen = false;
 
@@ -419,7 +464,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
   static void _showDeleteSuccessDialog(BuildContext context) {
     if (!isDeletedDialogOpen) {
       isDeletedDialogOpen = true;
-      Utils.showMyOkDialog(context, S.of(context).evaluationDeleted,  S.of(context).evaluationDeletedDesc, () {
+      Utils.showMyOkDialog(context, S.of(context).evaluationDeleted,
+          S.of(context).evaluationDeletedDesc, () {
         Navigator.of(context).pop();
         isDeletedDialogOpen = false;
       });
@@ -433,14 +479,10 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     }
   }
 
-  static void _closeLoadingDialog(BuildContext context){
+  static void _closeLoadingDialog(BuildContext context) {
     if (isDialogOpen) {
       Navigator.of(context).pop();
       isDialogOpen = false;
     }
   }
-
 }
-
-
-
