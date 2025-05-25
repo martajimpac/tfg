@@ -54,12 +54,6 @@ La aplicación ha sido desarrollada para la Delegación de Defensa en la Comunid
    ```
    - **Salida:** `build/windows/runner/Release/`
 
-## 📊 Metodología de Desarrollo
-
-El proyecto ha seguido la metodología ágil Scrum, con:
-- ✔ Sprints de 2 semanas
-- ✔ Reuniones diarias (Daily Standups)
-- ✔ Retrospectivas al final de cada iteración
 
 ## 📸 Capturas de Pantalla
 
