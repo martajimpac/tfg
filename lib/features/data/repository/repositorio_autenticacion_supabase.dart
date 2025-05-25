@@ -26,7 +26,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
       } else {
         var message = "";
         if(context != null){
-          message = S.of(context).errorAuthentication;
+          message = "HOLI"; //S.of(context).errorAuthentication
         }
         return message;
       }
@@ -47,7 +47,7 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
           break;
         default:
           if(context != null){
-            message = S.of(context).errorAuthentication;
+            message = "${error.message} S.of(context).errorAuthentication;";
           }
           return message;
           break;

@@ -135,7 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                             children: <Widget>[
                               Text(S.of(context).email),
                               MyLoginTextField(
-                                key: const Key('usernameField'),
                                 controller: _emailController,
                                 hintText: S.of(context).hintEmail,
                                 isRed: isEmailRed,
@@ -147,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: Dimensions.marginMedium),
                               Text(S.of(context).password),
                               MyLoginTextField(
-                                key: const Key('passwordField'),
                                 controller: _passwordController,
                                 hintText: S.of(context).hintPassword,
                                 obscureText: true,
@@ -184,7 +182,6 @@ class _LoginPageState extends State<LoginPage> {
                                       child: CircularProgressIndicator(),
                                     )
                                   : MyButton(
-                                      key: const Key('loginButton'),
                                       adaptableWidth: false,
                                       onTap: () async {
                                         // Evitar clics múltiples si ya está cargando

@@ -65,7 +65,6 @@ class LoginCubit extends Cubit<LoginState> {
           (state as LoginError).isPasswordRed == isPasswordRed) {
         return;
       }
-      debugPrint("marta error 1");
       emit(LoginError(errorEmptyMessage, isEmailRed, isPasswordRed));
       return;
     }

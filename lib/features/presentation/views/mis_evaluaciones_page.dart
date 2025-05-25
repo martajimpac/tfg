@@ -31,7 +31,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint("MARTA MisEvaluaccionesPage initState() llamado");
+    debugPrint("MisEvaluaccionesPage initState() llamado");
     _cubitEvaluaciones = BlocProvider.of<EvaluacionesCubit>(context);
     _cubitEvaluaciones.getEvaluaciones(context);
   }

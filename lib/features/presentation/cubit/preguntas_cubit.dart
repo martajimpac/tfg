@@ -150,7 +150,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
 
     try {
       categorias = await repositorio.getCategorias(idEvaluacion, idMaquina);
-      debugPrint("marta cate $categorias");
       return categorias ?? [];
     } catch (e) {
       return [];
@@ -185,7 +184,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       _isMaqMovil = evaluacion.isMaqMovil;
 
       if (categorias.isEmpty || pageIndex < 0 || pageIndex >= categorias.length) {
-        debugPrint("MARTA: Índice de página fuera de rango o categorías vacías.");
+        debugPrint("Índice de página fuera de rango o categorías vacías.");
       }
 
 
@@ -195,7 +194,7 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       ).toList();*/
 
 
-      //debugPrint("MARTA: $categoria ${preguntasPagina.map((t) => t.idRespuestaSeleccionada).toList()}");
+      //debugPrint("$categoria ${preguntasPagina.map((t) => t.idRespuestaSeleccionada).toList()}");
 
 
       emit(PreguntasLoaded(evaluacion.ideval, pageIndex));

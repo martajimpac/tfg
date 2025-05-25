@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,11 +39,18 @@ void main() async {
   ///Se inicializa el splash screen
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  /// Carga las variables del archivo .env
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    Logger log = Logger();
+    log.e('No se ha encontrado envied: $e');
+  }
+
   /// Se obtienen las variables de entorno del fichero .env mediante la librería envied
   Supabase supabase = await Supabase.initialize(
-    url: 'https://mhxryaquargzfumndwgq.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oeHJ5YXF1YXJnemZ1bW5kd2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2NTc0NjgsImV4cCI6MjAxNTIzMzQ2OH0.zuNF8ECVgZPasigxX0cxT1bph-NueCGaJA9kDTPmdZ8',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   /// Se inicializa el bloc observer para que muestre los eventos de los blocs
@@ -55,16 +64,6 @@ void main() async {
   runApp(MyApp(supabase: supabase));
 }
 
-void handleDeepLink(Uri uri, BuildContext context) {
-  // Parseo y navegación según el link recibido
-  if (uri.pathSegments.contains('product')) {
-    final productId = uri.queryParameters['id'];
-    if (productId != null) {
-      GoRouter.of(context).go('/product/$productId');
-    }
-  }
-  // Agregar más condiciones según tus rutas
-}
 
 class MyApp extends StatefulWidget {
   const MyApp({required this.supabase, super.key});
