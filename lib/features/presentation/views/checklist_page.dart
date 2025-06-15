@@ -58,11 +58,6 @@ class _CheckListPageState extends State<CheckListPage> {
     _cubit.insertarRespuestasAndGeneratePdf(context, widget.evaluacion, AccionesPdfChecklist.guardar);
   }
 
-  void _exit(){
-    /*_cubit.clearCache();
-    Navigator.of(context).pop(); //TODO ARREGLAR AQUI NAV ATRÁS*/
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -90,8 +85,6 @@ class _CheckListPageState extends State<CheckListPage> {
           body: BlocConsumer<PreguntasCubit, PreguntasState>(
             builder: (context, state) {
               final List<CategoriaPreguntaDataModel> categorias = _cubit.categorias ?? [];
-              /*bool isLastPage = _currentPageIndex == (categorias.length - 1);
-              bool isLoading = state is PreguntasLoading;*/
 
               return Column(
                 children: [
@@ -100,6 +93,7 @@ class _CheckListPageState extends State<CheckListPage> {
                     currentIndex: _currentPageIndex,
                     enabled: state is PreguntasLoaded,
                     onCategorySelected: (index) {
+
                       _currentPageIndex = index;
                       _cubit.cambiarCategoria(index);
                     },
@@ -131,9 +125,12 @@ class _CheckListPageState extends State<CheckListPage> {
 
                         return Column(
                           children: [
-                            _buildQuestionsList(context, _currentPageIndex, preguntasPorPagina, category!, respuestas),
+                            if (category != null)
+                              _buildQuestionsList(context, _currentPageIndex, preguntasPorPagina, category, respuestas),
+
                             if (_currentPageIndex == (categorias.length - 1))
                               MyButton(
+                                key: buttonFinishChecklistKey,
                                 adaptableWidth: false,
                                 onTap: () => _checkAllAnswer(preguntas),
                                 text: S.of(context).finish,

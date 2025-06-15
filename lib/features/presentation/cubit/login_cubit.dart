@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../data/repository/auth_exceptions.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../../generated/l10n.dart';
 
@@ -58,54 +59,39 @@ class LoginCubit extends Cubit<LoginState> {
       isEmailRed = email.isEmpty;
       isPasswordRed = password.isEmpty;
 
-      // Verificar si el estado actual ya es el mismo error
-      if (state is LoginError &&
-          (state as LoginError).message == errorEmptyMessage &&
-          (state as LoginError).isEmailRed == isEmailRed &&
-          (state as LoginError).isPasswordRed == isPasswordRed) {
-        return;
-      }
       emit(LoginError(errorEmptyMessage, isEmailRed, isPasswordRed));
       return;
     }
 
-    final errorMessage =
-        await repositorio.signInWithEmailAndPassword(email, password, context);
-
-    if (errorMessage == null) {
+    try {
+      await repositorio.signInWithEmailAndPassword(email, password);
       emit(LoginSuccess());
       return;
-    } else if (errorMessage == errorAuthMessage) {
-      // Verificar si el estado actual ya es el mismo error
-      if (state is LoginError &&
-          (state as LoginError).message == errorAuthMessage &&
-          (state as LoginError).isEmailRed == true &&
-          (state as LoginError).isPasswordRed == true) {
-        return;
-      }
-      emit(LoginError(errorMessage, true, true));
+    } on InvalidCredentialsException {
+
+      emit(LoginError(S.of(context).errorAuthenticationCredentials, true, true));
       return;
-    } else {
-      // Verificar si el estado actual ya es el mismo error
-      if (state is LoginError &&
-          (state as LoginError).message == errorMessage &&
-          (state as LoginError).isEmailRed == false &&
-          (state as LoginError).isPasswordRed == false) {
-        return;
-      }
-      emit(LoginError(errorMessage, false, false));
+
+    } on EmailNotConfirmedException {
+      emit(LoginError(S.of(context).errorAuthenticationNotConfirmed, true, false));
+      return;
+
+    } on AuthenticationRepositoryException catch (e) {
+      emit(LoginError(S.of(context).errorAuthentication,  false, false));
+      return;
+
+    } catch (e) {
+      emit(LoginError(S.of(context).unknownError, false, false));
       return;
     }
   }
 
-  Future<void> resendConfirmationEmail(
-      String email, String password, BuildContext context) async {
-    final errorMesage =
-        await repositorio.resendConfirmationEmail(email, password, context);
-    if (errorMesage == null) {
+  Future<void> resendConfirmationEmail(String email, String password, BuildContext context) async {
+    try {
+      await repositorio.resendConfirmationEmail(email, password);
       emit(ConfirmationEmailSent());
-    } else {
-      emit(LoginError(errorMesage, false, false));
+    } catch (e) {
+      emit(LoginError(S.of(context).errorEmailResent, false, false));
       return;
     }
   }

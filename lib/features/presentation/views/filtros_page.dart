@@ -154,6 +154,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
                           const SizedBox(height: Dimensions.marginSmall),
                           Text(S.of(context).completionDateMustBeAfter),
                           CustomDatePicker(
+                            key: filtroFechaRealizacionKey,
                             onDateChanged: (DateTime? newDate) {
                               _fechaRealizacion = newDate;
                               if (newDate != null) {
@@ -171,6 +172,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
 
                           const SizedBox(height: Dimensions.marginSmall),
                           CustomDatePicker(
+                            key: filtroFechaCaducidadKey,
                             onDateChanged: (DateTime? newDate) {
                               _fechaCaducidad = newDate;
                               if (newDate != null) {
@@ -238,6 +240,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
                       final numEval = _cubitEvaluaciones.evaluacionesFiltered.length;
 
                       return MyButton(
+                        key: buttonApplyFiltersKey,
                         onTap: () {
                           Navigator.push(
                             context,

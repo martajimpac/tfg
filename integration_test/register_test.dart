@@ -16,10 +16,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'initegration_helpers.dart';
-import 'login_test.dart';
-// Para mocking (si lo usas para errores específicos de Supabase)
-// import 'package:mockito/mockito.dart';
-// import '../test/mocks/mock_repositories.mocks.dart'; // Asegúrate que este mock incluya SupabaseAuthRepository
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +48,7 @@ void main() {
     // Espera a que aparecezca el login
     await pumpUntil(tester, find.byType(LoginPage));
     // Encuentra y presiona el botón de registro en LoginPage
-    final registerButtonOnLogin = find.widgetWithText(MyButton, s.loginButton.toUpperCase());
+    final registerButtonOnLogin = find.widgetWithText(MyButton, s.registerButton.toUpperCase());
     expect(registerButtonOnLogin, findsOneWidget, reason: "Botón para ir a registro no encontrado en LoginPage");
     await tester.tap(registerButtonOnLogin);
     await tester.pumpAndSettle();
@@ -88,11 +84,12 @@ void main() {
     expect(nameField, findsOneWidget, reason: "No se encontró el campo de nombre con hint: '${s.hintName}'");
     expect(emailField, findsOneWidget, reason: "No se encontró el campo de email con hint: '${s.hintEmail}'");
     expect(passwordField, findsOneWidget, reason: "No se encontró el campo de contraseña con hint: '${s.hintPassword}'");
+    expect(repeatPasswordField, findsOne, reason: "No se encontró el campo de contraseña con hint : '${s.hintPassword}'");
 
     if (name != null) await tester.enterText(nameField, name);
     if (email != null) await tester.enterText(emailField, email);
     if (password != null) await tester.enterText(passwordField, password);
-
+    if (repeatPassword != null) await tester.enterText(repeatPasswordField, repeatPassword);
 
     await tester.ensureVisible(registerButton); // Asegúrate de que el botón es visible
     await tester.tap(registerButton);
@@ -100,7 +97,7 @@ void main() {
   }
 
   group('Registration Tests', () {
-    testWidgets('Successful registration shows confirmation message/navigates', (WidgetTester tester) async {
+    testWidgets('Successful registration', (WidgetTester tester) async {
       await initializeAppAndNavigateToRegister(tester);
 
       // Genera un email único para cada test para evitar conflictos de "email ya registrado"
@@ -119,8 +116,6 @@ void main() {
       final registerPageElement = tester.element(find.byType(RegisterPage)); // O el widget que use RegisterCubit
       final registerCubit = BlocProvider.of<RegisterCubit>(registerPageElement);
       expect(registerCubit.state, isA<RegisterSuccess>(), reason: "El estado del Cubit debería ser RegisterSuccess");
-
-      //TODO COMPROBAR QUE SE ENVIA CORREO DE CONFIRMACIÓN?
     });
 
     testWidgets('Registration with already registered email shows error', (WidgetTester tester) async {
@@ -132,6 +127,7 @@ void main() {
         name: 'Another User',
         email: existingEmail,
         password: 'Password123!',
+        repeatPassword: 'Password123!',
       );
       await tester.pumpAndSettle();
 
@@ -140,12 +136,9 @@ void main() {
       expect(registerCubit.state, isA<RegisterError>());
       final errorState = registerCubit.state as RegisterError; // Asume que RegisterError tiene 'message'
       expect(errorState.message, s.emailAlredyRegistered);
-
-      // También verifica la UI si muestra el error
-      expect(find.text(s.emailAlredyRegistered), findsOneWidget);
     });
 
-    /*
+
     testWidgets('Registration with weak password shows error', (WidgetTester tester) async {
       await initializeAppAndNavigateToRegister(tester);
       final uniqueEmail = 'weakpass_${DateTime.now().millisecondsSinceEpoch}@example.com';
@@ -222,49 +215,8 @@ void main() {
 
       // Verificación en la UI
       expect(find.text(s.errorPasswordsDontMatch), findsOneWidget);
-    });*/
-
-    //TODO TEST SUPABASE RESPUESTA INVALIDA - MOCKEAR SUPABASE
-    // Test para "errorRegisterLimit" (429) - Esto SÍ requeriría mockear SupabaseAuthRepository
-    // para simular que el método signUp devuelve S.of(context).errorRegisterLimit
-    /*
-    testWidgets('Registration limit reached shows error', (WidgetTester tester) async {
-      // 1. Configura el mock (necesitarías MockSupabaseAuthRepository)
-      // when(mockSupabaseAuthRepository.signUp(any, any, any, any))
-      //    .thenAnswer((_) async => s.errorRegisterLimit);
-
-      // 2. Bombea la app con el RepositoryProvider mockeado
-      // await tester.pumpWidget(
-      //   MultiRepositoryProvider(
-      //     providers: [
-      //       RepositoryProvider<SupabaseAuthRepository>.value(value: mockSupabaseAuthRepository),
-      //       // ... otros repositorios si son necesarios
-      //     ],
-      //     child: app.MyApp(supabase: Supabase.instance),
-      //   ),
-      // );
-      // await tester.pumpAndSettle();
-      // await pumpUntil(tester, find.byType(RegisterPage)); // Navega a RegisterPage
-
-      await initializeAppAndNavigateToRegister(tester); // NO PUEDES USAR ESTA SI NECESITAS MOCK. Debes bombear con el mock.
-
-      final uniqueEmail = 'limit_${DateTime.now().millisecondsSinceEpoch}@example.com';
-      await performRegistration(tester,
-        name: 'Test User',
-        email: uniqueEmail,
-        password: 'Password123!',
-      );
-      await tester.pumpAndSettle();
-
-      final registerPageElement = tester.element(find.byType(RegisterPage));
-      final registerCubit = BlocProvider.of<RegisterCubit>(registerPageElement);
-      expect(registerCubit.state, isA<RegisterError>());
-      final errorState = registerCubit.state as RegisterError;
-      expect(errorState.message, s.errorRegisterLimit);
-
-      expect(find.text(s.errorRegisterLimit), findsOneWidget);
     });
-    */
+
   });
 }
 

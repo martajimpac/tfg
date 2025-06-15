@@ -74,11 +74,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Icon(
                   Icons.add,
+                  key: addButtonKey,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   semanticLabel: S.of(context).semanticlabelNewEvaluation,
                 ),
                 Icon(
                   Icons.person,
+                  key: buttonProfileKey,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   semanticLabel: S.of(context).semanticlabelProfile,
                 ),

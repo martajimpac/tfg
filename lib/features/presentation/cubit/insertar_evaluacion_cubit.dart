@@ -115,9 +115,11 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           numeroSerie: numeroSerie,
           isMaqCarga: isMaqCarga,
           isMaqMovil: isMaqMovil);
-      //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenes, idEvaluacion); //TODO IMAGENES
-      final listImagenesIds =
-          await repositorio.insertarImagenes(imagenes, idEvaluacion);
+
+      //TODO usar supabase storage para imágnes
+      //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenes, idEvaluacion);
+
+      final listImagenesIds = await repositorio.insertarImagenes(imagenes, idEvaluacion);
       emit(EvaluacionInsertada(evaluacion, listImagenesIds));
 
       emit(InsertarEvaluacionInicial());
@@ -177,7 +179,9 @@ class InsertarEvaluacionCubit extends Cubit<InsertarEvaluacionState> {
           imagenes.where((imagen) => imagen.idimg == null).toList();
       final listImagenesIds = await repositorio.insertarImagenesUrl(
           imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(),
-          idEvaluacion); //TODO IMAGENES
+          idEvaluacion);
+
+      //TODO usar supabase storage para imágnes
       //final listImagenesIds = await repositorio.insertarImagenesUrl(imagenesInsertar.map((imageModel) => imageModel.imagen!).toList(), idEvaluacion);
 
       // Actualizar los ids de las imagenes que acabamos de eliminar

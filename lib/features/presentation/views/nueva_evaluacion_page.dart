@@ -476,6 +476,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                   //const SizedBox(height: Dimensions.marginMedium),
                   Expanded(
                     child: ListView(
+                      key: listViewNewEvaluationKey,
                       scrollDirection: Axis.vertical,
                       children: <Widget>[
                         /**********************DATOS EVALUACION***********************/
@@ -579,6 +580,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                         const SizedBox(height: Dimensions.marginSmall),
                         Text(S.of(context).manufacturedDateAsterisk),
                         CustomDatePicker(
+                          key: fechaFabricacionKey,
                           onDateChanged: (DateTime? newDate) {
                             _fechaFabricacion = newDate;
                           },
@@ -591,6 +593,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
 
                         const SizedBox(height: Dimensions.marginSmall),
                         CustomDatePicker(
+                          key: fechaServicioKey,
                           onDateChanged: (DateTime? newDate) {
                             _fechaPuestaServicio = newDate;
                           },
@@ -743,6 +746,7 @@ class _NuevaEvaluacionPageState extends State<NuevaEvaluacionPage> {
                         ),
                         const SizedBox(height: Dimensions.marginSmall),
                         MyButton(
+                          key: buttonFinishEvaluationKey,
                           adaptableWidth: false,
                           onTap: () {
                             setState(() {

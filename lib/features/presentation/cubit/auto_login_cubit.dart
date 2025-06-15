@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 
+import '../../data/repository/auth_exceptions.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 
@@ -30,13 +31,12 @@ class AutoLoginCubit extends Cubit<AutoLoginState> {
       return;
     }
 
-    final errorMessage =
-        await repositorio.signInWithEmailAndPassword(email, password, null);
-
-    if (errorMessage == null) {
+    try {
+      await repositorio.signInWithEmailAndPassword(email, password);
       emit(AutoLoginSuccess());
-    } else {
+    }catch (error) {
       emit(AutoLoginError());
     }
+
   }
 }

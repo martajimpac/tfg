@@ -65,10 +65,11 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-
+  mockito: ^5.4.4
+  mocktail: ^1.0.4
+  build_runner: ^2.4.9
   flutter_lints: ^5.0.0
   envied_generator: ^1.0.0
-  build_runner: ^2.4.9
 
 flutter_launcher_icons:
   android: "launcher_icon"

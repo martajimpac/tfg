@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  ///Método que se ejecuta al inicio de la aplicación
+  ///Métoodo que se ejecuta al inicio de la aplicación
   void initialization(Supabase supabase) async {
     //Aquí es donde podemos poner los recursos necesarios para nuestra aplicación mientras se muestra la pantalla de inicio.
     FlutterNativeSplash.remove();
@@ -152,8 +152,9 @@ class _MyAppState extends State<MyApp> {
           builder: (context) {
             final settingsCubit = context.watch<SettingsCubit>();
             return MaterialApp.router(
-              locale: _locale,
               debugShowCheckedModeBanner: false,
+              title: 'Evaluaciones',
+              locale: _locale,
               theme: settingsCubit.state.theme,
               localizationsDelegates: const [
                 S.delegate,
@@ -162,7 +163,6 @@ class _MyAppState extends State<MyApp> {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: S.delegate.supportedLocales,
-              title: 'Evaluaciones',
               routerConfig: _enrutador,
             );
           },
@@ -170,4 +170,5 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
 }

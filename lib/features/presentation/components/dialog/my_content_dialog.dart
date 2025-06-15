@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
+import '../../../../core/utils/Constants.dart';
 import '../buttons/my_button.dart';
 
 class MyContentDialog extends StatelessWidget {
@@ -22,7 +22,6 @@ class MyContentDialog extends StatelessWidget {
     this.onSecondaryButtonTap,
   });
 
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -39,7 +38,7 @@ class MyContentDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             title,
-            const SizedBox(height: Dimensions.marginMedium), // Espacio entre el título y el texto siguiente
+            const SizedBox(height: Dimensions.marginMedium),
             content,
             const SizedBox(height: Dimensions.marginMedium),
             Row(
@@ -51,7 +50,7 @@ class MyContentDialog extends StatelessWidget {
                       adaptableWidth: false,
                       onTap: onSecondaryButtonTap,
                       text: secondaryButtonText,
-                      color: Colors.grey.shade700
+                      color: Colors.grey.shade700,
                     ),
                   ),
                 ),
@@ -59,6 +58,7 @@ class MyContentDialog extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: MyButton(
+                      key: primaryButtonKey,
                       adaptableWidth: false,
                       onTap: onPrimaryButtonTap,
                       text: primaryButtonText,

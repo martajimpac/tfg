@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../data/repository/auth_exceptions.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../../generated/l10n.dart';
 
@@ -78,16 +79,59 @@ class RegisterCubit extends Cubit<RegisterState> {
     isPasswordRed = false;
     isRepeatPasswordRed = false;
 
-    final errorMessage = await repositorio.signUp(name, email, password, context);
-
-    if(errorMessage == null){
+    try{
+      await repositorio.signUp(name, email, password);
       emit(RegisterSuccess());
-    }else if(errorMessage == S.of(context).errorRegisterPasswordMin){
-      emit(RegisterError(errorMessage, isEmailRed, true, true, name: name, email: email, password: password, repeatPassword: repeatPassword));
-    }else if(errorMessage == S.of(context).errorEmailNotValid){
-      emit(RegisterError(errorMessage, true, isPasswordRed, isRepeatPasswordRed, name: name, email: email, password: password, repeatPassword: repeatPassword));
-    }else{
-      emit(RegisterError(errorMessage, isEmailRed, isPasswordRed, isRepeatPasswordRed, name: name, email: email, password: password, repeatPassword: repeatPassword));
+    } on InvalidEmailFormatException{
+      emit(RegisterError(
+        S.of(context).errorEmailNotValid,
+        true,
+        isPasswordRed,
+        isRepeatPasswordRed,
+        name: name,
+      ));
+    }on PasswordTooShortException{
+      emit(RegisterError(
+        S.of(context).errorRegisterPasswordMin,
+        isEmailRed,
+        true,
+        isRepeatPasswordRed,
+        name: name,
+      ));
+    }on EmailAlreadyRegisteredException{
+      emit(RegisterError(
+          S.of(context).emailAlredyRegistered,
+          true,
+          isPasswordRed,
+          isRepeatPasswordRed,
+          name: name,
+        )
+      );
+    } on RateLimitExceededException catch (e) {
+      emit(
+          RegisterError(
+              S.of(context).errorRegisterLimit,
+              isEmailRed,
+              isPasswordRed,
+              isRepeatPasswordRed, name: name,
+              email: email,
+              password: password,
+              repeatPassword: repeatPassword
+          ));
+      return;
+    } catch (e) {
+      emit(
+          RegisterError(
+              S.of(context).unknownError,
+              false,
+              false,
+              false,
+              name: name,
+              email: email,
+              password: password,
+              repeatPassword: repeatPassword
+          ));
+      return;
     }
   }
 }

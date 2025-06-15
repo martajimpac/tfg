@@ -1,6 +1,7 @@
 library dropdownfield;
 
 import 'package:diacritic/diacritic.dart';
+import 'package:evaluacionmaquinas/core/utils/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -56,11 +57,13 @@ class DropDownField extends FormField<String> {
             final DropDownFieldState state = field as DropDownFieldState;
             final ScrollController scrollController = ScrollController();
             final InputDecoration effectiveDecoration = InputDecoration(
+
                 border: InputBorder.none,
                 filled: true,
                 icon: icon,
                 suffixIcon: IconButton(
                     icon: Icon(Icons.arrow_drop_down,
+                        key: arrowCentersKey,
                         size: 30.0,
                         color: Theme.of(context).colorScheme.onSurface,
                         semanticLabel: S.of(context).semanticlabelShowCenters),
@@ -128,6 +131,7 @@ class DropDownField extends FormField<String> {
                     height: itemsVisibleInDropdown * 48.0,
                     width: MediaQuery.of(field.context).size.width,
                     child: ListView(
+                      key: listViewCentersKey,
                       cacheExtent: 0.0,
                       scrollDirection: Axis.vertical,
                       controller: scrollController,

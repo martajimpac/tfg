@@ -1,4 +1,5 @@
 
+import 'package:evaluacionmaquinas/core/utils/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -40,7 +41,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _updateUser(BuildContext context) async {
     final userName = _userNameController.text.trim();
-    _cubit.editProfile(userName, context);
+    _cubit.editProfile(userName);
   }
 
   @override
@@ -77,19 +78,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   },
                 );
               } else if (state is EditProfileError) {
-                final errorMessage = state.errorMessage;
+                final errorMessage = state.errorCode;
 
-                if (errorMessage == S.of(context).errorEmpty) {
+                if (errorMessage == errorEmpty) {
                   Utils.showAdaptiveToast(
                       context: context,
-                      message: errorMessage,
+                      message: S.of(context).errorEmpty,
                       gravity: ToastGravity.BOTTOM
                   );
                 } else {
                   Utils.showMyOkDialog(
                     context,
                     S.of(context).error,
-                    state.errorMessage,
+                    S.of(context).errorChangeUserData,
                         () {
                       Navigator.of(context).pop();
                     },
@@ -127,6 +128,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           SizedBox(height: Dimensions.marginMedium),
                           MyButton(
+                            key: buttonSaveProfileKey,
                             adaptableWidth: false,
                             onTap: () {
                               _updateUser(context);

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../data/repository/auth_exceptions.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../../generated/l10n.dart';
 
@@ -95,14 +96,15 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    final errorMessage = await repositorio.changePassword(currentPassword, newPassword, context);
-
-    if(errorMessage == null){
+    try{
+      await repositorio.changePassword(currentPassword, newPassword);
       emit(ChangePasswordSuccess());
-    }else if(errorMessage == S.of(context).errorChangePasswordIncorrect){
-      emit(ChangePasswordError(errorMessage, true, false, false, currentPassword, newPassword, confirmPassword));
-    }else{
-      emit(ChangePasswordError(errorMessage, false, false, false, currentPassword, newPassword, confirmPassword));
+    } on ChangePasswordIncorrectException{
+      emit(ChangePasswordError(S.of(context).errorChangePasswordIncorrect, true, false, false, currentPassword, newPassword, confirmPassword));
+    } on ChangePasswordNoChangedException{
+      emit(ChangePasswordError(S.of(context).errorChangePasswordNoChange, false, false, false, currentPassword, newPassword, confirmPassword));
+    } catch(e){
+      emit(ChangePasswordError(S.of(context).errorChangePassword, false, false, false, currentPassword, newPassword, confirmPassword));
     }
   }
 
@@ -136,11 +138,12 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    final errorMessage = await repositorio.resetPassword(newPassword, context);
-    if(errorMessage == null){
+    try{
+      await repositorio.resetPassword(newPassword);
       emit(ChangePasswordSuccess());
-    }else{
-      emit(ChangePasswordError(errorMessage, false, false, false, "", newPassword, confirmPassword));
+    }catch(e){
+      emit(ChangePasswordError(S.of(context).errorChangePassword, false, false, false, "", newPassword, confirmPassword));
+      return;
     }
   }
 
@@ -152,11 +155,15 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       return;
     }
 
-    final errorMessage = await repositorio.sendResetPasswordEmail(email, context);
-    if(errorMessage == null){
+    try{
+      await repositorio.sendResetPasswordEmail(email);
       emit(SendPasswordResetEmailSuccess());
-    }else{
-      emit(SendPasswordResetEmailError(errorMessage, false));
+    } on RateLimitExceededException catch(e){
+      emit(SendPasswordResetEmailError(S.of(context).errorRecoverPasswordLimit, false));
+    } on InvalidEmailFormatException catch(e){
+      emit(SendPasswordResetEmailError(S.of(context).errorRecoverPasswordEmail, false));
+    } catch(e){
+      emit(SendPasswordResetEmailError(S.of(context).errorRecoverPassword, false));
     }
   }
 }

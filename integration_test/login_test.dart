@@ -106,8 +106,6 @@ void main() {
       final errorState = authCubit.state as LoginError;
       expect(errorState.message, s.errorEmpty);
     });
-
-    //TODO TEST SUPABASE RESPUESTA INVALIDA - MOCKEAR SUPABASE
   });
 
 

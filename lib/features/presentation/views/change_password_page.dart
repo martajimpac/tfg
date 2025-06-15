@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/Constants.dart';
 import '../../../core/utils/Utils.dart';
 import '../../../generated/l10n.dart';
 import '../components/buttons/my_button.dart';
@@ -122,6 +123,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         children: <Widget>[
                           Text(S.of(context).currentPassword),
                           MyLoginTextField(
+                            key: fieldCurrentPasswordKey,
                             controller: _currentPasswordController,
                             hintText: S.of(context).hintPassword,
                             isRed: isCurrentPasswordRed,
@@ -132,6 +134,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                           Text(S.of(context).newPassword),
                           MyLoginTextField(
+                            key: fieldNewPasswordKey,
                             controller: _newPasswordController,
                             hintText: S.of(context).hintPassword,
                             isRed: isPasswordRed,
@@ -143,6 +146,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                           Text(S.of(context).confirmNewPassword),
                           MyLoginTextField(
+                            key: fieldRepeatPasswordKey,
                             controller: _confirmPasswordController,
                             hintText: S.of(context).hintPassword,
                             isRed: isRepeatPasswordRed,
@@ -154,6 +158,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                           const SizedBox(height: 16.0),
                           MyButton(
+                            key: buttonChangePasswordPageKey,
                             adaptableWidth: false,
                             onTap: () {
                               _changePassword(context);

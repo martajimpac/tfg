@@ -53,48 +53,86 @@ class EvaluacionesDeleteError extends EvaluacionesState {
 class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   final RepositorioDBSupabase repositorio;
   final Map<String, dynamic> filtros = {};
-  List<EvaluacionDataModel> evaluaciones = [];
-  List<EvaluacionDataModel> evaluacionesFiltered = [];
+  List<EvaluacionDataModel> _evaluaciones = [];
+  List<EvaluacionDataModel> _evaluacionesFiltered = [];
   bool sortedByDate = true;
   bool sortDateDescendent = true;
   bool sortNameDescendent = true;
 
+  List<EvaluacionDataModel> get evaluaciones => _evaluaciones;
+  List<EvaluacionDataModel> get evaluacionesFiltered => _evaluacionesFiltered;
+
   EvaluacionesCubit(this.repositorio) : super(EvaluacionesLoading());
+
+  bool isAfterOrSameDay(DateTime a, DateTime b) {
+    final aDate = DateTime(a.year, a.month, a.day);
+    final bDate = DateTime(b.year, b.month, b.day);
+    return aDate.isAfter(bDate);
+  }
+
+  bool isBeforeOrSameDay(DateTime a, DateTime b) {
+    final aDate = DateTime(a.year, a.month, a.day);
+    final bDate = DateTime(b.year, b.month, b.day);
+    return aDate.isBefore(bDate);
+  }
 
   Future<void> getEvaluaciones(BuildContext context) async {
     try {
       emit(EvaluacionesLoading());
 
       final id = await SharedPrefs.getUserId();
-      evaluaciones = await repositorio.getListaEvaluaciones(id);
+      _evaluaciones = await repositorio.getListaEvaluaciones(id);
 
-      evaluacionesFiltered = evaluaciones;
+      _evaluacionesFiltered = _evaluaciones;
       // Filtrar las evaluaciones con los filtros
       if (filtros[filtroCentro] != null) {
         if (filtros[filtroCentro] is CentroDataModel) {
           final centro = filtros[filtroCentro] as CentroDataModel;
-          evaluacionesFiltered = evaluacionesFiltered
+          _evaluacionesFiltered = _evaluacionesFiltered
               .where((evaluacion) => evaluacion.idCentro == centro.idCentro)
               .toList();
         }
       }
 
       if (filtros[filtroFechaRealizacion] != null) {
-        evaluacionesFiltered = evaluacionesFiltered
-            .where((evaluacion) => evaluacion.fechaRealizacion
-                .isAfter(filtros[filtroFechaRealizacion]))
-            .toList();
+        _evaluacionesFiltered = _evaluacionesFiltered.where((evaluacion) {
+          final fechaEvaluacion = DateTime(
+            evaluacion.fechaRealizacion.year,
+            evaluacion.fechaRealizacion.month,
+            evaluacion.fechaRealizacion.day,
+          );
+          final filtroFecha = DateTime(
+            filtros[filtroFechaRealizacion].year,
+            filtros[filtroFechaRealizacion].month,
+            filtros[filtroFechaRealizacion].day,
+          );
+
+          final pasa = !fechaEvaluacion.isBefore(filtroFecha);
+          return pasa;
+        }).toList();
       }
 
+
+
       if (filtros[filtroFechaCaducidad] != null) {
-        evaluacionesFiltered = evaluacionesFiltered
-            .where((evaluacion) => evaluacion.fechaCaducidad
-                .isBefore(filtros[filtroFechaCaducidad]))
-            .toList();
+        _evaluacionesFiltered = _evaluacionesFiltered.where((evaluacion) {
+          final fechaEvaluacion = DateTime(
+            evaluacion.fechaCaducidad.year,
+            evaluacion.fechaCaducidad.month,
+            evaluacion.fechaCaducidad.day,
+          );
+          final filtroFecha = DateTime(
+            filtros[filtroFechaCaducidad].year,
+            filtros[filtroFechaCaducidad].month,
+            filtros[filtroFechaCaducidad].day,
+          );
+          final pasa = !fechaEvaluacion.isAfter(filtroFecha);
+          return pasa;
+        }).toList();
       }
 
       if (filtros[filtroDenominacion] != null) {
-        evaluacionesFiltered = evaluacionesFiltered.where((evaluacion) {
+        _evaluacionesFiltered = _evaluacionesFiltered.where((evaluacion) {
           String normalizedFiltro =
               removeDiacritics(filtros[filtroDenominacion].toUpperCase())
                   .trim();
@@ -106,7 +144,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       }
 
       // Ordenar por defecto al iniciar
-      evaluacionesFiltered.sort((a, b) {
+      _evaluacionesFiltered.sort((a, b) {
         // Ordenar por fecha de realización en orden descendente
         return a.fechaRealizacion.compareTo(b.fechaRealizacion);
       });
@@ -119,7 +157,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
   }
 
   void updateSorting(BuildContext context, bool sortByDate) {
-    if (evaluacionesFiltered.isNotEmpty) {
+    if (_evaluacionesFiltered.isNotEmpty) {
       emit(EvaluacionesLoading());
       // Actualizar los criterios de ordenación
       if (sortByDate) {
@@ -137,7 +175,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       }
 
       //ordenar
-      evaluacionesFiltered.sort((a, b) {
+      _evaluacionesFiltered.sort((a, b) {
         if (sortedByDate) {
           return sortDateDescendent
               ? a.fechaRealizacion.compareTo(b.fechaRealizacion)
@@ -202,7 +240,7 @@ class EvaluacionesCubit extends Cubit<EvaluacionesState> {
       await deleteFileFromIdEval(idEvaluacion);
 
       // Filtrar la evaluación eliminada de la lista
-      evaluacionesFiltered = evaluacionesFiltered
+      _evaluacionesFiltered = _evaluacionesFiltered
           .where((evaluacion) => evaluacion.ideval != idEvaluacion)
           .toList();
 

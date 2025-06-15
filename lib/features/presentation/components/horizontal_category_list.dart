@@ -1,3 +1,4 @@
+import 'package:evaluacionmaquinas/core/utils/Constants.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/categoria_pregunta_dm.dart';
 
@@ -26,19 +27,29 @@ class _HorizontalCategoryListState extends State<HorizontalCategoryList> {
   void didUpdateWidget(HorizontalCategoryList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentIndex != widget.currentIndex) {
-      _scrollToSelectedCategory();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _scrollToSelectedCategory();
+        }
+      });
     }
   }
+
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedCategory();
+      if (mounted) {
+        _scrollToSelectedCategory();
+      }
     });
   }
 
   void _scrollToSelectedCategory() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
     // Calculamos la posición para centrar el ítem seleccionado
     final double itemWidth = 66; // 50 (ancho) + 16 (padding)
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -73,6 +84,7 @@ class _HorizontalCategoryListState extends State<HorizontalCategoryList> {
             height: 66, // (50 + 16 margen)
             color: Theme.of(context).colorScheme.primaryContainer,
             child: ListView.builder(
+              key: listViewCategoriesKey,
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: widget.categorias.length,

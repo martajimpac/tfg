@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
+import '../../../../core/utils/Constants.dart';
 import '../../../../generated/l10n.dart';
 import '../buttons/my_button.dart';
 
@@ -46,6 +47,7 @@ class MyOkDialog extends StatelessWidget {
             ),
             const SizedBox(height: Dimensions.marginMedium),
             MyButton(
+              key: okButtonKey,
               adaptableWidth: false,
               onTap: onTap,
               text: buttonText.isNotEmpty ? buttonText : S.of(context).accept,

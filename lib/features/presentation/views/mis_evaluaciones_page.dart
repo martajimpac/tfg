@@ -139,6 +139,8 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
     );
   }
 
+
+
   void _eliminarEvaluacion(int idEvaluacion, int idMaquina) {
     showDialog(
       context: context,
@@ -173,8 +175,11 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             color: Theme.of(context).colorScheme.primaryContainer,
           ),
           child: IconButton(
-            icon: Icon(Icons.filter_alt,
-                semanticLabel: S.of(context).semanticlabelFilters),
+            icon: Icon(
+                key: buttonFiltersKey,
+                Icons.filter_alt,
+                semanticLabel: S.of(context).semanticlabelFilters
+            ),
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             onPressed: () {
               _cubitEvaluaciones.saveCurrentFilters();
@@ -343,6 +348,7 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
             });
           },
           child: ListView.builder(
+            key: listViewEvaluationsKey,
             itemCount: evaluaciones.length,
             itemBuilder: (BuildContext context, int index) {
               final evaluacion = evaluaciones[index];
@@ -432,9 +438,9 @@ class _MisEvaluaccionesPageState extends State<MisEvaluaccionesPage> {
                           _showDeleteIcons // Mostrar la cruz según la visibilidad de la lista
                               ? IconButton(
                                   icon: Image.asset(
+                                    key: buttonDeleteEvaluationKey,
                                     'assets/icons/ic_close_transparent.png',
-                                    height:
-                                        40, // Ajusta el tamaño de la imagen según sea necesario
+                                    height: 40,
                                     width: 40,
                                     color: Colors.red,
                                     semanticLabel:

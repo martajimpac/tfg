@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/utils/Constants.dart';
 import '../../../generated/l10n.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
@@ -33,13 +34,13 @@ class EditProfileSuccess extends EditProfileState {
 }
 
 class EditProfileError extends EditProfileState {
-  final String errorMessage;
+  final String errorCode;
   final bool isNameRed;
 
-  const EditProfileError(this.errorMessage, this.isNameRed);
+  const EditProfileError(this.errorCode, this.isNameRed);
 
   @override
-  List<Object> get props => [errorMessage, isNameRed];
+  List<Object> get props => [errorCode, isNameRed];
 }
 
 
@@ -49,20 +50,20 @@ class EditProfileCubit extends Cubit<EditProfileState> {
 
   EditProfileCubit(this.repositorio) : super(EditProfileLoading());
 
-  Future<void> editProfile(String newUserName, BuildContext context) async {
+  Future<void> editProfile(String newUserName) async {
     emit(EditProfileLoading());
 
     if (newUserName.isEmpty) {
-      var message = S.of(context).errorEmpty;
+      var message = errorEmpty;
       emit(EditProfileError(message, true));
       return;
     }
 
-    final errorMessage = await repositorio.editProfile(newUserName, context);
-    if(errorMessage == null){
+    try{
+      await repositorio.editProfile(newUserName);
       emit(EditProfileSuccess(newUserName));
-    }else{
-      emit(EditProfileError(errorMessage, false));
+    }catch(e){
+      emit(EditProfileError(defaultError, false));
     }
   }
 

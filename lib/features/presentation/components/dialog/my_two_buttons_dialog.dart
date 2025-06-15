@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/dimensions.dart';
+import '../../../../core/utils/Constants.dart';
 import '../buttons/my_button.dart';
 
 class MyTwoButtonsDialog extends StatelessWidget {
@@ -66,6 +67,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: MyButton(
+                    key: primaryButtonKey,
                     adaptableWidth: false,
                     onTap: onPrimaryButtonTap,
                     text: primaryButtonText,
@@ -90,6 +92,7 @@ class MyTwoButtonsDialog extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: MyButton(
+                      key: primaryButtonKey,
                       adaptableWidth: false,
                       onTap: onPrimaryButtonTap,
                       text: primaryButtonText,

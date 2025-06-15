@@ -5,21 +5,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../shared_prefs.dart';
 import '../../../generated/l10n.dart';
+import 'auth_exceptions.dart';
 
 part 'repositorio_autenticacion_supabase.dart';
 
 abstract class RepositorioAutenticacion {
-  Future<String?> signInWithEmailAndPassword(String email, String password, BuildContext context);
+  Future<void> signInWithEmailAndPassword(String email, String password);
 
-  Future<String?> resendConfirmationEmail(String email, String password, BuildContext context);
+  Future<void> resendConfirmationEmail(String email, String password);
 
-  Future<String?> signUp(String name, String email, String password, BuildContext context);
+  Future<void> signUp(String name, String email, String password);
 
-  Future<String?> changePassword(String currentPassword, String newPassword, BuildContext context);
+  Future<void> changePassword(String currentPassword, String newPassword);
 
-  Future<String?> resetPassword(String newPassword, BuildContext context);
+  Future<void> resetPassword(String newPassword);
 
-  Future<String?> editProfile(String newName, BuildContext context);
+  Future<void> editProfile(String newName);
 
-  Future<String?> sendResetPasswordEmail(String email, BuildContext context);
+  Future<void> sendResetPasswordEmail(String email);
 }

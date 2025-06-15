@@ -117,40 +117,66 @@ class Utils {
   }
 
 
+  // Función auxiliar para normalizar una fecha a medianoche
+  static DateTime _normalizeDate(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
+
   static String getDays(BuildContext context, DateTime to) {
-    to = DateTime(to.year, to.month, to.day);
-    int daysOfDifference = (to.difference(DateTime.now()).inHours / 24).round() + 1;
+    final DateTime normalizedTo = _normalizeDate(to);
+    final DateTime normalizedNow = _normalizeDate(DateTime.now());
+
+    final int daysOfDifference = normalizedTo.difference(normalizedNow).inDays;
 
     if (daysOfDifference == 0) {
-      return "Caduca hoy";
-    } else if(daysOfDifference == 1) {
-      return "Caduca mañana";
-    } else{
-      return "Caduca en $daysOfDifference días";
+      return "Caduca hoy"; // Ejemplo: S.of(context).expiresToday;
+    } else if (daysOfDifference == 1) {
+      return "Caduca mañana"; // Ejemplo: S.of(context).expiresTomorrow;
+    } else if (daysOfDifference > 1) {
+      return "Caduca en $daysOfDifference días"; // Ejemplo: S.of(context).expiresInXDays(daysOfDifference);
+    } else if (daysOfDifference == -1) {
+      return "Caducó ayer"; // Ejemplo: S.of(context).expiredYesterday;
+    } else { // daysOfDifference < -1
+      return "Caducó hace ${daysOfDifference.abs()} días"; // Ejemplo: S.of(context).expiredXDaysAgo(daysOfDifference.abs());
     }
   }
 
   static bool menosDe30DiasParaCaducar(BuildContext context, DateTime to) {
-    to = DateTime(to.year, to.month, to.day);
-    int daysOfDifference = (to.difference(DateTime.now()).inHours / 24).round() + 1;
+    final DateTime normalizedTo = _normalizeDate(to);
+    final DateTime normalizedNow = _normalizeDate(DateTime.now());
 
-    if(daysOfDifference < 30){
-      return true;
-    }else{
-      return false;
-    }
+    final int daysOfDifference = normalizedTo.difference(normalizedNow).inDays;
+
+    // Si la diferencia es menor que 30 días (incluyendo hoy, mañana, y también fechas ya caducadas)
+    // daysOfDifference = 0  (hoy) -> 0 < 30 (true)
+    // daysOfDifference = 29 (en 29 días) -> 29 < 30 (true)
+    // daysOfDifference = 30 (en 30 días) -> 30 < 30 (false)
+    // daysOfDifference = -1 (ayer) -> -1 < 30 (true) -> esto incluye los ya caducados
+    return daysOfDifference < 30;
   }
+
+  // Una versión alternativa si "menosDe30DiasParaCaducar" significa que *aún no ha caducado*
+  // y le quedan menos de 30 días.
+  static bool menosDe30DiasRestantesParaCaducar(BuildContext context, DateTime to) {
+    final DateTime normalizedTo = _normalizeDate(to);
+    final DateTime normalizedNow = _normalizeDate(DateTime.now());
+
+    final int daysOfDifference = normalizedTo.difference(normalizedNow).inDays;
+
+    // Debe ser hoy o en el futuro (daysOfDifference >= 0)
+    // Y la diferencia debe ser menor que 30 días.
+    return daysOfDifference >= 0 && daysOfDifference < 30;
+  }
+
 
   static bool haCaducado(BuildContext context, DateTime to) {
-    to = DateTime(to.year, to.month, to.day);
-    int daysOfDifference = (to.difference(DateTime.now()).inHours / 24).round() + 1;
+    final DateTime normalizedTo = _normalizeDate(to);
+    final DateTime normalizedNow = _normalizeDate(DateTime.now());
 
-    if(daysOfDifference < 0){
-      return true;
-    }else{
-      return false;
-    }
+    // Si la fecha 'to' (normalizada) es anterior a 'now' (normalizada), entonces ha caducado.
+    return normalizedTo.isBefore(normalizedNow);
   }
+
 
   static Uint8List? convertImage(imagenJson){
     if (imagenJson != null) {

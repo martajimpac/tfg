@@ -187,15 +187,12 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         debugPrint("Índice de página fuera de rango o categorías vacías.");
       }
 
-
       /*final categoria = categorias[pageIndex];
       final preguntasPagina = preguntas.where(
             (pregunta) => pregunta.idCategoria == categoria.idcat,
       ).toList();*/
 
-
       //debugPrint("$categoria ${preguntasPagina.map((t) => t.idRespuestaSeleccionada).toList()}");
-
 
       emit(PreguntasLoaded(evaluacion.ideval, pageIndex));
 
