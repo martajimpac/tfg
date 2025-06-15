@@ -1,9 +1,7 @@
 import 'package:evaluacionmaquinas/features/presentation/components/buttons/my_button.dart';
 import 'package:evaluacionmaquinas/features/presentation/components/textField/my_login_textfield.dart';
-import 'package:evaluacionmaquinas/features/presentation/cubit/login_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/register_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
-import 'package:evaluacionmaquinas/features/presentation/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/features/presentation/views/register_page.dart';
 import 'package:evaluacionmaquinas/generated/l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

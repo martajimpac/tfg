@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/utils/Constants.dart';
-import '../../../generated/l10n.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 

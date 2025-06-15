@@ -1,14 +1,9 @@
-import 'package:evaluacionmaquinas/features/presentation/components/buttons/my_button.dart';
-import 'package:evaluacionmaquinas/features/presentation/components/textField/my_login_textfield.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/login_cubit.dart';
-import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
-import 'package:evaluacionmaquinas/features/presentation/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/generated/l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:evaluacionmaquinas/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -40,7 +35,7 @@ void main() {
     // 3. Carga las localizaciones
     s = await S.load(const Locale('es'));
 
-
+    SharedPreferences.setMockInitialValues({});
   });
 
   // Preparación antes de cada test (sin tester)

@@ -2,29 +2,18 @@ import 'package:evaluacionmaquinas/core/theme/app_theme.dart';
 import 'package:evaluacionmaquinas/core/utils/Constants.dart';
 import 'package:evaluacionmaquinas/features/data/models/evaluacion_list_dm.dart';
 import 'package:evaluacionmaquinas/features/presentation/components/buttons/my_button.dart';
-import 'package:evaluacionmaquinas/features/presentation/components/datePicker/custom_date_picker.dart';
-import 'package:evaluacionmaquinas/features/presentation/components/textField/custom_drop_down_field.dart';
 import 'package:evaluacionmaquinas/features/presentation/components/textField/my_login_textfield.dart';
-import 'package:evaluacionmaquinas/features/presentation/components/textField/my_textfield.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/change_password_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/edit_profile_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/evaluaciones_cubit.dart';
-import 'package:evaluacionmaquinas/features/presentation/cubit/insertar_evaluacion_cubit.dart';
-import 'package:evaluacionmaquinas/features/presentation/cubit/login_cubit.dart';
-import 'package:evaluacionmaquinas/features/presentation/cubit/preguntas_cubit.dart';
 import 'package:evaluacionmaquinas/features/presentation/cubit/settings_cubit.dart';
-import 'package:evaluacionmaquinas/features/presentation/views/login_page.dart';
-import 'package:evaluacionmaquinas/features/presentation/views/my_home_page.dart';
 import 'package:evaluacionmaquinas/features/presentation/views/profile_page.dart';
 import 'package:evaluacionmaquinas/generated/l10n.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:evaluacionmaquinas/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -459,6 +448,19 @@ void main() {
       );
 
       expect(changePasswordCubit.state, isA<ChangePasswordSuccess>());
+    });
+
+    testWidgets('Logout', (tester) async {
+      await initializeAppAndNavigateProfile(tester);
+      await tester.pumpAndSettle();
+      final logoutButton = find.byKey(buttonLogoutKey);
+      expect(logoutButton, findsOneWidget);
+      await tester.tap(logoutButton);
+      await tester.pumpAndSettle();
+
+      final loginButton = find.widgetWithText(MyButton, s.loginButton.toUpperCase());
+      expect(loginButton, findsOneWidget);
+      await tester.pumpAndSettle();
     });
 
   });

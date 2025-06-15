@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:evaluacionmaquinas/features/data/models/imagen_dm.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -276,8 +277,12 @@ class Utils {
     Color textColor = Colors.white,
     Duration duration = const Duration(seconds: 2),
   }) {
+    if (kIsWeb || Platform.environment.containsKey('FLUTTER_TEST')) {
+      debugPrint('Toast ignorado en test: $message');
+      return;
+    }
+
     if (Platform.isAndroid || Platform.isIOS) {
-      // Para móvil: Toast nativo
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -286,7 +291,6 @@ class Utils {
         textColor: textColor,
       );
     } else {
-      // Para escritorio: SnackBar personalizado
       final snackBar = SnackBar(
         content: Text(message, style: TextStyle(color: textColor)),
         duration: duration,
@@ -299,9 +303,7 @@ class Utils {
   }
 
   /// Calcula el margen para posicionar el SnackBar según el gravity
-  static
-
-  EdgeInsets _calculateMargin(BuildContext context, ToastGravity gravity) {
+  static EdgeInsets _calculateMargin(BuildContext context, ToastGravity gravity) {
     final screenHeight = MediaQuery.of(context).size.height;
     switch (gravity) {
       case ToastGravity.TOP:

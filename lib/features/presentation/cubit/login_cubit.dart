@@ -76,7 +76,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginError(S.of(context).errorAuthenticationNotConfirmed, true, false));
       return;
 
-    } on AuthenticationRepositoryException catch (e) {
+    } on AuthenticationRepositoryException {
       emit(LoginError(S.of(context).errorAuthentication,  false, false));
       return;
 

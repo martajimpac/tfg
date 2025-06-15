@@ -1,10 +1,7 @@
 import 'package:evaluacionmaquinas/core/utils/Constants.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../shared_prefs.dart';
-import '../../../generated/l10n.dart';
 import 'auth_exceptions.dart';
 
 part 'repositorio_autenticacion_supabase.dart';

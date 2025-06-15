@@ -37,7 +37,7 @@ Future<List<File>> getPdfFiles() async {
 }
 
 
-///Método encargado de obtener path y permisoso para almacenar el fichero de forma extrerna a la aplicación
+///Métoodo encargado de obtener path y permisoso para almacenar el fichero de forma extrerna a la aplicación
 
 Future<Directory?> damePathAlmacenamientoExterno() async {
   Directory? path;
@@ -103,9 +103,7 @@ Future<void> deleteFileFromIdEval(int idEval) async {
     if (await file.exists()) {
       await file.delete();
     }
-  } catch (e) {
-
-  }
+  } catch (e) {}
 }
 
 Future<void> deleteFile(File file) async {

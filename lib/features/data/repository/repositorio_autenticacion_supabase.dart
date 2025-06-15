@@ -9,7 +9,6 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
 
 
 
-  //Funcion que inicia sesión y te devuelve el código de error
   @override
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
@@ -20,17 +19,29 @@ class SupabaseAuthRepository implements RepositorioAutenticacion {
 
       final user = response.user;
 
-      if (user != null) {
-        await SharedPrefs.saveUserPreferences(user, password);
-        // Éxito, no se devuelve nada o Future.value()
-      } else {
-        // Este caso es inusual si signInWithPassword no lanza AuthException
-        // Podrías lanzar una excepción genérica aquí si es un estado inesperado.
-        throw AuthenticationRepositoryException('');
+      if (user == null) {
+        // Caso inesperado si no lanza AuthException pero no hay usuario
+        throw AuthenticationRepositoryException('No se pudo iniciar sesión: usuario nulo');
       }
+
+      await SharedPrefs.saveUserPreferences(user, password);
+
     } on AuthException catch (error) {
-      throw AuthenticationRepositoryException(error.message);
-    } catch (error) { // Errores genéricos de red, etc.
+      final message = error.message.toLowerCase();
+
+      if (message.contains("invalid login credentials")) {
+        throw InvalidCredentialsException();
+      } else if (message.contains("email not confirmed")) {
+        throw EmailNotConfirmedException();
+      } else if (message.contains("user not found")) {
+        throw AuthenticationRepositoryException(error.message);
+      } else {
+        // Otros errores específicos de autenticación
+        throw AuthenticationRepositoryException(error.message);
+      }
+
+    } catch (error) {
+      // Errores no relacionados con la autenticación (como red, formato, etc.)
       throw AuthenticationRepositoryException('$error');
     }
   }

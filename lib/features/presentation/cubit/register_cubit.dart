@@ -107,7 +107,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           name: name,
         )
       );
-    } on RateLimitExceededException catch (e) {
+    } on RateLimitExceededException {
       emit(
           RegisterError(
               S.of(context).errorRegisterLimit,

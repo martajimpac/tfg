@@ -110,10 +110,8 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
 
 
   Future<void> resetPassword(String newPassword, String confirmPassword, BuildContext context) async {
-
     bool isNewPasswordRed = newPassword.isEmpty;
     bool isConfirmPasswordRed = confirmPassword.isEmpty;
-
 
     emit(ChangePasswordLoading());
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
@@ -158,9 +156,9 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     try{
       await repositorio.sendResetPasswordEmail(email);
       emit(SendPasswordResetEmailSuccess());
-    } on RateLimitExceededException catch(e){
+    } on RateLimitExceededException {
       emit(SendPasswordResetEmailError(S.of(context).errorRecoverPasswordLimit, false));
-    } on InvalidEmailFormatException catch(e){
+    } on InvalidEmailFormatException {
       emit(SendPasswordResetEmailError(S.of(context).errorRecoverPasswordEmail, false));
     } catch(e){
       emit(SendPasswordResetEmailError(S.of(context).errorRecoverPassword, false));

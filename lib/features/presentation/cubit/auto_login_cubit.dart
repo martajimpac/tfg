@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 
-import '../../data/repository/auth_exceptions.dart';
 import '../../data/repository/repositorio_autenticacion.dart';
 import '../../data/shared_prefs.dart';
 

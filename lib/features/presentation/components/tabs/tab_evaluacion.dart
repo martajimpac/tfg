@@ -91,7 +91,9 @@ class TabEvaluacion extends StatelessWidget {
                       const SizedBox(height: Dimensions.marginMedium),
 
                       Utils.menosDe30DiasParaCaducar(context, evaluacion.fechaCaducidad) || Utils.haCaducado(context, evaluacion.fechaCaducidad)
-                          ? CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
+                          ?  Center(
+                           child: CaducidadIndicator(fechaCaducidad: evaluacion.fechaCaducidad)
+                          )
                           : Center(
                         child: Text(
                           Utils.getDifferenceBetweenDates(context, DateTime.now(), evaluacion.fechaCaducidad),
