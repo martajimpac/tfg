@@ -1,0 +1,2 @@
+C:/Users/marta/Documents/TFG/NUEVA APP/tfg/android/app/.cxx/Debug/4h184ep3/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/marta/Documents/TFG/NUEVA APP/tfg/android/app/.cxx/Debug/4h184ep3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

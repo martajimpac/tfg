@@ -1,0 +1,2 @@
+C:/Users/marta/Documents/TFG/NUEVA APP/tfg/android/app/.cxx/RelWithDebInfo/526c7g37/x86/CMakeFiles/edit_cache.dir
+C:/Users/marta/Documents/TFG/NUEVA APP/tfg/android/app/.cxx/RelWithDebInfo/526c7g37/x86/CMakeFiles/rebuild_cache.dir
