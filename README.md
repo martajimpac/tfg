@@ -28,7 +28,7 @@ La aplicación ha sido desarrollada para la Delegación de Defensa en la Comunid
 
 1. **Clonar el repositorio**:
    ```bash
-   git clone [URL_DEL_REPOSITORIO]
+   git clone https://github.com/martajimpac/tfg.git
    cd tfg
    ```
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -30,6 +31,8 @@ class PdfHelper {
   static const double paddingCondition = 2;
   static PdfColor yellowColor = PdfColor.fromHex('EEE2BC');
 
+
+
   /// * Función que genera informe *
   static Future<String?> generarInformePDF(
       EvaluacionDetailsDataModel evaluacion,
@@ -37,6 +40,9 @@ class PdfHelper {
       List<OpcionRespuestaDataModel> respuestas,
       List<CategoriaPreguntaDataModel> categorias) async {
     try {
+
+      final logger = Logger();
+      logger.d('[PDF] Iniciando generación de informe');
       final userName = await SharedPrefs.getUserName();
 
       final imagenLogo = MemoryImage(
@@ -44,12 +50,15 @@ class PdfHelper {
               .buffer
               .asUint8List());
 
+
       final pdf = pw.Document();
+
+      final headerWidget = _buildCabeceraPaginaChecklist(imagenLogo);
+      logger.d('[PDF] Documento inicializado');
       pdf.addPage(pw.MultiPage(
-        maxPages: 100,
+        maxPages: 20,
         pageFormat: PdfPageFormat.a4,
-        header: (pw.Context context) =>
-            _buildCabeceraPaginaChecklist(context, imagenLogo),
+        header: (pw.Context context) => headerWidget,
         build: (pw.Context context) => _buildCuerpoPaginaChecklist(userName,
             context, preguntas, respuestas, categorias, evaluacion), // Content
         // Center
@@ -58,14 +67,21 @@ class PdfHelper {
 
       final bitsPDF = await pdf.save();
 
+      logger.d('[PDF] El pdf se ha guardado');
+
       // Guardar el archivo en el almacenamiento interno
       final pathFicheroAlmacenado = await almacenamiento
           .getNameFicheroAlmacenamientoLocal(evaluacion.ideval);
       final file = File(pathFicheroAlmacenado);
       await file.writeAsBytes(bitsPDF);
 
+      logger.d('[PDF] El pdf se ha guardado en el destino deseado');
+
       return pathFicheroAlmacenado;
+
     } catch (e) {
+      final logger = Logger();
+      logger.e('[PDF] Ocurrio un error al generar el pdf $e');
       return null;
     }
   }
@@ -138,9 +154,12 @@ class PdfHelper {
     return truncatedNombreMaquina;
   }
 
-  ///Método que genera la cabecera del pdf
-  static Widget _buildCabeceraPaginaChecklist(
-      Context context, MemoryImage imagenLogo) {
+  ///Métoodo que genera la cabecera del pdf
+  static Widget _buildCabeceraPaginaChecklist(MemoryImage imagenLogo) {
+
+    final logger = Logger();
+    logger.d('[PDF] Construyendo cabecera');
+    
     return pw.Table(children: [
       pw.TableRow(children: [
         pw.Image(imagenLogo, width: 100, height: 100),
@@ -173,7 +192,6 @@ class PdfHelper {
       List<CategoriaPreguntaDataModel> categorias,
       EvaluacionDetailsDataModel evaluacion) {
     return [
-      //pw.SizedBox(height: 20),
 
       // Invocar la función para construir la tabla de la evaluación
       ..._dameTablaDatos(evaluacion, preguntas, respuestas),
@@ -189,6 +207,10 @@ class PdfHelper {
       EvaluacionDetailsDataModel evaluacion,
       List<PreguntaDataModel> preguntas,
       List<OpcionRespuestaDataModel> respuestas) {
+
+    final logger = Logger();
+    logger.d('[PDF] Construyendo tabla superior');
+    
     // Agrupar las preguntas por idCategoria
     List<PreguntaDataModel> preguntasIdentificacion = [];
     for (var pregunta in preguntas) {
@@ -442,32 +464,31 @@ class PdfHelper {
   }
 
   static List<Widget> _dameTablaPreguntas(
-    String userName,
-    List<PreguntaDataModel> preguntas,
-    List<OpcionRespuestaDataModel> respuestas,
-    List<CategoriaPreguntaDataModel> todasLasCategorias,
-  ) {
-    List<CategoriaPreguntaDataModel> categorias =
-        todasLasCategorias.where((categoria) => categoria.idcat != 1).toList();
+      String userName,
+      List<PreguntaDataModel> preguntas,
+      List<OpcionRespuestaDataModel> respuestas,
+      List<CategoriaPreguntaDataModel> todasLasCategorias,
+      ) {
+    final logger = Logger();
+    logger.d('[PDF] Construyendo tabla de preguntas');
 
-    // Agrupar las preguntas por idCategoria, excluyendo las de idCategoria == 1
+    List<CategoriaPreguntaDataModel> categorias =
+    todasLasCategorias.where((categoria) => categoria.idcat != 1).toList();
+
     Map<int?, List<PreguntaDataModel>> preguntasPorCategoria = {};
     for (var pregunta in preguntas) {
-      if (pregunta.idCategoria == 1) {
-        continue; // Omitir preguntas con idCategoria 1
-      }
-
-      if (preguntasPorCategoria.containsKey(pregunta.idCategoria)) {
-        preguntasPorCategoria[pregunta.idCategoria]!.add(pregunta);
-      } else {
-        preguntasPorCategoria[pregunta.idCategoria] = [pregunta];
-      }
+      if (pregunta.idCategoria == 1) continue;
+      (preguntasPorCategoria[pregunta.idCategoria] ??= []).add(pregunta);
     }
 
-    // Ordenar las categorías por su id
+    logger.d('[PDF] Preguntas agrupadas por categoría');
     categorias.sort((a, b) => a.idcat.compareTo(b.idcat));
 
-    return [
+    final List<pw.Widget> widgetsFinales = [];
+
+    widgetsFinales.add(pw.SizedBox(height: 10)); // Espacio antes del título principal
+    // Título principal, fuera del bucle
+    widgetsFinales.add(
       pw.Table(
         border: pw.TableBorder.all(width: 1, color: PdfColors.black),
         children: [
@@ -480,123 +501,137 @@ class PdfHelper {
           ),
         ],
       ),
+    );
+    widgetsFinales.add(pw.SizedBox(height: 10)); // Espacio después del título principal
 
-      ...categorias.expand((categoria) {
-        var preguntasDeLaCategoria =
-            preguntasPorCategoria[categoria.idcat] ?? [];
+    // *** INICIO DEL CAMBIO PRINCIPAL ***
+    // Iteramos sobre las categorías y envolvemos cada una en su propia Column.
+    for (var categoria in categorias) {
+      var preguntasDeLaCategoria = preguntasPorCategoria[categoria.idcat] ?? [];
 
-        // Título de la categoría + las preguntas de esa categoría
-        return [
-          pw.Table(
-            border: pw.TableBorder.all(width: 1, color: PdfColors.black),
-            children: [
-              // Fila de título (solo para categorías especiales)
-              if (categoria.idcat == idMaqCarga1 ||
-                  categoria.idcat == idMaqMovil1)
+      // pw.Column es el widget clave aquí. Agrupa toodo el contenido de la categoría
+      // y permite que el motor de PDF inserte saltos de página entre sus hijos si es necesario.
+      widgetsFinales.add(
+        pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.stretch, // Para que las tablas ocupen toodo el ancho
+          children: [
+            // 1. Tabla para el título/subtítulo de la categoría
+            pw.Table(
+              border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+              children: [
+                if (categoria.idcat == idMaqCarga1 ||
+                    categoria.idcat == idMaqMovil1)
+                  pw.TableRow(
+                    children: [
+                      _buildTableCellTitle(
+                          getTituloEspecial(categoria), pw.TextAlign.center),
+                    ],
+                    decoration: pw.BoxDecoration(color: yellowColor),
+                  ),
                 pw.TableRow(
                   children: [
-                    _buildTableCellTitle(
-                        getTituloEspecial(categoria), pw.TextAlign.center),
+                    _buildTableCellSubtitle(
+                      categoria.idcat == idMaqCarga1 ||
+                          categoria.idcat == idMaqCarga2 ||
+                          categoria.idcat == idMaqMovil1 ||
+                          categoria.idcat == idMaqMovil2
+                          ? categoria.categoria
+                          : "${categoria.idcat - 1}. ${categoria.categoria}",
+                      pw.TextAlign.start,
+                    ),
                   ],
-                  decoration: pw.BoxDecoration(color: yellowColor),
-                ),
-
-              // Fila de subtítulo
-              pw.TableRow(
-                children: [
-                  _buildTableCellSubtitle(
-                    categoria.idcat == idMaqCarga1 ||
-                            categoria.idcat == idMaqCarga2 ||
-                            categoria.idcat == idMaqMovil1 ||
-                            categoria.idcat == idMaqMovil2
-                        ? categoria.categoria
-                        : "${categoria.idcat - 1}. ${categoria.categoria}",
-                    pw.TextAlign.start,
+                  decoration: pw.BoxDecoration(
+                    color: yellowColor,
+                    border: const pw.Border(top: pw.BorderSide.none),
                   ),
-                ],
-                decoration: pw.BoxDecoration(
-                  color: yellowColor,
-                  border: const pw.Border(
-                      top: pw.BorderSide
-                          .none), // Elimina borde superior para unión visual
                 ),
-              ),
-            ],
-          ),
-          // Fila de título de la categoría
+              ],
+            ),
 
-          // Filas de preguntas
-          ...preguntasDeLaCategoria.expand((pregunta) {
-            final index = preguntasDeLaCategoria.indexOf(pregunta);
-            final widgets = <pw.Widget>[];
+            // 2. Filas de preguntas
+            // Tu estructura de expandir las preguntas en tablas individuales es PERFECTA
+            // para esto, ya que crea muchos puntos de ruptura naturales para la Column.
+            ...preguntasDeLaCategoria.expand((pregunta) {
+              final widgetsPregunta = <pw.Widget>[];
 
-            // Insertar condiciones especiales para las preguntas
-            if (pregunta.textoAux != null) {
-              widgets.add(
+              if (pregunta.textoAux != null) {
+                widgetsPregunta.add(
+                  pw.Table(
+                    border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+                    children: [
+                      pw.TableRow(
+                        children: [
+                          _buildTableCellCondition(
+                            pregunta.textoAux ?? "",
+                            pw.TextAlign.start,
+                          ),
+                        ],
+                        decoration: pw.BoxDecoration(color: yellowColor),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              widgetsPregunta.add(
                 pw.Table(
+                  columnWidths: {
+                    0: const pw.FlexColumnWidth(3),
+                    1: const pw.FlexColumnWidth(1),
+                  },
                   border: pw.TableBorder.all(width: 1, color: PdfColors.black),
                   children: [
                     pw.TableRow(
                       children: [
-                        _buildTableCellCondition(
-                          pregunta.textoAux ?? "",
-                          pw.TextAlign.start,
-                        ),
+                        _buildTableCell(pregunta.pregunta, TextAlign.left),
+                        _buildAnswersRow(respuestas, pregunta),
                       ],
-                      decoration: pw.BoxDecoration(color: yellowColor),
                     ),
                   ],
                 ),
               );
-            }
 
-            // Añadir la pregunta normal
-            widgets.add(
-              pw.Table(
-                columnWidths: {
-                  0: const pw.FlexColumnWidth(3),
-                  1: const pw.FlexColumnWidth(1),
-                },
-                border: pw.TableBorder.all(width: 1, color: PdfColors.black),
-                children: [
-                  pw.TableRow(
-                    children: [
-                      _buildTableCell(pregunta.pregunta, TextAlign.left),
-                      _buildAnswersRow(respuestas, pregunta),
-                    ],
-                  ),
-                ],
-              ),
-            );
+              return widgetsPregunta;
+            }),
 
-            return widgets;
-          }),
+            // 3. Tabla de Observaciones
+            pw.Table(
+              border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(1),
+                1: const pw.FlexColumnWidth(2),
+              },
+              children: [
+                pw.TableRow(children: [
+                  _buildTableCellWithValue(
+                      "Observaciones:", categoria.observaciones ?? ""),
+                ]),
+              ],
+            ),
+          ],
+        ),
+      );
 
-          //Observaciones
-          pw.Table(
-            border: pw.TableBorder.all(width: 1, color: PdfColors.black),
-            columnWidths: {
-              0: pw.FlexColumnWidth(
-                  1), // Ancho flexible para la primera columna
-              1: pw.FlexColumnWidth(
-                  2), // Ancho flexible para la segunda columna
-            },
-            children: [
-              pw.TableRow(children: [
-                _buildTableCellWithValue(
-                    "Observaciones:", categoria.observaciones ?? ""),
-              ]),
-            ],
-          ),
-        ];
-      }),
+      // Añadir un espacio entre cada bloque de categoría para mejorar la visualización
+      widgetsFinales.add(pw.SizedBox(height: 15));
+    }
+    // *** FIN DEL CAMBIO PRINCIPAL ***
 
-      // Agregar el nombre del inspector que ha realizado la evaluación
-      pw.SizedBox(height: 10),
+    // Quitar el último SizedBox para que no haya espacio extra antes del nombre del inspector
+    if (widgetsFinales.isNotEmpty) {
+      widgetsFinales.removeLast();
+    }
+
+    // Agregar el nombre del inspector al final
+    widgetsFinales.add(pw.SizedBox(height: 20));
+    widgetsFinales.add(
       pw.Text('Realizado por: $userName',
           style: pw.TextStyle(
-              fontSize: tamanoFuente, fontWeight: FontWeight.bold)),
-    ];
+              fontSize: 10, // tamanoFuente
+              fontWeight: FontWeight.bold)),
+    );
+
+    return widgetsFinales;
   }
 
   static String getTituloEspecial(CategoriaPreguntaDataModel categoria) {

@@ -114,40 +114,49 @@ class _CheckListPageState extends State<CheckListPage> {
                       } else if (state is PreguntasLoaded) {
                         final List<OpcionRespuestaDataModel> respuestas = _cubit.respuestas ?? [];
                         final List<PreguntaDataModel> preguntas = _cubit.preguntas ?? [];
+                        final List<CategoriaPreguntaDataModel>? categorias = _cubit.categorias;
 
-                        final CategoriaPreguntaDataModel? category = _cubit.categorias?.firstWhere(
-                              (it) => it.idcat == (state.pageIndex + 1),
-                        );
+                        // Declarar la variable para la categoría actual.
+                        CategoriaPreguntaDataModel? category;
 
-                        final List<PreguntaDataModel> preguntasPorPagina = category == null
-                            ? []
-                            : preguntas.where((pregunta) => pregunta.idCategoria == category.idcat).toList();
+                        // Comprueba si la lista no es nula y si el índice es válido para evitar errores.
+                        if (categorias != null && state.pageIndex >= 0 && state.pageIndex < categorias.length) {
+                          // Accede directamente al elemento usando el índice de la página.
+                          category = categorias[state.pageIndex];
+                        }
 
-                        return Column(
-                          children: [
-                            if (category != null)
+                        if(category != null && categorias != null){
+                          final List<PreguntaDataModel> preguntasPorPagina =
+                            preguntas.where((pregunta) => pregunta.idCategoria == category?.idcat).toList();
+
+                          return Column(
+                            children: [
                               _buildQuestionsList(context, _currentPageIndex, preguntasPorPagina, category, respuestas),
 
-                            if (_currentPageIndex == (categorias.length - 1))
-                              MyButton(
-                                key: buttonFinishChecklistKey,
-                                adaptableWidth: false,
-                                onTap: () => _checkAllAnswer(preguntas),
-                                text: S.of(context).finish,
-                                roundBorders: false,
-                              )
-                            else
-                              MyButton(
-                                adaptableWidth: false,
-                                onTap: () {
-                                  _currentPageIndex++;
-                                  _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
-                                },
-                                text: S.of(context).next,
-                                roundBorders: false,
-                              ),
-                          ],
-                        );
+                              if (_currentPageIndex == (categorias.length - 1))
+                                MyButton(
+                                  key: buttonFinishChecklistKey,
+                                  adaptableWidth: false,
+                                  onTap: () => _checkAllAnswer(preguntas),
+                                  text: S.of(context).finish,
+                                  roundBorders: false,
+                                )
+                              else
+                                MyButton(
+                                  adaptableWidth: false,
+                                  onTap: () {
+                                    _currentPageIndex++;
+                                    _cubit.getPreguntas(context, widget.evaluacion, _currentPageIndex);
+                                  },
+                                  text: S.of(context).next,
+                                  roundBorders: false,
+                                ),
+                            ],
+                          );
+                        } else {
+                          return Center(child: Text(S.of(context).defaultError));
+                        }
+
                       } else {
                         return Center(child: Text(S.of(context).defaultError));
                       }

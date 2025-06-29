@@ -90,6 +90,7 @@ flutter:
      - family: Manrope
        fonts:
          - asset: assets/fonts/Gill-Sans.otf
+         - asset: assets/fonts/Gill-Sans-Bold.otf
 
 
 
