@@ -54,22 +54,6 @@ La aplicación ha sido desarrollada para la Delegación de Defensa en la Comunid
    ```
    - **Salida:** `build/windows/runner/Release/`
 
-
-## 📸 Capturas de Pantalla
-
-Ejemplo de Interfaz  
-<!-- Aquí iría la imagen, por ejemplo: -->
-<!-- ![Ejemplo de Interfaz](url_a_la_imagen.png) -->
-
-## 📜 Licencia
-
-Este proyecto está bajo licencia MIT.
-
-## ✉️ Contacto
-
-- 📧 Correo: tu_email@example.com
-- 🔗 LinkedIn: tu_perfil_linkedin
-
 ---
 
 🚀 ¡Gracias por tu interés en este proyecto! 🚀
